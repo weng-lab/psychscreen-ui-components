@@ -4,7 +4,7 @@ import { AppBar, AppBarProps, PSYCHSCREEN_DEFAULT_THEME } from '../src';
 import "../src/App.css";
 import { ThemeProvider } from '@emotion/react';
 
-const meta: Meta = { 
+const meta: Meta = {
   title: 'AppBar',
   component: AppBar,
   argTypes: {
