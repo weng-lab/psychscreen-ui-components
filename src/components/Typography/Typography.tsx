@@ -1,5 +1,5 @@
 /**
- * Body.tsx: typography for page bodies.
+ * Typography.tsx: PsychSCREEN-styled typography.
  */
 
 import styled from '@emotion/styled';
@@ -8,10 +8,6 @@ import { Typography as MUITypography, TypographyProps as MUITypographyProps } fr
 type TypographyType = 'body' | 'title' | 'headline' | 'display';
 type TypographySize = 'large' | 'medium' | 'small';
 type TypographyPropertyDictionary = Map<TypographyType, Map<TypographySize, string>>;
-
-/**
- * Typography.tsx: PsychSCREEN-styled typography.
- */
 
 export type TypographyProps = MUITypographyProps & {
     type: TypographyType;
