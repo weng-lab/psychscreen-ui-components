@@ -5,7 +5,7 @@ import "../src/App.css";
 import { ThemeProvider } from '@emotion/react';
 
 const meta: Meta = {
-  title: 'AppBar',
+  title: 'AppBar', 
   component: AppBar,
   argTypes: {
     children: {
