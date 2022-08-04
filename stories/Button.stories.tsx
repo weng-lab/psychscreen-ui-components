@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { Button, ButtonProps, PSYCHSCREEN_DEFAULT_THEME } from '../src';
+import { Button, ButtonProps, PSYCHSCREEN_DEFAULT_THEME } from '../src'; 
 import "../src/App.css";
 import { ThemeProvider } from '@emotion/react';
 
