@@ -25,7 +25,7 @@ export default meta;
 const Template: Story<TypographyProps> = args => (
   <ThemeProvider theme={PSYCHSCREEN_DEFAULT_THEME}>
     <h3 style={{ fontFamily: "Gilroy" }}>
-      Typography for <strong>{args.type}</strong> elements
+      Typography for <strong>{args.type}</strong> elements:
     </h3>
     <hr />
     <Typography size="small" {...args}>
