@@ -35,7 +35,7 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "psychscreen-ui-components",
+  "name": "@zscreen/psychscreen-ui-components",
   "author": "hpratt",
   "module": "dist/psychscreen-ui-components.esm.js",
   "size-limit": [
