@@ -5,7 +5,7 @@ module.exports = {
     ...options,
   }),
   framework: '@storybook/react',
-  stories: ['../src/**/*.stories.@(js|mdx)'],
+  stories: ['../stories/**/*.stories.@(ts|tsx|js|jsx|mdx)'],
   webpackFinal: async (config, { configType }) => {
     // Make whatever fine-grained changes you need
     // Return the altered config
