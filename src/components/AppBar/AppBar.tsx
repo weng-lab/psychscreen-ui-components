@@ -61,8 +61,8 @@ export const AppBar: React.FC<AppBarProps> = props => (
                 <div>
                     <Button
                         onClick={props.onDownloadsClicked}
-                        variant="contained"
-                        primary
+                        bvariant="filled"
+                        btheme="light"
                     >
                         Downloads
                     </Button>

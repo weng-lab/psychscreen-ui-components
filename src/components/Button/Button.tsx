@@ -20,7 +20,7 @@ export type ButtonStyling = {
 
 export type ButtonProps = MUIButtonProps & {
     btheme: "light" | "dark";
-    variant: ButtonVariant;
+    bvariant: ButtonVariant;
 };
 
 export type ButtonTheme = Map<ButtonState, ButtonStyling>;
@@ -124,20 +124,20 @@ export const PSYCHSCREEN_BUTTON_DARK_THEME: Map<ButtonVariant, ButtonTheme> = ne
     ])]
 ]);
 
-const Button = styled(MUIButton)<ButtonProps>(({ variant, btheme: ttheme }) => {
+const Button = styled(MUIButton)<ButtonProps>(({ bvariant, btheme: ttheme }) => {
     const theme = ttheme === "light" ? PSYCHSCREEN_BUTTON_LIGHT_THEME : PSYCHSCREEN_BUTTON_DARK_THEME;
     return ({
         borderRadius: '100px',
-        ...theme.get(variant)!.get(""),
+        ...theme.get(bvariant)!.get(""),
         fontFamily: PSYCHSCREEN_DEFAULT_FONT_FAMILY,
         fontSize: FONT_SIZES.get("body")?.get("medium"),
         fontWeight: FONT_WEIGHTS.get("body")?.get("medium"),
         fontVariantCaps: "normal",
-        '&:active': theme.get(variant)?.get("&:active"),
-        '&:focus': theme.get(variant)?.get("&:focus"),
-        '&:hover': theme.get(variant)?.get("&:hover"),
-        '&:pressed': theme.get(variant)?.get("&:pressed"),
-        '&:disabled': theme.get(variant)?.get("&:disabled")
+        '&:active': theme.get(bvariant)?.get("&:active"),
+        '&:focus': theme.get(bvariant)?.get("&:focus"),
+        '&:hover': theme.get(bvariant)?.get("&:hover"),
+        '&:pressed': theme.get(bvariant)?.get("&:pressed"),
+        '&:disabled': theme.get(bvariant)?.get("&:disabled")
     });
 });
 export default Button;
