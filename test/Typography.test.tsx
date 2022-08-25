@@ -1,6 +1,6 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Body, Display, Title, Headline } from '../stories/Typography.stories';
+import { Body, Display, Title, Headline, Label } from '../stories/Typography.stories';
 
 describe('Body', () => {
   
@@ -25,6 +25,12 @@ describe('Body', () => {
   it('renders headline typography without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(<Headline />, div);
+    ReactDOM.unmountComponentAtNode(div);
+  });
+
+  it('renders label typography without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<Label />, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 

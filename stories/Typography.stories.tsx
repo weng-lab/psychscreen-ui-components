@@ -24,18 +24,16 @@ export default meta;
 
 const Template: Story<TypographyProps> = args => (
   <ThemeProvider theme={PSYCHSCREEN_DEFAULT_THEME}>
-    <h3 style={{ fontFamily: "Gilroy" }}>
+    <h3 style={{ fontFamily: "Roboto" }}>
       Typography for <strong>{args.type}</strong> elements:
     </h3>
     <hr />
     <Typography size="small" {...args}>
       <strong>small: </strong>A quick brown fox jumps over the lazy dog.
     </Typography>
-    { args.type !== 'headline' ? (
-      <Typography size="medium" {...args}>
-        <strong>medium: </strong>A quick brown fox jumps over the lazy dog.
-      </Typography>
-    ) : null}
+    <Typography size="medium" {...args}>
+      <strong>medium: </strong>A quick brown fox jumps over the lazy dog.
+    </Typography>
     <Typography size="large" {...args}>
       <strong>large: </strong>A quick brown fox jumps over the lazy dog.
     </Typography>
@@ -47,9 +45,11 @@ const Template: Story<TypographyProps> = args => (
 export const Body = Template.bind({});
 export const Title = Template.bind({});
 export const Display = Template.bind({});
+export const Label = Template.bind({});
 export const Headline = Template.bind({});
 
 Body.args = { type: 'body' };
 Headline.args = { type: 'headline' };
 Display.args = { type: 'display' };
+Label.args = { type: 'label' };
 Title.args = { type: 'title' };

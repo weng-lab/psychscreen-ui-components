@@ -1,8 +1,7 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { Button, ButtonProps, PSYCHSCREEN_DEFAULT_THEME } from '../src'; 
+import { Button, ButtonProps } from '../src'; 
 import "../src/App.css";
-import { ThemeProvider } from '@emotion/react';
 
 const meta: Meta = {
   title: 'Button',
@@ -22,16 +21,16 @@ const meta: Meta = {
 export default meta;
 
 const Template: Story<ButtonProps> = args => (
-  <ThemeProvider theme={PSYCHSCREEN_DEFAULT_THEME}>
-    <Button variant="contained" {...args}>I'm Enabled.</Button>&nbsp;
-    <Button variant="contained" disabled {...args}>I'm Disabled.</Button>
-  </ThemeProvider>
+  <div style={{ backgroundColor: args.btheme === "dark" ? "#1f1f1f" : "#ffffff", padding: "30px" }}>
+    <Button variant="filled" {...args}>I'm Enabled.</Button>&nbsp;
+    <Button variant="filled" disabled {...args}>I'm Disabled.</Button>
+  </div>
 );
 
 // By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
 // https://storybook.js.org/docs/react/workflows/unit-testing
-export const Primary = Template.bind({});
-export const Secondary = Template.bind({});
+export const Light = Template.bind({});
+export const Dark = Template.bind({});
 
-Primary.args = { primary: true };
-Secondary.args = {};
+Light.args = { btheme: 'light', variant: "outlined" };
+Dark.args = { btheme: 'dark', variant: "outlined" };

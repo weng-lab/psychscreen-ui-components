@@ -2,35 +2,7 @@
  * App.css: global fonts and styles for PsychSCREEN.
 */
 
-@font-face {
-    font-family: 'Gilroy';
-    font-weight: 300;
-    src: local('Gilroy'), url(./fonts/Gilroy-Light.ttf) format('truetype');
-}
-
-@font-face {
-    font-family: 'Gilroy';
-    font-weight: 400;
-    src: local('Gilroy'), url(./fonts/Gilroy-Regular.ttf) format('truetype');
-}
-
-@font-face {
-    font-family: 'Gilroy';
-    font-weight: 500;
-    src: local('Gilroy'), url(./fonts/Gilroy-Medium.ttf) format('truetype');
-}
-
-@font-face {
-    font-family: 'Gilroy';
-    font-weight: 700;
-    src: local('Gilroy'), url(./fonts/Gilroy-Bold.ttf) format('truetype');
-}
-
-@font-face {
-    font-family: 'Gilroy';
-    font-weight: 900;
-    src: local('Gilroy'), url(./fonts/Gilroy-Heavy.ttf) format('truetype');
-}
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 .app-bar-menu-item {
     cursor: 'pointer';
