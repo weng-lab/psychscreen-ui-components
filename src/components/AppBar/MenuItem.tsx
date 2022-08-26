@@ -6,10 +6,8 @@ import React from 'react';
 
 import { Typography } from "../Typography";
 
-export type MenuItemProps = {
+export type MenuItemProps = React.CSSProperties & {
     onClick?: () => void;
-    flexGrow?: 1;
-    marginRight?: string;
     children: React.ReactNode;
 };
 
@@ -19,7 +17,7 @@ const MenuItem: React.FC<MenuItemProps> = props => (
         size="small"
         variant="h6"
         sx={{ flexGrow: props.flexGrow }}
-        style={{ marginRight: props.flexGrow ? "0px" : props.marginRight, cursor: "pointer" }}
+        style={{ marginRight: props.flexGrow ? "0px" : props.marginRight, cursor: "pointer", fontWeight: 400, ...props }}
         onClick={props.onClick}
         className="app-bar-menu-item"
     >

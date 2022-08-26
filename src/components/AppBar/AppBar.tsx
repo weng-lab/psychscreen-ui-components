@@ -6,8 +6,8 @@ import React from 'react';
 import { AppBar as MUIAppBar, AppBarProps as MUIAppBarProps, Box, Toolbar } from '@mui/material';
 import styled from '@emotion/styled';
 
-import { Button } from '../Button';
 import MenuItem from './MenuItem';
+import DropDownMenuItem from './DropDownMenuItem';
 
 /**
  * PsychSCREEN AppBar properties.
@@ -20,7 +20,7 @@ import MenuItem from './MenuItem';
 export type AppBarProps = MUIAppBarProps & {
     onHomepageClicked?: () => void;
     onAboutClicked?: () => void;
-    onPortalClicked?: () => void;
+    onPortalClicked?: (index: number) => void;
     onResourcesClicked?: () => void;
     onDownloadsClicked?: () => void;
 };
@@ -30,43 +30,65 @@ export const StyledAppBar = styled(MUIAppBar)<AppBarProps>(() => ({
     color: "#000000"
 }));
 
+const PortalsMenuItem: React.FC<{ children?: React.ReactNode, onClick?: () => void }> = ({ children, onClick }) => (
+    <MenuItem
+        onClick={onClick}
+        height="48px"
+        fontSize="14px"
+        lineHeight="24px"
+        marginTop="5px"
+    >
+        {children}
+    </MenuItem>
+);
+
+const PortalsMenu: React.FC<{ onPortalClicked?: (index: number) => void }> = ({ onPortalClicked }) => (
+    <>
+        <PortalsMenuItem onClick={() => onPortalClicked && onPortalClicked(0)}>Disease/Trait</PortalsMenuItem>
+        <PortalsMenuItem onClick={() => onPortalClicked && onPortalClicked(1)}>Gene/bCRE</PortalsMenuItem>
+        <PortalsMenuItem onClick={() => onPortalClicked && onPortalClicked(2)}>SNP/QTL</PortalsMenuItem>
+        <PortalsMenuItem onClick={() => onPortalClicked && onPortalClicked(3)}>Single-Cell</PortalsMenuItem>
+    </>
+);
+
 export const AppBar: React.FC<AppBarProps> = props => (
     <Box sx={{ flexGrow: 1 }}>
         <StyledAppBar position="static">
-            <Toolbar>
+            <Toolbar style={{ marginLeft: "60px" }}>
                 <MenuItem
                     onClick={props.onHomepageClicked}
-                    marginRight="4em"
+                    marginRight="32px"
+                    fontWeight={700}
+                    fontSize="20px"
+                    lineHeight="15px"
                 >
-                    PsychSCREEN
+                    psych<br />&nbsp;screen
                 </MenuItem>
                 <MenuItem
                     onClick={props.onAboutClicked}
-                    marginRight="1em"
+                    marginRight="32px"
                 >
-                    About
+                    About Us
                 </MenuItem>
-                <MenuItem
-                    onClick={props.onPortalClicked}
-                    marginRight="1em"
+                <DropDownMenuItem
+                    marginRight="32px"
+                    menu={<PortalsMenu onPortalClicked={props.onPortalClicked} />}
                 >
                     Portals
-                </MenuItem>
+                </DropDownMenuItem>
                 <MenuItem
                     onClick={props.onHomepageClicked}
-                    flexGrow={1}
+                    marginRight="32px"
                 >
                     Resources
                 </MenuItem>
-                <div>
-                    <Button
-                        onClick={props.onDownloadsClicked}
-                        bvariant="filled"
-                        btheme="light"
-                    >
-                        Downloads
-                    </Button>
-                </div>
+                <MenuItem
+                    onClick={props.onDownloadsClicked}
+                    flexGrow={1}
+                    marginRight="32px"
+                >
+                    Downloads
+                </MenuItem>
             </Toolbar>
         </StyledAppBar>
     </Box>
