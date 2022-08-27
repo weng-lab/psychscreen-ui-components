@@ -53,7 +53,7 @@
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@mui/icons-material": "^5.10.2",
-    "@material-ui/core": "latest",
+    "@material-ui/core": "4.12.4",
     "@mui/material": "^5.9.3",
     "@size-limit/preset-small-lib": "^8.0.0",
     "@storybook/addon-essentials": "^6.5.9",
