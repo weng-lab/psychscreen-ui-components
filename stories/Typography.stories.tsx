@@ -2,8 +2,9 @@ import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import { ThemeProvider } from '@emotion/react';
 
-import { Typography, TypographyProps, PSYCHSCREEN_DEFAULT_THEME } from '../src';
+import { Typography, PSYCHSCREEN_DEFAULT_THEME } from '../src';
 import "../src/App.css";
+import { TypographyType } from '../src/components/Typography/Typography';
 
 const meta: Meta = {
   title: 'Typography',
@@ -22,7 +23,7 @@ const meta: Meta = {
 
 export default meta;
 
-const Template: Story<TypographyProps> = args => (
+const Template: Story<{ type: TypographyType }> = args => (
   <ThemeProvider theme={PSYCHSCREEN_DEFAULT_THEME}>
     <h3 style={{ fontFamily: "Roboto" }}>
       Typography for <strong>{args.type}</strong> elements:

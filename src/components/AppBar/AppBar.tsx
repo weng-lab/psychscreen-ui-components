@@ -30,7 +30,7 @@ export const StyledAppBar = styled(MUIAppBar)<AppBarProps>(() => ({
     color: "#000000"
 }));
 
-const PortalsMenuItem: React.FC<{ children?: React.ReactNode, onClick?: () => void }> = ({ children, onClick }) => (
+export const PortalsMenuItem: React.FC<{ children?: React.ReactNode, onClick?: () => void }> = ({ children, onClick }) => (
     <MenuItem
         onClick={onClick}
         height="48px"
@@ -51,7 +51,7 @@ const PortalsMenu: React.FC<{ onPortalClicked?: (index: number) => void }> = ({ 
     </>
 );
 
-export const AppBar: React.FC<AppBarProps> = props => (
+const AppBar: React.FC<AppBarProps> = props => (
     <Box sx={{ flexGrow: 1 }}>
         <StyledAppBar position="static">
             <Toolbar style={{ marginLeft: "60px" }}>

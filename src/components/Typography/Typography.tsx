@@ -6,7 +6,7 @@ import styled from '@emotion/styled';
 import { Typography as MUITypography, TypographyProps as MUITypographyProps } from '@mui/material';
 import { PSYCHSCREEN_DEFAULT_FONT_FAMILY } from '../../constants/theme';
 
-type TypographyType = 'body' | 'title' | 'headline' | 'display' | 'label';
+export type TypographyType = 'body' | 'title' | 'headline' | 'display' | 'label';
 type TypographySize = 'large' | 'medium' | 'small';
 type TypographyPropertyDictionary = Map<TypographyType, Map<TypographySize, string>>;
 
