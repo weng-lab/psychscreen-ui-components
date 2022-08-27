@@ -36,5 +36,5 @@ const onCardClick = (v?: string) =>{
 
 }
 
-Card.args = { onCardClick, cardSpacing: 5, cardDetails : [{cardLabel: "Card 1", val: "val 1", cardDesc: "Card Desc 1"},{cardLabel: "Card 2", val: "val 2", cardDesc: " 1Card Desc 2"}] };
+Card.args = { onCardClick, cardSpacing: 5, cardContentText : [{cardLabel: "Card 1", val: "val 1", cardDesc: "Card Desc 1"},{cardLabel: "Card 2", val: "val 2", cardDesc: " Card Desc 2"}] };
 
