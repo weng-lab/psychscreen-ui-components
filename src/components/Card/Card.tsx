@@ -13,7 +13,7 @@ export type HorizontalCardProps = MUICardProps & { width?: number, cardSpacing?:
 const StyledCard = styled(Card)<MUICardProps>(() => ({
     background: "#FFFFFF",
       '&:hover': {
-         background: "#E5E4E2",
+         background: "#F5F5F5",
       },
 }));
 
