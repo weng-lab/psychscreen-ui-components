@@ -1,5 +1,6 @@
 export { AppBar, AppBarProps } from './components/AppBar';
 export { Button, ButtonProps } from './components/Button';
+export { HorizontalCard, HorizontalCardProps } from './components/Card';
 export { Typography, TypographyProps } from './components/Typography';
 export { SearchBox, SearchBoxProps, SearchBoxWithSelect, SearchBoxWithSelectProps } from './components/SearchBox';
 export { Select, SelectProps } from './components/Select';
