@@ -12,12 +12,23 @@ export type HorizontalCardProps = MUICardProps & { width?: number, cardSpacing?:
 
 const StyledCard = styled(Card)<MUICardProps>(() => ({
     background: "#FFFFFF",
-      '&:hover': {
+    '&:hover': {
          background: "#F5F5F5",
-      },
+    },
+    flex: "none",
+    order:1, 
+    flexGrow:0, 
+    cursor: "pointer",
+    boxSizing:"border-box", 
+    width: "651px",  
+    border: "1px solid", 
+    borderColor: "#828282",
+    borderRadius: "12px", 
+    boxShadow: "none"
+
 }));
 
-const HorizontalCard = (props: HorizontalCardProps) =>{
+const HorizontalCard: React.FC<HorizontalCardProps> = (props) =>{
     
     return (
         

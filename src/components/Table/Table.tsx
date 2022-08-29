@@ -13,13 +13,7 @@ const StyledTableCell = styled(TableCell)(() => ({
   border: "None",
   paddingLeft: "16px",
   textAlign: "center",
-  font: "Helvetica Neue",
-  [`&.${tableCellClasses.head}`]: {
-    fontSize: 50
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14
-  }
+  font: "Helvetica Neue"
 }));
 
 const StyledTableRow = styled(TableRow)(() => ({
@@ -33,7 +27,7 @@ const StyledTableRow = styled(TableRow)(() => ({
 
 export type CustomizedTableProps = MUITableProps & {tabledata: Array<Object>}
 
-const CustomizedTable = (props: CustomizedTableProps ) => {
+const CustomizedTable:React.FC<CustomizedTableProps> = (props) => {
   return (
     <TableContainer>
       <Table aria-label="customized table" style={{width: "max-content"}}>
