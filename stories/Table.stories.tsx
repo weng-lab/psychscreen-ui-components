@@ -31,10 +31,5 @@ const Template: Story<any> = args => (
 // https://storybook.js.org/docs/react/workflows/unit-testing
 export const Table = Template.bind({ });
 
-const onCardClick = (v?: string) =>{
-    console.log('Card Value',v)
-
-}
-
 Table.args = { tabledata: [{Symbol: 'a','Score':2},{Symbol:'b','Score':5},{Symbol:'c','Score':15},{Symbol:'d','Score':25},{Symbol:'e','Score':35}]};
 
