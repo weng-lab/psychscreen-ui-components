@@ -61,7 +61,7 @@ const SearchBoxWithSelect: React.FC<SearchBoxWithSelectProps> = props => {
                 onChange={e => props.onSearchChange && props.onSearchChange(e.target.value)}
                 helperText={option.helperText}
                 width={belowThreshold ? props.reactiveWidth : undefined}
-                style={{ borderTopLeftRadius: belowThreshold ? "100px" : "0px", borderBottomLeftRadius: belowThreshold ? "100px" : "0px" }}
+                style={{ borderTopLeftRadius: props.reactiveThreshold && belowThreshold ? "100px" : "0px", borderBottomLeftRadius: props.reactiveThreshold && belowThreshold ? "100px" : "0px" }}
                 unadorned={!!belowThreshold}
                 {...props}
             />

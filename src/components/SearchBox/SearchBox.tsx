@@ -46,6 +46,7 @@ const SearchBox: React.FC<SearchBoxProps> = props => (
                 height: "76px",
                 marginRight: props.unadorned ? "0px" : "10px",
                 marginTop: "0px",
+                backgroundColor: "none",
                 width: `${props.width || 436}px`
             },
             disableUnderline: true
