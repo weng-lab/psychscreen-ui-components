@@ -56,7 +56,7 @@ const DropDownMenuItem: React.FC<MenuItemProps> = props => {
                             {...TransitionProps}
                             style={{ transformOrigin: placement === 'bottom-start' ? 'left top' : 'left bottom' }}
                         >
-                            <DropDownMenu style={{ width: "150px", height: "208px" }}>
+                            <DropDownMenu style={{ width: "150px" }}>
                                 <ClickAwayListener onClickAway={() => setOpen(false)}>
                                     <MenuList style={{ textAlign: "center" }}>
                                         {props.menu}

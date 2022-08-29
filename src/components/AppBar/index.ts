@@ -1,2 +1,3 @@
 import AppBar, { AppBarProps } from './AppBar';
-export { AppBar, AppBarProps };
+import TabletAppBar, { TabletAppBarProps } from './TabletAppBar';
+export { AppBar, AppBarProps, TabletAppBar, TabletAppBarProps };

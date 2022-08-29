@@ -1,4 +1,4 @@
-export { AppBar, AppBarProps } from './components/AppBar';
+export { AppBar, AppBarProps, TabletAppBar, TabletAppBarProps } from './components/AppBar';
 export { Button, ButtonProps } from './components/Button';
 export { HorizontalCard, HorizontalCardProps } from './components/Card';
 export { Typography, TypographyProps } from './components/Typography';

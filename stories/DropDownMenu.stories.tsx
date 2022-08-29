@@ -33,14 +33,6 @@ const Template: Story<DropDownMenuProps> = args => (
 
 // By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
 // https://storybook.js.org/docs/react/workflows/unit-testing
-export const Body = Template.bind({});
-export const Title = Template.bind({});
-export const Display = Template.bind({});
-export const Label = Template.bind({});
-export const Headline = Template.bind({});
+export const Default = Template.bind({});
 
-Body.args = { type: 'body' };
-Headline.args = { type: 'headline' };
-Display.args = { type: 'display' };
-Label.args = { type: 'label' };
-Title.args = { type: 'title' };
+Default.args = {};
