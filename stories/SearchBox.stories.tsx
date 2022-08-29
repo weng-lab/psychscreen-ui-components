@@ -61,12 +61,12 @@ const Template: Story<SearchBoxProps & { withSelect?: boolean }> = args => {
           />
         </Grid>
         <Grid item sm={6}>
-          <strong>Reactive (at width &lt;200px; current width is {width / 2})</strong><br />
+          <strong>Reactive (at width &lt;800px; current width is {width / 2})</strong><br />
           <SearchBoxWithSelect
             selectOptions={SELECT_OPTIONS}
             label="What can we help you find?"
             variant="standard"
-            reactiveThreshold={400}
+            reactiveThreshold={700}
             reactiveWidth={305}
             containerWidth={width / 2}
             {...args}
