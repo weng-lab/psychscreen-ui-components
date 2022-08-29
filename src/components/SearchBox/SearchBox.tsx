@@ -29,7 +29,7 @@ const StyledTextField = styled(TextField)<SearchBoxProps>(() => ({
 const SearchBox: React.FC<SearchBoxProps> = props => (
     <StyledTextField
         label="What can we help you find?"
-        variant="filled"
+        variant="standard"
         helperText="e.g. schizophrenia, years of education"
         InputProps={{
             endAdornment: props.unadorned ? undefined : (
