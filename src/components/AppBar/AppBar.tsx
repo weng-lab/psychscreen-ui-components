@@ -23,11 +23,14 @@ export type AppBarProps = MUIAppBarProps & {
     onPortalClicked?: (index: number) => void;
     onResourcesClicked?: () => void;
     onDownloadsClicked?: () => void;
+    centered?: boolean;
 };
 
-export const StyledAppBar = styled(MUIAppBar)<AppBarProps>(() => ({
+export const StyledAppBar = styled(MUIAppBar)<AppBarProps>((props) => ({
     backgroundColor: "#ffffff",
-    color: "#000000"
+    color: "#000000",
+    alignItems: props.centered===true ? "center" : "left"
+
 }));
 
 export const PortalsMenuItem: React.FC<{ children?: React.ReactNode, onClick?: () => void }> = ({ children, onClick }) => (
@@ -53,7 +56,7 @@ const PortalsMenu: React.FC<{ onPortalClicked?: (index: number) => void }> = ({ 
 
 const AppBar: React.FC<AppBarProps> = props => (
     <Box sx={{ flexGrow: 1 }}>
-        <StyledAppBar position="static">
+        <StyledAppBar position="static" {...props}>
             <Toolbar style={{ marginLeft: "60px" }}>
                 <MenuItem
                     onClick={props.onHomepageClicked}

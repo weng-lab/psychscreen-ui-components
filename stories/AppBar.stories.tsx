@@ -35,6 +35,9 @@ const Template: Story<TabletAppBarProps & { tablet?: boolean }> = args => args.t
 // https://storybook.js.org/docs/react/workflows/unit-testing
 export const Default = Template.bind({});
 export const Tablet = Template.bind({});
+export const CentredAppBar = Template.bind({});
 
 Default.args = {};
 Tablet.args = { tablet: true, title: "Tablet App Bar" };
+CentredAppBar.args = { centered: true };
+
