@@ -31,5 +31,9 @@ const Template: Story<any> = args => (
 // https://storybook.js.org/docs/react/workflows/unit-testing
 export const Table = Template.bind({ });
 
-Table.args = { tabledata: [{Symbol: 'a','Score':2},{Symbol:'b','Score':5},{Symbol:'c','Score':15},{Symbol:'d','Score':25},{Symbol:'e','Score':35}]};
+const tdata = Array.from(Array(1000).keys()).map((a)=> {
+  return {Symbol: 'S'+ a, 'Score 1':a, 'Score 2':1,'Score 3':4,'Score 4':6,'Score 5':9,'Score 6':0,'Score 7':9,'Score 8':1,'Score 9':2,'Score 10':5,'Score 11':12}
+})
+
+Table.args = { rowsPerPage: [10,100],  tabledata: tdata};
 
