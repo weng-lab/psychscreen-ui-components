@@ -29,7 +29,7 @@ export type CustomizedTableProps = MUITableProps & { tabledata: Array<Object>, r
 const CustomizedTable:React.FC<CustomizedTableProps> = (props) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage && props.rowsPerPage[0] || 10);
-  const handleChangePage = (_, newPage: number) => {
+  const handleChangePage = (_: any, newPage: number) => {
     setPage(newPage);
   };
 
