@@ -4,11 +4,11 @@ import { CardProps as MUICardProps } from '@mui/material/Card';
 import Stack from "@mui/material/Stack";
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import { CardActionArea } from '@mui/material';
+import { CardActionArea, Grid } from '@mui/material';
 import styled from '@emotion/styled';
+import ArrowForward from '@mui/icons-material/ArrowForward'
 
-
-export type HorizontalCardProps = MUICardProps & { width?: number, cardSpacing?: number, cardContentText:  {cardLabel: string, val?: string, cardDesc: string}[], onCardClick?: (val?: string) => void };
+export type HorizontalCardProps = MUICardProps & { width?: number, cardSpacing?: number, cardContentText: {cardLabel: string, val?: string, cardDesc: string}[], onCardClick?: (val?: string) => void, onArrowClick?: (val?: string) => void };
 
 const StyledCard = styled(Card)<MUICardProps>(() => ({
     background: "#FFFFFF",
@@ -45,12 +45,21 @@ const HorizontalCard: React.FC<HorizontalCardProps> = (props) =>{
                                 }}
                             >    
                                 <CardContent>
-                                    <Typography fontFamily={"Helvetica Neue"} gutterBottom variant="h5" component="div">
-                                    {c.cardLabel}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                    {c.cardDesc}
-                                    </Typography>
+                                    <Grid container>
+                                        <Grid item sm={10}>
+                                            <Typography fontFamily={"Helvetica Neue"} gutterBottom variant="h5" component="div">
+                                            {c.cardLabel}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                            {c.cardDesc}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item sm={2}>
+                                            <ArrowForward onClick={(_) => {
+                                                props.onArrowClick && props.onArrowClick(c.val)
+                                            }} style={{ width: "50px", height: "50px", color: "#E0E0E0" }}/>
+                                        </Grid>
+                                    </Grid>
                                 </CardContent>   
                             </CardActionArea>    
                         </StyledCard>)
