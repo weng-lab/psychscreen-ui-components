@@ -39,14 +39,17 @@ const CustomizedTable:React.FC<CustomizedTableProps> = (props) => {
   };
 
   let rows = props.tabledata;
+  console.log(rows)
+  console.log(rows
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage))
   return (
     <>
       <TableContainer>
         <Table stickyHeader aria-label="sticky table" >
           <TableHead >
             <TableRow>
-              {props.tabledata[0].map(t=>{
-                  return <TableCell key={t.header}  style={{textAlign:"center", fontWeight: "bold" ,border:"None"}}>{t.header}</TableCell>
+              {props.tabledata[0].map((t,k)=>{
+                  return <TableCell key={t.header+k}  style={{textAlign:"center", fontWeight: "bold" ,border:"None"}}>{t.header}</TableCell>
               })}           
             </TableRow>
           </TableHead>
@@ -56,8 +59,8 @@ const CustomizedTable:React.FC<CustomizedTableProps> = (props) => {
                 .map((row,i) => {
                 return(
               <StyledTableRow key={i}>
-                  {row.map(v=>{
-                      return <StyledTableCell key={v.value}> { v.render ? v.render : v.value}</StyledTableCell>
+                  {row.map((v,j)=>{
+                      return <StyledTableCell key={i+j+v.value}> { v.render ? v.render : v.value}</StyledTableCell>
                     })
                   }            
               </StyledTableRow>
