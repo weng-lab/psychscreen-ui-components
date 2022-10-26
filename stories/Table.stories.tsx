@@ -32,7 +32,8 @@ const Template: Story<any> = args => (
 export const Table = Template.bind({ });
 
 const tdata = Array.from(Array(1000).keys()).map((a)=> {
-  return {Symbol: 'S'+ a, 'Score 1':a, 'Score 2':1,'Score 3':4,'Score 4':6,'Score 5':9,'Score 6':0,'Score 7':9,'Score 8':1,'Score 9':2,'Score 10':5,'Score 11':12}
+  //return {  Symbol: 'S'+ a, 'Score 1':a, 'Score 2':1,'Score 3':4,'Score 4':6,'Score 5':9,'Score 6':0,'Score 7':9,'Score 8':1,'Score 9':2,'Score 10':5,'Score 11':12}
+  return [{header: 'Symbol', value: a},{ header: 'Score', value: 'score '+ a, render: <b>{'test'+a}</b>}]
 })
 
 Table.args = { rowsPerPage: [10,100],  tabledata: tdata};

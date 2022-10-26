@@ -13,6 +13,7 @@ import { Button } from '../Button';
 export type SearchBoxProps = TextFieldProps & {
     width?: number;
     unadorned?: boolean;
+    onSearchButtonClick?: () => void;
 };
 
 const StyledTextField = styled(TextField)<SearchBoxProps>(() => ({
@@ -37,6 +38,7 @@ const SearchBox: React.FC<SearchBoxProps> = props => (
                     <Button
                         bvariant='filled'
                         btheme='light'
+                        onClick={props.onSearchButtonClick}
                     >
                         Search
                     </Button>

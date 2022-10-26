@@ -84,5 +84,8 @@ const Template: Story<SearchBoxProps & { withSelect?: boolean }> = args => {
 export const Default = Template.bind({});
 export const WithSelect = Template.bind({});
 
-Default.args = {};
+const onSearch = () =>{
+  console.log('on search ')
+}
+Default.args = { onSearchButtonClick: onSearch};
 WithSelect.args = { withSelect: true };

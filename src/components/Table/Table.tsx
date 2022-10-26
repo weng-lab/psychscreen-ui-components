@@ -24,7 +24,7 @@ const StyledTableRow = styled(TableRow)(() => ({
 }));
 
 
-export type CustomizedTableProps = MUITableProps & { tabledata: Array<Object>, rowsPerPage?: number[] }
+export type CustomizedTableProps = MUITableProps & { tabledata: Array<{ header: string, value: any, render?: any }[]>, rowsPerPage?: number[] }
 
 const CustomizedTable:React.FC<CustomizedTableProps> = (props) => {
   const [page, setPage] = React.useState(0);
@@ -42,11 +42,11 @@ const CustomizedTable:React.FC<CustomizedTableProps> = (props) => {
   return (
     <>
       <TableContainer>
-        <Table stickyHeader aria-label="sticky table">
+        <Table stickyHeader aria-label="sticky table" >
           <TableHead >
             <TableRow>
-              {Object.keys(props.tabledata[0]).map(t=>{
-                  return <TableCell style={{textAlign:"center", fontWeight: "bold" ,border:"None"}}>{t}</TableCell>
+              {props.tabledata[0].map(t=>{
+                  return <TableCell key={t.header}  style={{textAlign:"center", fontWeight: "bold" ,border:"None"}}>{t.header}</TableCell>
               })}           
             </TableRow>
           </TableHead>
@@ -56,8 +56,8 @@ const CustomizedTable:React.FC<CustomizedTableProps> = (props) => {
                 .map((row,i) => {
                 return(
               <StyledTableRow key={i}>
-                  {Object.values(row).map(v=>{
-                      return <StyledTableCell> {v}</StyledTableCell>
+                  {row.map(v=>{
+                      return <StyledTableCell key={v.value}> { v.render ? v.render : v.value}</StyledTableCell>
                     })
                   }            
               </StyledTableRow>

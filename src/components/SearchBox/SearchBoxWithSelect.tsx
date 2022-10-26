@@ -14,6 +14,7 @@ export type SearchBoxWithSelectProps = SearchBoxProps & {
     selectOptions: SearchBoxWithSelectOption[];
     onSelectChange?: (option: SearchBoxWithSelectOption) => void;
     onSearchChange?: (value: string) => void;
+    onSearchButtonClick?: () => void;
     reactiveThreshold?: number;
     reactiveWidth?: number;
     containerWidth?: number;
