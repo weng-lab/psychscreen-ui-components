@@ -24,9 +24,15 @@ const StyledTableRow = styled(TableRow)(() => ({
 }));
 
 
-export type CustomizedTableProps = MUITableProps & { tabledata: Array<{ header: string, value: any, render?: any }[]>, rowsPerPage?: number[] }
+export type CustomizedTableProps = MUITableProps & {
+    tabledata: Array<{ header: string, value: any, render?: any }[]>,
+    rowsPerPage?: number[],
+    onRowMouseOver?: (row: any, i: number) => void;
+    onRowMouseOut?: () => void;
+    onRowClick?: (row: any, i: number) => void;
+};
 
-const CustomizedTable:React.FC<CustomizedTableProps> = (props) => {
+const CustomizedTable: React.FC<CustomizedTableProps> = (props) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage && props.rowsPerPage[0] || 10);
   const handleChangePage = (_: any, newPage: number) => {
@@ -58,7 +64,12 @@ const CustomizedTable:React.FC<CustomizedTableProps> = (props) => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row,i) => {
                 return(
-              <StyledTableRow key={i}>
+              <StyledTableRow
+                onMouseOver={() => props.onRowMouseOver && props.onRowMouseOver(row, i)}
+                onClick={() => props.onRowClick && props.onRowClick(row, i)}
+                onMouseOut={props.onRowMouseOut}
+                key={i}
+              >
                   {row.map((v,j)=>{
                       return <StyledTableCell key={i+j+v.value}> { v.render ? v.render : v.value}</StyledTableCell>
                     })
