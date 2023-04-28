@@ -39,6 +39,11 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  },
   "module": "dist/psychscreen-ui-components.esm.js",
   "size-limit": [
     {
