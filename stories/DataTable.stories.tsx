@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
+import { Meta, Story } from '@storybook/react';
 import { DataTable, DataTableProps, DataTableColumn } from '../src';
 
-export default {
-  title: 'DataTable',
+const meta: Meta<typeof DataTable> = {
+  title: 'DataTable', 
+  component: DataTable,
+  tags: ['autodocs'],
+  argTypes: {},
+  parameters: {
+    controls: { expanded: true },
+  },
 };
+
+export default meta;
 
 type Row = {
   index: number;
@@ -53,128 +62,102 @@ const ROWS = [
     { index: 7, text: "this is row 7", color: "#110000", description: "this is row 7" }
 ];
 
-// By passing optional props to this story, you can control the props of the component when
-// you consume the story in a test.
-export const Default = (props?: Partial<DataTableProps<Row>>) => {
-  return (
-      <DataTable
-          rows={ROWS}
-          columns={COLUMNS}
-          itemsPerPage={4}
-          tableTitle="Table Title"
-          searchable
-          {...props}
-      />
-  );
+const Template: Story<DataTableProps<any>> = args => (
+  <DataTable 
+   {...args}
+  />
+)
+
+// By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
+// https://storybook.js.org/docs/react/workflows/unit-testing
+export const Default = Template.bind({})
+export const EmptyTable = Template.bind({})
+export const NoHeader = Template.bind({})
+export const AddMoreColumnsOnSelect = Template.bind({})
+export const HoverInfo = Template.bind({})
+export const FunctionalComponentColumn = Template.bind({})
+export const OnRowClick = Template.bind({})
+export const HeaderColored = Template.bind({})
+// Revisit this when there's a need/more time
+// export const ManagedSearchState = Template.bind({})
+
+Default.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true
 }
 
-export const EmptyTable = (props?: Partial<DataTableProps<Row>>) => {
-  return (
-      <DataTable
-          rows={[]}
-          emptyText="No Data to Display"
-          columns={COLUMNS}
-          itemsPerPage={4}
-          tableTitle="Table Title"
-          searchable
-          {...props}
-      />
-  );
+EmptyTable.args = {
+  rows: [],
+  emptyText: "No Data to Display",
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true
 }
 
-export const NoHeader = (props?: Partial<DataTableProps<Row>>) => {
-  return (
-      <DataTable
-          rows={ROWS}
-          columns={COLUMNS}
-          itemsPerPage={4}
-          tableTitle="Table Title"
-          searchable
-          hideHeader
-          {...props}
-      />
-  );
+NoHeader.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  hideHeader: true,
 }
 
-export const AddMoreColumnsOnSelect = (props?: Partial<DataTableProps<Row>>) => {
-  return (
-      <DataTable
-          rows={ROWS}
-          columns={COLUMNS}
-          itemsPerPage={4}
-          tableTitle="Table Title"
-          searchable
-          showMoreColumns={true}          
-          {...props}
-          noOfDefaultColumns={3}
-      />
-  );
+AddMoreColumnsOnSelect.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  showMoreColumns: true,        
+  noOfDefaultColumns: 3
 }
 
-export const HoverInfo = (props?: Partial<DataTableProps<Row>>) => {
-  return (
-      <DataTable
-          rows={ROWS}
-          columns={COLUMNS}
-          itemsPerPage={4}
-          tableTitle="Table Title"
-          searchable
-          {...props}
-          titleHoverInfo="
-          Here is some more information about this table. Here is some more information about this table. 
-          Here is some more information about this table. Here is some more information about this table. 
-          Here is some more information about this table. Here is some more information about this table. 
-          Here is some more information about this table. Here is some more information about this table. 
-          Here is some more information about this table. Here is some more information about this table. 
-          Here is some more information about this table. Here is some more information about this table. 
-          Here is some more information about this table. Here is some more information about this table. 
-          Here is some more information about this table. Here is some more information about this table. 
-          Here is some more information about this table. Here is some more information about this table. "
-      />
-  );
+HoverInfo.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  titleHoverInfo: "Here is some more information about this table. Here is some more information about this table."
+  + "Here is some more information about this table. Here is some more information about this table. "
+  + "Here is some more information about this table. Here is some more information about this table. "
+  + "Here is some more information about this table. Here is some more information about this table. "
+  + "Here is some more information about this table. Here is some more information about this table. "
+  + "Here is some more information about this table. Here is some more information about this table. "
 }
 
-export const FunctionalComponentColumn = (props?: Partial<DataTableProps<Row>>) => {
-  return (
-      <DataTable
-          rows={ROWS}
-          columns={FCCOLUMNS}
-          itemsPerPage={4}
-          tableTitle="Table Title"
-          searchable
-          showMoreColumns={true}          
-          {...props}
-          noOfDefaultColumns={3}
-      />
-  );
+FunctionalComponentColumn.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  showMoreColumns: true,      
+  noOfDefaultColumns: 3,
 }
 
-/*
-This functionality has been removed as of version 4.0 when pagination was 
-changed from the PageMenu component to MUI pagination
-
-export const ManagedPageState = (props?: Partial<DataTableProps<Row>>) => {
-  const [page, setPage] = useState(0);
-  return (
-    <>
-      <span>Page: {page}</span>
-      <PageMenu selected={page} onPageSelect={setPage} length={2} />
-      <DataTable
-          rows={ROWS}
-          columns={COLUMNS}
-          itemsPerPage={4}
-          tableTitle="title"
-          searchable
-          showMoreColumns={true}          
-          {...props}
-          noOfDefaultColumns={3}
-          page={page}
-          setPage={setPage}
-      />
-    </>
-  );
+OnRowClick.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  onRowClick: (row) => + window.alert(`You clicked on:\nIndex: ${row.index.toString()}\nText: ${row.text}\nColor: ${row.color}\nDescription: ${row.description}`)
 }
-*/
+
+HeaderColored.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  headerColor: {backgroundColor: '#1976d2', textColor: '#ffffff'}
+}
 
 export const ManagedSearchState = (props?: Partial<DataTableProps<Row>>) => {
   const [ value, setValue ] = useState("");
@@ -192,33 +175,5 @@ export const ManagedSearchState = (props?: Partial<DataTableProps<Row>>) => {
           search={value}
       />
     </>
-  );
-}
-
-export const OnRowClick = (props?: Partial<DataTableProps<Row>>) => {
-  return (
-      <DataTable
-          rows={ROWS}
-          columns={COLUMNS}
-          itemsPerPage={4}
-          tableTitle="Table Title"
-          searchable
-          {...props}
-          onRowClick={(row) => + window.alert(`You clicked on:\nIndex: ${row.index.toString()}\nText: ${row.text}\nColor: ${row.color}\nDescription: ${row.description}`)}
-      />
-  );
-}
-
-export const HeaderColored = (props?: Partial<DataTableProps<Row>>) => {
-  return (
-      <DataTable
-          rows={ROWS}
-          columns={COLUMNS}
-          itemsPerPage={4}
-          tableTitle="Table Title"
-          searchable
-          headerColor='rgb(100,100,100)'
-          {...props}
-      />
   );
 }

@@ -2,74 +2,214 @@
  * Slider.tsx: provides PsychSCREEN-styled Sliders.
  */
 
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
+import React from 'react';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Slider from '@mui/material/Slider';
-import MuiInput from '@mui/material/Input';
-import VolumeUp from '@mui/icons-material/VolumeUp';
 import { SliderProps as MuiSliderProps } from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+
+/*
+TODO: Have a browser popup when an invalid number is chosen
+      How does an outside piece of code access the values set here? Wouldn't it be out of scope
+      Write support for an onChange function that exports the values
+
+      Empty text box behavior is whack
+*/
+
 
 export type SliderProps = MuiSliderProps & {
-
+  title: string;
+  width: number;
+  defaultStart: number;
+  defaultEnd: number;
+  //Could do more strict input checking here by checking the min/max of the slider
+  minDistance?: number;
+  // onChange?: () => void;
 };
 
-const Input = styled(MuiInput)`
-  width: 42px;
-`;
+function valuetext(value: number) {
+  return `${value}°C`;
+}
 
-export default function InputSlider(props: SliderProps) {
-  const [value, setValue] = React.useState<number | string | Array<number | string>>(
-    30,
+const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
+  //value that the slider uses
+  const [value, setValue] = React.useState<number[]>(
+    [props.defaultStart, props.defaultEnd]
   );
 
-  const handleSliderChange = (_event: Event, newValue: number | number[]) => {
-    setValue(newValue);
+  //Check if declared, if not set to MUI slider defaults
+  const sliderMin = props.min ? props.min : 0
+  const sliderMax = props.max ? props.max : 100
+  const sliderStep = props.step ? props.step : 1
+
+  //Unless specified, the minimum distance between sliders is 0
+  const minDistance = props.minDistance ? props.minDistance : 0;
+
+  //temp value for input validation. It's what the text boxes display
+  const [tempValue, setTempValue] = React.useState<Array<Number | String>>(
+    [value[0], value[1]]
+  );
+
+  const handleSetTempValue0 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTempValue([event.target.value, value[1]])
+  }
+
+  const handleSetTempValue1 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTempValue([value[0], event.target.value])
+  }
+
+  //Value change from using slider
+  const handleSliderChange = (
+    _event: Event,
+    newValue: number | number[],
+    activeThumb: number,
+  ) => {
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+    if (activeThumb === 0) {
+      setValue([Math.min(newValue[0], value[1] - minDistance), value[1]]);
+      setTempValue([Math.min(newValue[0], value[1] - minDistance), value[1]]);
+    } else {
+      setValue([value[0], Math.max(newValue[1], value[0] + minDistance)]);
+      setTempValue([value[0], Math.max(newValue[1], value[0] + minDistance)]);
+    }
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value === '' ? '' : Number(event.target.value));
+
+  //On a user pressing enter, decides if the temp value is valid and posts it, or corrects the temp value
+  const handleInputEnter0 = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const newTempValue0: number = Number(tempValue[0]);
+    const curValue1: number = value[1]
+
+    if (event.key == "Enter") {
+      //If the temp value is valid, set the true slider value
+      if (newTempValue0 <= (curValue1 - minDistance) && newTempValue0 > sliderMin) {
+        setValue([newTempValue0, curValue1])
+      }
+      //If the value is too close to the other slider, reset the TempValue
+      if (newTempValue0 > (curValue1 - minDistance)) {
+        setTempValue([value[0], curValue1])
+      }
+      //If the value is below sliderMin, reset the tempValue
+      if (newTempValue0 < sliderMin) {
+        setTempValue([value[0], curValue1])
+      }
+    }
   };
 
-  const handleBlur = () => {
-    if (Number(value) < 0) {
-      setValue(0);
-    } else if (Number(value) > 100) {
-      setValue(100);
+  //Handles the user clicking away, decides if the temp value is valid and posts it, or corrects the temp value
+  const handleBlur0 = () => {
+    const newTempValue0: number = Number(tempValue[0]);
+    const curValue1: number = value[1]
+
+    //If the temp value is valid, set the true slider value
+    if (newTempValue0 <= (curValue1 - minDistance) && newTempValue0 > sliderMin) {
+      setValue([newTempValue0, curValue1])
+    }
+    //If the value is too close to the other slider, reset the TempValue
+    if (newTempValue0 > (curValue1 - minDistance)) {
+      setTempValue([value[0], curValue1])
+    }
+    //If the value is below sliderMin, reset the tempValue
+    if (newTempValue0 < sliderMin) {
+      setTempValue([value[0], curValue1])
+    }
+  };
+
+  //On a user pressing enter, decides if the temp value is valid and posts it, or corrects the temp value
+  const handleInputEnter1 = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const curValue0: number = value[0]
+    const newTempValue1: number = Number(tempValue[1]);
+
+    if (event.key == "Enter") {
+      //If the temp value is valid, set the true slider value
+      if (newTempValue1 >= (curValue0 + minDistance) && newTempValue1 < sliderMax) {
+        setValue([curValue0, newTempValue1])
+      }
+      //If the value is too close to the other slider, reset the TempValue
+      if (newTempValue1 < (curValue0 + minDistance)) {
+        setTempValue([curValue0, value[1]])
+      }
+      //If the value is above sliderMax, reset the tempValue
+      if (newTempValue1 > sliderMax) {
+        setTempValue([curValue0, value[1]])
+      }
+    }
+  };
+
+  //Handles the user clicking away, decides if the temp value is valid and posts it, or corrects the temp value
+  const handleBlur1 = () => {
+    //This should be able to be set as either tempValue or Value
+    const curValue0: number = value[0]
+    const newTempValue1: number = Number(tempValue[1]);
+
+    //If the temp value is valid, set the true slider value
+    if (newTempValue1 >= (curValue0 + minDistance) && newTempValue1 < sliderMax) {
+      setValue([curValue0, newTempValue1])
+    }
+    //If the value is too close to the other slider, reset the TempValue
+    if (newTempValue1 < (curValue0 + minDistance)) {
+      setTempValue([curValue0, value[1]])
+    }
+    //If the value is above sliderMax, reset tempValue
+    if (newTempValue1 > sliderMax) {
+      setTempValue([curValue0, value[1]])
     }
   };
 
   return (
-    <Box sx={{ width: 250 }}>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item>
-          <VolumeUp />
-        </Grid>
-        <Grid item xs>
-          <Slider
-            value={typeof value === 'number' ? value : 0}
-            onChange={handleSliderChange}
-            aria-labelledby="input-slider"
-          />
-        </Grid>
-        <Grid item>
-          <Input
-            value={value}
-            size="small"
-            onChange={handleInputChange}
-            onBlur={handleBlur}
+    <Box sx={{ width: props.width }}>
+      <Typography>{props.title}</Typography>
+      <Slider
+        getAriaLabel={() => 'Minimum distance'}
+        value={value}
+        onChange={handleSliderChange}
+        valueLabelDisplay="auto"
+        getAriaValueText={valuetext}
+        disableSwap
+        //Check if min/max declared, if not set to MUI slider defaults
+        min={sliderMin}
+        max={sliderMax}
+        step={sliderStep}
+      />
+      <Grid2 container spacing={2}>
+        <Grid2 xs={6}>
+          <TextField
+            value={tempValue[0]}
+            size='small'
+            fullWidth
+            variant='outlined'
+            onChange={handleSetTempValue0}
+            onBlur={handleBlur0}
+            onKeyDown={handleInputEnter0}
             inputProps={{
-              step: 10,
-              min: 0,
-              max: 100,
-              type: 'number',
+              variant: 'outlined',
+              type: 'text',
               'aria-labelledby': 'input-slider',
             }}
           />
-        </Grid>
-      </Grid>
+        </Grid2>
+        <Grid2 xs={6}>
+          <TextField
+            value={tempValue[1]}
+            size='small'
+            fullWidth
+            variant='outlined'
+            onChange={handleSetTempValue1}
+            onBlur={handleBlur1}
+            onKeyDown={handleInputEnter1}
+            inputProps={{
+              type: 'text',
+              'aria-labelledby': 'input-slider',
+            }}
+          />
+        </Grid2>
+      </Grid2>
     </Box>
   );
 }
+
+export default RangeSlider;

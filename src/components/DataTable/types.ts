@@ -38,7 +38,7 @@ export type DataTableProps<T> = {
   rowLink?: (row: T, index: number) => string
   titleHoverInfo?: string,
   // headerColor?: "primary" | "secondary" | string
-  headerColor?: RGB | RGBA | HEX;
+  headerColor?: {backgroundColor: RGB | RGBA | HEX , textColor: RGB | RGBA | HEX | 'inherit'};
   //Or should this be an array of length two, where both header color and text color can be defined?
 }
 

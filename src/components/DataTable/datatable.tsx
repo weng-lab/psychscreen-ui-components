@@ -40,6 +40,9 @@ const theme = createTheme({
   typography: {
     fontFamily: "inherit",
   },
+  shape: {
+    borderRadius: 4,
+  },
   components: {
     MuiTableCell: {
       styleOverrides: {
@@ -114,7 +117,9 @@ const boxStyle = {
   p: 4,
 }
 
-function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTableProps<T>> {
+//const RangeSlider: React.FC<SliderProps> = (props: SliderProps) =>
+// function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTableProps<T>> {
+const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) => {
   // Sets default rows to display at 5 if unspecified
   const itemsPerPage = props.itemsPerPage || 5
   const [page, setPage] = React.useState(0)
@@ -139,7 +144,7 @@ function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTablePro
 
   const columnLimit = useMemo(() => props.noOfDefaultColumns || props.columns.length, [props.noOfDefaultColumns, props.columns])
 
-  const [state, dispatch] = useReducer<Reducer<DataTableState<T>, DataTableAction<T>>>(reducer, {
+  const [state, dispatch] = useReducer<Reducer<DataTableState<any>, DataTableAction<any>>>(reducer, {
     sort: {
       column: props.sortColumn || 0,
       asc: !!props.sortDescending,
@@ -156,7 +161,7 @@ function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTablePro
   })
 
   const search = useCallback(
-    (row: T, value: string): boolean => {
+    (row: any, value: string): boolean => {
       /* look for any matching searchable column */
       for (const i in state.columns) {
         /* get column; look for a user-defined search function first */
@@ -175,7 +180,7 @@ function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTablePro
   )
 
   const sort = useCallback(
-    (rows: T[]): T[] => {
+    (rows: any[]): any[] => {
       /* look for a user-defined sort function for this column or fall back
           to generic string/number sorting */
       const sortf =
@@ -190,7 +195,7 @@ function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTablePro
   )
 
   const displayRows = useCallback(
-    (sortedRows: T[], filterValue: string): T[] =>
+    (sortedRows: any[], filterValue: string): any[] =>
       filterValue === "" ? [...sortedRows] : sortedRows.filter((row) => search(row, filterValue)),
     [search]
   )
@@ -204,7 +209,7 @@ function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTablePro
     const data =
       state.columns.map((col) => col.header).join("\t") +
       os.EOL +
-      displayedRows.map((row: T) => state.columns.map((col) => col.value(row)).join("\t")).join(os.EOL) +
+      displayedRows.map((row: any) => state.columns.map((col) => col.value(row)).join("\t")).join(os.EOL) +
       os.EOL
     const a = document.createElement("a")
     document.body.appendChild(a)
@@ -225,12 +230,12 @@ function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTablePro
           // For alignment of the title. Padding scales in multiples of the theme's spacing scaling factor (8px default)
           sx={{ "& .MuiToolbar-root": { pl: 2 } }}
         >
-          <Toolbar sx={{backgroundColor:`${props.headerColor ? props.headerColor : "transparent"}`}}>
+          <Toolbar sx={{backgroundColor:`${props.headerColor? props.headerColor.backgroundColor : "transparent"}`, borderTopLeftRadius: theme.shape.borderRadius, borderTopRightRadius: theme.shape.borderRadius}}>
             <Typography
               variant="h5"
               noWrap
               component="div"
-              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" }, fontWeight: "normal" }}
+              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" }, fontWeight: "normal", color:`${props.headerColor? props.headerColor.textColor : "inherit"}` }}
             >
               {props.tableTitle}
               {props.titleHoverInfo && (
@@ -274,7 +279,7 @@ function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTablePro
               </Search>
             )}
             <IconButton onClick={download}>
-              <DownloadIcon />
+              <DownloadIcon htmlColor={`${props.headerColor?.textColor || 'inherit'}`}/>
             </IconButton>
           </Toolbar>
           <Table stickyHeader aria-label="sticky table">
@@ -330,7 +335,7 @@ function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTablePro
             {!props.hidePageMenu && (
               <TableFooter>
                 <TableRow>
-                  <TableCell colSpan={state.columns.length}>
+                  <TableCell colSpan={state.columns.length} sx={{borderBottom: "none"}}>
                     {displayedRows.length !== props.rows.length &&
                       `Showing ${displayedRows.length} matching rows of ${props.rows.length} total.`}
                     <TablePagination

@@ -1,2 +1,2 @@
-import Slider, { SliderProps } from './Slider';
-export { Slider, SliderProps };
+import RangeSlider, { SliderProps } from './Slider';
+export { RangeSlider, SliderProps };
