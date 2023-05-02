@@ -1,5 +1,5 @@
 import React, { useCallback, useReducer, Reducer, useMemo, Fragment } from "react"
-import * as os from "os"
+// import * as os from "os"
 import { genericSort } from "../utilities"
 import { DataTableProps, DataTableState, DataTableAction } from "./types"
 import { reducer } from "./reducer"
@@ -208,9 +208,9 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
   const download = useCallback(() => {
     const data =
       state.columns.map((col) => col.header).join("\t") +
-      os.EOL +
-      displayedRows.map((row: any) => state.columns.map((col) => col.value(row)).join("\t")).join(os.EOL) +
-      os.EOL
+      '\n' +
+      displayedRows.map((row: any) => state.columns.map((col) => col.value(row)).join("\t")).join('\n') +
+      '\n'
     const a = document.createElement("a")
     document.body.appendChild(a)
     a.setAttribute("style", "display: none")

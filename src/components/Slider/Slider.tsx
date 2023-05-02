@@ -30,7 +30,7 @@ export type SliderProps = MuiSliderProps & {
 };
 
 function valuetext(value: number) {
-  return `${value}°C`;
+  return `${value}`;
 }
 
 const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
@@ -42,7 +42,7 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
   //Check if declared, if not set to MUI slider defaults
   const sliderMin = props.min ? props.min : 0
   const sliderMax = props.max ? props.max : 100
-  const sliderStep = props.step ? props.step : 1
+  const sliderStep = props.step ? props.step : 0.01
 
   //Unless specified, the minimum distance between sliders is 0
   const minDistance = props.minDistance ? props.minDistance : 0;
@@ -70,11 +70,13 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
       return;
     }
     if (activeThumb === 0) {
-      setValue([Math.min(newValue[0], value[1] - minDistance), value[1]]);
-      setTempValue([Math.min(newValue[0], value[1] - minDistance), value[1]]);
+      //If activeThumb is Thumb 0, then set the first value. Use toFixed to eliminate floating point math errors
+      setValue([Number(Math.min(newValue[0], value[1] - minDistance).toFixed(5)), value[1]]);
+      setTempValue([Number(Math.min(newValue[0], value[1] - minDistance).toFixed(5)), value[1]]);
     } else {
-      setValue([value[0], Math.max(newValue[1], value[0] + minDistance)]);
-      setTempValue([value[0], Math.max(newValue[1], value[0] + minDistance)]);
+      //If activeThumb is Thumb 1, then set the second value. Use toFixed to eliminate floating point math errors
+      setValue([value[0], Number(Math.max(newValue[1], value[0] + minDistance).toFixed(5))]);
+      setTempValue([value[0], Number(Math.max(newValue[1], value[0] + minDistance).toFixed(5))]);
     }
   };
 
@@ -170,7 +172,6 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
         valueLabelDisplay="auto"
         getAriaValueText={valuetext}
         disableSwap
-        //Check if min/max declared, if not set to MUI slider defaults
         min={sliderMin}
         max={sliderMax}
         step={sliderStep}
