@@ -179,8 +179,8 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
         max={sliderMax}
         step={sliderStep}
       />
-      <Grid2 container spacing={2}>
-        <Grid2 xs={6}>
+      <Grid2 container spacing={1}>
+        <Grid2 xs={5.5}>
           <TextField
             value={tempValue[0]}
             size='small'
@@ -196,7 +196,12 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
             }}
           />
         </Grid2>
-        <Grid2 xs={6}>
+        <Grid2 xs={1} sx={{display: "inline-grid", alignItems: "center"}}>
+          <Typography sx={{justifySelf: "center"}}>
+            –
+          </Typography>
+        </Grid2>
+        <Grid2 xs={5.5}>
           <TextField
             value={tempValue[1]}
             size='small'
