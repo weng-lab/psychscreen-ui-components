@@ -2,7 +2,7 @@
  * Slider.tsx: provides PsychSCREEN-styled Sliders.
  */
 
-import React, { Component, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Slider from '@mui/material/Slider';
