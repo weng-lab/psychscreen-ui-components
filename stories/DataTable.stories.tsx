@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Meta, Story } from '@storybook/react';
 import { DataTable, DataTableProps, DataTableColumn } from '../src';
+import { Typography } from '@mui/material';
 
 const meta: Meta<typeof DataTable> = {
   title: 'DataTable', 
@@ -86,7 +87,8 @@ Default.args = {
   columns: COLUMNS,
   itemsPerPage: 4,
   tableTitle: "Table Title",
-  searchable: true
+  searchable: true,
+  hideHeader: false
 }
 
 EmptyTable.args = {

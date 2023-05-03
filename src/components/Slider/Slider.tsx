@@ -2,7 +2,7 @@
  * Slider.tsx: provides PsychSCREEN-styled Sliders.
  */
 
-import React from 'react';
+import React, { Component, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Slider from '@mui/material/Slider';
@@ -12,10 +12,6 @@ import TextField from '@mui/material/TextField';
 
 /*
 TODO: Have a browser popup when an invalid number is chosen
-      How does an outside piece of code access the values set here? Wouldn't it be out of scope
-      Write support for an onChange function that exports the values
-
-      Empty text box behavior is whack
 */
 
 
@@ -26,7 +22,7 @@ export type SliderProps = MuiSliderProps & {
   defaultEnd: number;
   //Could do more strict input checking here by checking the min/max of the slider
   minDistance?: number;
-  // onChange?: () => void;
+  onChange?: (value: number[]) => void;
 };
 
 function valuetext(value: number) {
@@ -38,6 +34,11 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
   const [value, setValue] = React.useState<number[]>(
     [props.defaultStart, props.defaultEnd]
   );
+
+  //Triggers when component updates, allows the value to be extraced in an onChange() function
+  useEffect(() => {
+    props.onChange && props.onChange(value);
+  })
 
   //Check if declared, if not set to MUI slider defaults
   const sliderMin = props.min ? props.min : 0
@@ -88,7 +89,7 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
 
     if (event.key == "Enter") {
       //If the temp value is valid, set the true slider value
-      if (newTempValue0 <= (curValue1 - minDistance) && newTempValue0 > sliderMin) {
+      if (newTempValue0 <= (curValue1 - minDistance) && newTempValue0 >= sliderMin) {
         setValue([newTempValue0, curValue1])
       }
       //If the value is too close to the other slider, reset the TempValue
@@ -108,7 +109,7 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
     const curValue1: number = value[1]
 
     //If the temp value is valid, set the true slider value
-    if (newTempValue0 <= (curValue1 - minDistance) && newTempValue0 > sliderMin) {
+    if (newTempValue0 <= (curValue1 - minDistance) && newTempValue0 >= sliderMin) {
       setValue([newTempValue0, curValue1])
     }
     //If the value is too close to the other slider, reset the TempValue
@@ -128,8 +129,9 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
 
     if (event.key == "Enter") {
       //If the temp value is valid, set the true slider value
-      if (newTempValue1 >= (curValue0 + minDistance) && newTempValue1 < sliderMax) {
+      if (newTempValue1 >= (curValue0 + minDistance) && newTempValue1 <= sliderMax) {
         setValue([curValue0, newTempValue1])
+        // props.onSliderChange && props.onSliderChange(value)
       }
       //If the value is too close to the other slider, reset the TempValue
       if (newTempValue1 < (curValue0 + minDistance)) {
@@ -149,8 +151,9 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
     const newTempValue1: number = Number(tempValue[1]);
 
     //If the temp value is valid, set the true slider value
-    if (newTempValue1 >= (curValue0 + minDistance) && newTempValue1 < sliderMax) {
+    if (newTempValue1 >= (curValue0 + minDistance) && newTempValue1 <= sliderMax) {
       setValue([curValue0, newTempValue1])
+      // props.onSliderChange && props.onSliderChange(value)
     }
     //If the value is too close to the other slider, reset the TempValue
     if (newTempValue1 < (curValue0 + minDistance)) {
