@@ -12,6 +12,7 @@ import TextField from '@mui/material/TextField';
 
 /*
 TODO: Have a browser popup when an invalid number is chosen
+      Add functionality for an overlaid histogram
 */
 
 
