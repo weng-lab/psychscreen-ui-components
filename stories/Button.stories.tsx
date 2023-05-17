@@ -22,8 +22,8 @@ export default meta;
 
 const Template: Story<ButtonProps> = args => (
   <div style={{ backgroundColor: args.btheme === "dark" ? "#1f1f1f" : "#ffffff", padding: "30px" }}>
-    <Button bvariant="filled" {...args}>I'm Enabled.</Button>&nbsp;
-    <Button bvariant="filled" disabled {...args}>I'm Disabled.</Button>
+    <Button {...args}>I'm Enabled.</Button>&nbsp;
+    <Button disabled {...args}>I'm Disabled.</Button>
   </div>
 );
 
