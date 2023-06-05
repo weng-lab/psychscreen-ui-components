@@ -46,10 +46,11 @@ const DropDownMenuItem: React.FC<MenuItemProps> = props => {
             { anchorRef.current && (
                 <Popper
                     anchorEl={anchorRef.current}
-                    open={open}
+                    open={open}                
                     placement="bottom-start"
-                    transition
+                    transition                    
                     disablePortal
+                    onMouseLeave={()=> setOpen(false)}
                 >
                     { ({ TransitionProps, placement }) => (
                         <Grow
@@ -58,9 +59,11 @@ const DropDownMenuItem: React.FC<MenuItemProps> = props => {
                         >
                             <DropDownMenu style={{ width: "150px" }}>
                                 <ClickAwayListener onClickAway={() => setOpen(false)}>
+                                    
                                     <MenuList style={{ textAlign: "center" }}>
                                         {props.menu}
                                     </MenuList>
+                                    
                                 </ClickAwayListener>
                             </DropDownMenu>
                         </Grow>
