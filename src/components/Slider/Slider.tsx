@@ -15,10 +15,9 @@ TODO: Have a browser popup when an invalid number is chosen
       Add functionality for an overlaid histogram
 */
 
-
 export type SliderProps = MuiSliderProps & {
   title: string;
-  width: number;
+  width: number | string;
   defaultStart: number;
   defaultEnd: number;
   //Could do more strict input checking here by checking the min/max of the slider
