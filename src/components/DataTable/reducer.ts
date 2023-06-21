@@ -2,6 +2,7 @@ import { DataTableAction, DataTableState } from "./types"
 
 export function reducer<T>(previousState: DataTableState<T>, action: DataTableAction<T>): DataTableState<T> {
   switch (action.type) {
+    //This case has no dispatch event
     case "pageChanged":
       return {
         ...previousState,
@@ -31,7 +32,9 @@ export function reducer<T>(previousState: DataTableState<T>, action: DataTableAc
         ...previousState,
         columns: action.columns,
       }
+    //Bypassing this for now, not understood why it was implemented this way
     case "mousedOver":
+      console.log("moused over")
       return {
         ...previousState,
         mousedOver: action.index,

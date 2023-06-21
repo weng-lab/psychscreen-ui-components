@@ -15,6 +15,10 @@ type RGB = `rgb(${number}, ${number}, ${number})` | `rgb(${number},${number},${n
 type RGBA = `rgba(${number}, ${number}, ${number}, ${number})` | `rgba(${number},${number},${number},${number})`;
 type HEX = `#${string}` | `# ${string}`;
 
+//TODO:
+//Scrollable table
+//Remove styled() to prevent error
+
 export type DataTableProps<T> = {
   columns: DataTableColumn<T>[]
   itemsPerPage?: number
@@ -26,6 +30,23 @@ export type DataTableProps<T> = {
   rows: T[]
   emptyText?: string
   onRowClick?: (row: T, i: number) => void
+
+  /**
+   * @param rowObject The object representing the row
+   * @param rowIndex The index of the row as it's currently displayed
+   */
+  onRowMouseEnter?: (rowObject: {}, rowIndex: number) => void
+  onRowMouseLeave?: () => void
+
+  /**
+   * @param cellValue The value of the cell
+   * @param cellRowIndex The index of the cell's row as it's currently displayed
+   * @param cellColIndex The index of the cell's column as it's currently displayed
+   */
+
+  onCellMouseEnter?: (cellValue: T, cellRowIndex: number, cellColIndex: number) => void
+  onCellMouseLeave?: () => void
+
   sortColumn?: number
   sortDescending?: boolean
   downloadFileName?: string

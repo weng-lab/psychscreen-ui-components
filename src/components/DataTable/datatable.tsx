@@ -310,16 +310,22 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
                     hover
                     key={"row" + i}
                     onClick={() => props.onRowClick && props.onRowClick(row, i + page * rowsPerPage)}
-                    onMouseOver={() => {
-                      dispatch({ type: "mousedOver", index: i })
-                    }}
-                    onMouseOut={() => dispatch({ type: "mousedOver", index: undefined })}
+                    onMouseEnter={() => props.onRowMouseEnter && props.onRowMouseEnter(row, i + page * rowsPerPage)}
+                    onMouseLeave={() => props.onRowMouseLeave && props.onRowMouseLeave()}
+                    // onMouseOver={() => {
+                    //   dispatch({ type: "mousedOver", index: row })
+                    // }}
+                    // onMouseOut={() => dispatch({ type: "mousedOver", index: undefined })}
                   >
                     {state.columns.map((column, j) => {
                       return (
-                        <TableCell key={column.header + "Row" + i + "Column" + j}>
+                        <TableCell 
+                          key={column.header + "Row" + i + "Column" + j}
+                          onMouseEnter={() => props.onCellMouseEnter && props.onCellMouseEnter(column.value(row), i, j)}
+                          onMouseLeave={() => props.onCellMouseLeave && props.onCellMouseLeave()}
+                        >
                           {column.functionalRender ? (
-                            <column.functionalRender {...row} />
+                            <column.functionalRender {...row}/>
                           ) : column.render ? (
                             column.render(row)
                           ) : (

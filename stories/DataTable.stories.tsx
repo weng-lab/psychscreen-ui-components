@@ -149,7 +149,11 @@ OnRowClick.args = {
   itemsPerPage: 4,
   tableTitle: "Table Title",
   searchable: true,
-  onRowClick: (row) => + window.alert(`You clicked on:\nIndex: ${row.index.toString()}\nText: ${row.text}\nColor: ${row.color}\nDescription: ${row.description}`)
+  onRowClick: (row, i) => window.alert(`You clicked on:\nIndex: ${row.index.toString()}\nText: ${row.text}\nColor: ${row.color}\nDescription: ${row.description}`),
+  // onRowMouseEnter: (row, i) => {console.log(row); console.log(i)},
+  // onCellMouseEnter: (cellValue, rowIndex, colIndex) => {console.log(cellValue); console.log("cellRowIndex: " + rowIndex); console.log("colIndex: " + colIndex)}
+  // onRowMouseLeave: () => console.log("moused out of row"),
+  // onCellMouseLeave: () => console.log("moused out of cell")
 }
 
 HeaderColored.args = {
