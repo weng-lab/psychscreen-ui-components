@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer, Reducer, useMemo, Fragment } from "react"
+import React, { useCallback, useReducer, Reducer, useMemo, Fragment, useState } from "react"
 // import * as os from "os"
 import { genericSort } from "../utilities"
 import { DataTableProps, DataTableState, DataTableAction } from "./types"
@@ -11,7 +11,6 @@ import TableRow from "@mui/material/TableRow"
 import TableCell from "@mui/material/TableCell"
 import TableHead from "@mui/material/TableHead"
 import TableBody from "@mui/material/TableBody"
-import TableFooter from "@mui/material/TableFooter"
 import TablePagination from "@mui/material/TablePagination"
 import DownloadIcon from "@mui/icons-material/Download"
 import AddIcon from "@mui/icons-material/Add"
@@ -31,6 +30,7 @@ import Toolbar from "@mui/material/Toolbar"
 import Tooltip from "@mui/material/Tooltip"
 import { styled, alpha } from "@mui/material/styles"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
+import { Stack } from "@mui/material"
 
 const theme = createTheme({
   palette: {
@@ -53,7 +53,7 @@ const theme = createTheme({
     },
     MuiToolbar: {
       styleOverrides: {
-         
+
       }
     }
   },
@@ -122,8 +122,8 @@ const boxStyle = {
 const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) => {
   // Sets default rows to display at 5 if unspecified
   const itemsPerPage = props.itemsPerPage || 5
-  const [page, setPage] = React.useState(0)
-  const [rowsPerPage, setRowsPerPage] = React.useState(itemsPerPage)
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage)
 
   const handleChangePage = (_: any, newPage: number) => {
     setPage(newPage)
@@ -134,12 +134,27 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
     setPage(0)
   }
 
-  function handleEmptyTable(noColumns: number) {
+  function handleEmptyTable(noColumns: number): React.JSX.Element[] {
     let cells = []
     for (let i = 1; i < noColumns; i++) {
       cells.push(<TableCell key={i}></TableCell>)
     }
     return cells
+  }
+
+  function highlightCheck(row: {}): boolean {
+    var found = false;
+    if (Array.isArray(props.highlighted)) {
+      props.highlighted.forEach(highlight => {
+        if (JSON.stringify(row) === JSON.stringify(highlight)) {
+          found = true;
+        }
+      })
+      if (found) return true
+      else return false
+    }
+    else if (JSON.stringify(row) === JSON.stringify(props.highlighted)) { return true }
+    else return false
   }
 
   const columnLimit = useMemo(() => props.noOfDefaultColumns || props.columns.length, [props.noOfDefaultColumns, props.columns])
@@ -155,8 +170,8 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
       props.columns.length <= columnLimit
         ? props.columns
         : props.defaultColumnsToShow
-        ? props.columns.filter((c) => props.defaultColumnsToShow?.includes(c.header))
-        : props.columns.slice(0, columnLimit),
+          ? props.columns.filter((c) => props.defaultColumnsToShow?.includes(c.header))
+          : props.columns.slice(0, columnLimit),
     showAddColumnsModal: false,
   })
 
@@ -228,14 +243,13 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
       <Paper elevation={3}>
         <TableContainer
           // For alignment of the title. Padding scales in multiples of the theme's spacing scaling factor (8px default)
-          sx={{ "& .MuiToolbar-root": { pl: 2 } }}
-        >
-          <Toolbar sx={{backgroundColor:`${props.headerColor? props.headerColor.backgroundColor : "transparent"}`, borderTopLeftRadius: theme.shape.borderRadius, borderTopRightRadius: theme.shape.borderRadius}}>
+          sx={{ maxHeight: props.maxHeight ? props.maxHeight : 'none', "& .MuiToolbar-root": { pl: 2 } }}>
+          <Toolbar sx={{ backgroundColor: `${props.headerColor ? props.headerColor.backgroundColor : "transparent"}`, borderTopLeftRadius: theme.shape.borderRadius, borderTopRightRadius: theme.shape.borderRadius }}>
             <Typography
               variant="h5"
               noWrap
               component="div"
-              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" }, fontWeight: "normal", color:`${props.headerColor? props.headerColor.textColor : "inherit"}` }}
+              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" }, fontWeight: "normal", color: `${props.headerColor ? props.headerColor.textColor : "inherit"}` }}
             >
               {props.tableTitle}
               {props.titleHoverInfo && (
@@ -279,18 +293,17 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
               </Search>
             )}
             <IconButton onClick={download}>
-              <DownloadIcon htmlColor={`${props.headerColor?.textColor || 'inherit'}`}/>
+              <DownloadIcon htmlColor={`${props.headerColor?.textColor || 'inherit'}`} />
             </IconButton>
           </Toolbar>
-          <Table stickyHeader aria-label="sticky table">
+          <Table stickyHeader aria-label="sticky table" padding={props.dense ? "checkbox" : "normal"}>
             {!props.hideHeader && (
               <TableHead>
                 <TableRow>
                   {state.columns.map((column, i) => (
-                    <TableCell key={`${column.header}${i}`} onClick={() => dispatch({ type: "sortChanged", sortColumn: i })}>
+                    <TableCell  key={`${column.header}${i}`} onClick={() => dispatch({ type: "sortChanged", sortColumn: i })}>
                       <TableSortLabel active={i === state.sort.column} direction={state.sort.asc ? "asc" : "desc"}>
                         {column.headerRender ? column.headerRender() : column.header}
-                        &nbsp;
                       </TableSortLabel>
                     </TableCell>
                   ))}
@@ -307,25 +320,24 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
               ) : (
                 displayedRows.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((row, i) => (
                   <TableRow
+                    // Check that there's a row to select, it's the right one, and either none have been highlighted or it's the correct one
+                    selected={props.highlighted ? highlightCheck(row) : false}
                     hover
                     key={"row" + i}
                     onClick={() => props.onRowClick && props.onRowClick(row, i + page * rowsPerPage)}
                     onMouseEnter={() => props.onRowMouseEnter && props.onRowMouseEnter(row, i + page * rowsPerPage)}
                     onMouseLeave={() => props.onRowMouseLeave && props.onRowMouseLeave()}
-                    // onMouseOver={() => {
-                    //   dispatch({ type: "mousedOver", index: row })
-                    // }}
-                    // onMouseOut={() => dispatch({ type: "mousedOver", index: undefined })}
                   >
                     {state.columns.map((column, j) => {
                       return (
-                        <TableCell 
+                        <TableCell
+                          // sx={{pl: 1}}
                           key={column.header + "Row" + i + "Column" + j}
                           onMouseEnter={() => props.onCellMouseEnter && props.onCellMouseEnter(column.value(row), i, j)}
                           onMouseLeave={() => props.onCellMouseLeave && props.onCellMouseLeave()}
                         >
                           {column.functionalRender ? (
-                            <column.functionalRender {...row}/>
+                            <column.functionalRender {...row} />
                           ) : column.render ? (
                             column.render(row)
                           ) : (
@@ -338,64 +350,62 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
                 ))
               )}
             </TableBody>
-            {!props.hidePageMenu && (
-              <TableFooter>
-                <TableRow>
-                  <TableCell colSpan={state.columns.length} sx={{borderBottom: "none"}}>
-                    {displayedRows.length !== props.rows.length &&
-                      `Showing ${displayedRows.length} matching rows of ${props.rows.length} total.`}
-                    <TablePagination
-                      rowsPerPageOptions={[itemsPerPage, 10, 25, 100]}
-                      component="div"
-                      count={displayedRows.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                      showFirstButton
-                      showLastButton
-                    />
-                  </TableCell>
-                </TableRow>
-              </TableFooter>
-            )}
           </Table>
-          {/* Add columns modal */}
-          <Modal open={state.showAddColumnsModal} onClose={() => dispatch({ type: "modalChanged", showAddColumnsModal: false })}>
-            <Box sx={boxStyle}>
-              <Typography variant="h4">Add Columns</Typography>
-              {(props.defaultColumnsToShow
-                ? props.columns.filter((c) => !props.defaultColumnsToShow?.includes(c.header))
-                : props.columns.slice(props.noOfDefaultColumns || 5, props.columns.length)
-              ).map((col, i) => (
-                <Fragment key={i}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={state.columns.find((c) => c.header === col.header) !== undefined}
-                        onChange={(event) => {
-                          if (event.target.checked && props.columns.find((c) => c.header === col.header))
-                            dispatch({
-                              type: "columnsChanged",
-                              columns: [...state.columns, col],
-                            })
-                          else
-                            dispatch({
-                              type: "columnsChanged",
-                              columns: state.columns.filter((u) => u.header !== col.header),
-                            })
-                        }}
-                      />
-                    }
-                    label={col.header}
-                  />
-                  <br />
-                </Fragment>
-              ))}
-              <Button onClick={() => dispatch({ type: "modalChanged", showAddColumnsModal: false })}>Cancel</Button>
-            </Box>
-          </Modal>
         </TableContainer>
+        {!props.hidePageMenu && (
+          <Stack direction="column" useFlexGap justifyContent="space-between">
+            <Typography pl={props.dense ? '4px' : 2} sx={{ mt: 'auto', mb: 'auto' }}>
+              {displayedRows.length !== props.rows.length && `Showing ${displayedRows.length} matching rows of ${props.rows.length} total.`}
+            </Typography>
+            <TablePagination
+              rowsPerPageOptions={[itemsPerPage, 10, 25, 100]}
+              component="div"
+              count={displayedRows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              showFirstButton={props.dense ? false : true}
+              showLastButton={props.dense ? false : true}
+              sx={props.dense ? { "& .MuiTablePagination-toolbar": {pl: '4px'} } : undefined}
+            />
+          </Stack>
+        )}
+        {/* Add columns modal */}
+        <Modal open={state.showAddColumnsModal} onClose={() => dispatch({ type: "modalChanged", showAddColumnsModal: false })}>
+          <Box sx={boxStyle}>
+            <Typography variant="h4">Add Columns</Typography>
+            {(props.defaultColumnsToShow
+              ? props.columns.filter((c) => !props.defaultColumnsToShow?.includes(c.header))
+              : props.columns.slice(props.noOfDefaultColumns || 5, props.columns.length)
+            ).map((col, i) => (
+              <Fragment key={i}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={state.columns.find((c) => c.header === col.header) !== undefined}
+                      onChange={(event) => {
+                        if (event.target.checked && props.columns.find((c) => c.header === col.header))
+                          dispatch({
+                            type: "columnsChanged",
+                            columns: [...state.columns, col],
+                          })
+                        else
+                          dispatch({
+                            type: "columnsChanged",
+                            columns: state.columns.filter((u) => u.header !== col.header),
+                          })
+                      }}
+                    />
+                  }
+                  label={col.header}
+                />
+                <br />
+              </Fragment>
+            ))}
+            <Button onClick={() => dispatch({ type: "modalChanged", showAddColumnsModal: false })}>Cancel</Button>
+          </Box>
+        </Modal>
       </Paper>
     </ThemeProvider>
   )
