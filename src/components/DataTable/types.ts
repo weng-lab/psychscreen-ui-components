@@ -16,7 +16,6 @@ type RGBA = `rgba(${number}, ${number}, ${number}, ${number})` | `rgba(${number}
 type HEX = `#${string}` | `# ${string}`;
 
 //TODO:
-//Scrollable table
 //Remove styled() to prevent error
 
 export type DataTableProps<T> = {
@@ -29,7 +28,39 @@ export type DataTableProps<T> = {
   search?: string
   rows: T[]
   emptyText?: string
-  onRowClick?: (row: T, i: number) => void
+  sortColumn?: number
+  sortDescending?: boolean
+  downloadFileName?: string
+  noOfDefaultColumns?: number
+  showMoreColumns?: boolean
+  defaultColumnsToShow?: (string | JSX.Element)[]
+  page?: number
+  hideHeader?: boolean
+  titleHoverInfo?: string,
+  headerColor?: {backgroundColor: RGB | RGBA | HEX , textColor: RGB | RGBA | HEX | 'inherit'};
+  
+  /**
+   * Note: This currently does not account for the size of the pagination element,
+   * sets max-height of the table header and body.
+   */
+  maxHeight?: number | string
+  
+  /**
+   * Reduced the amount of padding on table cells to make the table more compact.
+   */
+  dense?: boolean
+
+  /**
+   * Highlights the row matching the provided object. Use this in conjunction with 
+   * onRowClick() and a state variable containing the current row to highlight.
+   * Importantly, currently this only supports highlighting a row with the same order.
+   * of key/value pairs. Matching but out-of-order row objects will not be highlighted.
+   */
+  highlighted?: {} | {}[]
+
+  setPage?: (page: number) => void
+  rowLink?: (row: {}, index: number) => string
+  onRowClick?: (row: {}, i: number) => void
 
   /**
    * @param rowObject The object representing the row
@@ -47,20 +78,6 @@ export type DataTableProps<T> = {
   onCellMouseEnter?: (cellValue: T, cellRowIndex: number, cellColIndex: number) => void
   onCellMouseLeave?: () => void
 
-  sortColumn?: number
-  sortDescending?: boolean
-  downloadFileName?: string
-  noOfDefaultColumns?: number
-  showMoreColumns?: boolean
-  defaultColumnsToShow?: (string | JSX.Element)[]
-  page?: number
-  setPage?: (page: number) => void
-  hideHeader?: boolean
-  rowLink?: (row: T, index: number) => string
-  titleHoverInfo?: string,
-  // headerColor?: "primary" | "secondary" | string
-  headerColor?: {backgroundColor: RGB | RGBA | HEX , textColor: RGB | RGBA | HEX | 'inherit'};
-  //Or should this be an array of length two, where both header color and text color can be defined?
 }
 
 export type DataTableState<T> = {

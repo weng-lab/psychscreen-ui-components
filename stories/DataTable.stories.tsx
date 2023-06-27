@@ -79,6 +79,10 @@ export const HoverInfo = Template.bind({})
 export const FunctionalComponentColumn = Template.bind({})
 export const OnRowClick = Template.bind({})
 export const HeaderColored = Template.bind({})
+export const ConstrainSize = Template.bind({})
+export const DensePadding = Template.bind({})
+export const RowHighlight1 = Template.bind({})
+export const RowHighlight2 = Template.bind({})
 // Revisit this when there's a need/more time
 // export const ManagedSearchState = Template.bind({})
 
@@ -163,6 +167,46 @@ HeaderColored.args = {
   tableTitle: "Table Title",
   searchable: true,
   headerColor: {backgroundColor: '#1976d2', textColor: '#ffffff'}
+}
+
+ConstrainSize.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  maxHeight: '350px',
+}
+
+DensePadding.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  dense: true,
+}
+
+RowHighlight1.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  highlighted: { index: 6, text: "this is row 6", color: "#330000", description: "this is row 6" },
+}
+
+RowHighlight2.args = {
+  rows: ROWS,
+  columns: COLUMNS,
+  itemsPerPage: 4,
+  tableTitle: "Table Title",
+  searchable: true,
+  highlighted: [
+    { index: 7, text: "this is row 7", color: "#110000", description: "this is row 7" },
+    { index: 0, text: "this is row 0", color: "#ff0000", description: "this is row 0"}, 
+    { index: 5, text: "this is row 5", color: "#550000", description: "this is row 5" }
+  ],
 }
 
 export const ManagedSearchState = (props?: Partial<DataTableProps<Row>>) => {
