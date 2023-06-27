@@ -51,9 +51,9 @@ export type DataTableProps<T> = {
   dense?: boolean
 
   /**
-   * Highlights the row matching the provided object. Use this in conjunction with 
-   * onRowClick() and a state variable containing the current row to highlight.
-   * Importantly, currently this only supports highlighting a row with the same order.
+   * Highlights the row(s) matching the provided object(s). Use this in conjunction with 
+   * onRowClick() and a state variable containing the current row(s) to highlight.
+   * Importantly, currently this only supports highlighting rows with the same order
    * of key/value pairs. Matching but out-of-order row objects will not be highlighted.
    */
   highlighted?: {} | {}[]
