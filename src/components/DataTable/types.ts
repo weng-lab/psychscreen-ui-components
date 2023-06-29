@@ -59,14 +59,14 @@ export type DataTableProps<T> = {
   highlighted?: {} | {}[]
 
   setPage?: (page: number) => void
-  rowLink?: (row: {}, index: number) => string
-  onRowClick?: (row: {}, i: number) => void
+  rowLink?: (row: T, index: number) => string
+  onRowClick?: (row: T, i: number) => void
 
   /**
    * @param rowObject The object representing the row
    * @param rowIndex The index of the row as it's currently displayed
    */
-  onRowMouseEnter?: (rowObject: {}, rowIndex: number) => void
+  onRowMouseEnter?: (rowObject: T, rowIndex: number) => void
   onRowMouseLeave?: () => void
 
   /**
