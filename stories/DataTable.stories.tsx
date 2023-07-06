@@ -53,7 +53,7 @@ const COLUMNS: DataTableColumn<Row>[] = [{
 }];
 
 const ROWS = [
-    { index: 0, text: "this is row 0", color: "#ff0000", description: "this is row 0"},
+    { index: 0, text: "this is row 0", color: "#ff0000", description: "this is row 0" },
     { index: 1, text: "this is row 1", color: "#dd0000", description: "this is row 1" },
     { index: 2, text: "this is row 2", color: "#bb0000", description: "this is row 2" },
     { index: 3, text: "this is row 3", color: "#990000", description: "this is row 3" },

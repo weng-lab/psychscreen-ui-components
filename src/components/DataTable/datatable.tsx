@@ -336,9 +336,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
                           onMouseEnter={() => props.onCellMouseEnter && props.onCellMouseEnter(column.value(row), i, j)}
                           onMouseLeave={() => props.onCellMouseLeave && props.onCellMouseLeave()}
                         >
-                          {column.functionalRender ? (
-                            <column.functionalRender {...row} />
-                          ) : column.render ? (
+                          {column.functionalRender ? (<column.functionalRender {...row} />) : column.render ? (
                             column.render(row)
                           ) : (
                             column.value(row)
@@ -367,7 +365,8 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
               onRowsPerPageChange={handleChangeRowsPerPage}
               showFirstButton={props.dense ? false : true}
               showLastButton={props.dense ? false : true}
-              sx={props.dense ? { "& .MuiTablePagination-toolbar": {pl: '4px'} } : undefined}
+              labelRowsPerPage={props.dense ? "Rows:" : undefined}
+              sx={props.dense ? { "& .MuiTablePagination-toolbar": {pl: "6px"}, "& .css-h0cf5v-MuiInputBase-root-MuiTablePagination-select": {mr: "6px", ml: "0px"}, "& .MuiTablePagination-actions": {ml: "4px !important"} } : undefined}
             />
           </Stack>
         )}
