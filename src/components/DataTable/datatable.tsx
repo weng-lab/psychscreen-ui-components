@@ -122,7 +122,7 @@ const boxStyle = {
 const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) => {
   // Sets default rows to display at 5 if unspecified
   const itemsPerPage = props.itemsPerPage || 5
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(props.page || 0)
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage)
 
   const handleChangePage = (_: any, newPage: number) => {
@@ -165,7 +165,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
       asc: !!props.sortDescending,
     },
     filter: "",
-    page: props.page || 0,
+    page: 0,
     columns:
       props.columns.length <= columnLimit
         ? props.columns
@@ -283,11 +283,13 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
                   id="table-search"
                   placeholder="Filter Items"
                   inputProps={{ "aria-label": "search" }}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     dispatch({
                       type: "searchChanged",
                       value: e.target.value,
-                    })
+                    });
+                    setPage(0);
+                  }
                   }
                 />
               </Search>
@@ -301,7 +303,10 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
               <TableHead>
                 <TableRow>
                   {state.columns.map((column, i) => (
-                    <TableCell  key={`${column.header}${i}`} onClick={() => dispatch({ type: "sortChanged", sortColumn: i })}>
+                    <TableCell  key={`${column.header}${i}`} onClick={() => {
+                      dispatch({ type: "sortChanged", sortColumn: i });
+                      setPage(0);
+                      }}>
                       <TableSortLabel active={i === state.sort.column} direction={state.sort.asc ? "asc" : "desc"}>
                         {column.headerRender ? column.headerRender() : column.header}
                       </TableSortLabel>
