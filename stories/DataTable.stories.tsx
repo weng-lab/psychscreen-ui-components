@@ -242,7 +242,6 @@ export const ManagedPageState = (props?: Partial<DataTableProps<Row>>) => {
           itemsPerPage={4}
           tableTitle="Table Title"
           showMoreColumns={true}
-          {...props}
           noOfDefaultColumns={3}
           page={page}
       />
