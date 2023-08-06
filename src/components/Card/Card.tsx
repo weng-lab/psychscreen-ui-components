@@ -5,7 +5,7 @@ import Stack from "@mui/material/Stack";
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { CardActionArea, Grid } from '@mui/material';
-import styled from '@emotion/styled';
+import { styled } from "@mui/material/styles"
 import ArrowForward from '@mui/icons-material/ArrowForward'
 
 export type HorizontalCardProps = MUICardProps & { width?: number, cardSpacing?: number, cardContentText: {cardLabel: string, val?: string, cardDesc: string}[], onCardClick?: (val?: string) => void, onArrowClick?: (val?: string) => void };

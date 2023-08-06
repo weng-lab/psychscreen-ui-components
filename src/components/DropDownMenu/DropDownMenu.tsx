@@ -1,5 +1,5 @@
 import { Paper, PaperProps } from '@mui/material';
-import styled from '@emotion/styled';
+import { styled } from "@mui/material/styles"
 
 import { PSYCHSCREEN_TONAL_PALETTES } from '../../constants';
 

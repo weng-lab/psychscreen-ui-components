@@ -2,7 +2,7 @@ import React from 'react';
 
 import { TextField, TextFieldProps, InputAdornment } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles"
-import styled from '@emotion/styled';
+import { styled } from "@mui/material/styles"
 import { Button } from '../Button';
 
 /*  

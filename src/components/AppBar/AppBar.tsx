@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { AppBar as MUIAppBar, AppBarProps as MUIAppBarProps, Box, Toolbar } from '@mui/material';
-import styled from '@emotion/styled';
+import { styled } from "@mui/material/styles"
 
 import MenuItem from './MenuItem';
 import DropDownMenuItem from './DropDownMenuItem';

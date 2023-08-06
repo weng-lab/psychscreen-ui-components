@@ -2,7 +2,7 @@
  * Typography.tsx: PsychSCREEN-styled typography.
  */
 
-import styled from '@emotion/styled';
+import { styled } from "@mui/material/styles"
 import { Typography as MUITypography, TypographyProps as MUITypographyProps } from '@mui/material';
 import { PSYCHSCREEN_DEFAULT_FONT_FAMILY } from '../../constants/theme';
 

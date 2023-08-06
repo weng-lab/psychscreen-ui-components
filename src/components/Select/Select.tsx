@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Select as MUISelect, SelectProps as MUISelectProps } from '@mui/material';
-import styled from '@emotion/styled';
+import { styled } from "@mui/material/styles"
 
 /**
  * PsychSCREEN drop down menu properties.
