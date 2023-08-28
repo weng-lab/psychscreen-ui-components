@@ -2,7 +2,7 @@ import React from "react"
 
 export type DataTableColumn<T> = {
   header: string
-  headerRender?: () => string | JSX.Element
+  headerRender?: React.FC<any> | (() => JSX.Element)
   value: (row: T) => string | number
   search?: (row: T) => boolean
   unsearchable?: boolean
@@ -14,9 +14,6 @@ export type DataTableColumn<T> = {
 type RGB = `rgb(${number}, ${number}, ${number})` | `rgb(${number},${number},${number})`;
 type RGBA = `rgba(${number}, ${number}, ${number}, ${number})` | `rgba(${number},${number},${number},${number})`;
 type HEX = `#${string}` | `# ${string}`;
-
-//TODO:
-//Remove styled() to prevent error
 
 export type DataTableProps<T> = {
   columns: DataTableColumn<T>[]

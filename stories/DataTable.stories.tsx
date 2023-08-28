@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Meta, Story } from '@storybook/react';
 import { DataTable, DataTableProps, DataTableColumn } from '../src';
-import { Button, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, Menu, MenuItem, Stack, Tooltip, Typography } from '@mui/material';
+
+/**
+ * @todo These stories should really be cleaned up, especially dense and headerRender
+ */
 
 const meta: Meta<typeof DataTable> = {
   title: 'DataTable', 
@@ -154,10 +158,6 @@ OnRowClick.args = {
   tableTitle: "Table Title",
   searchable: true,
   onRowClick: (row, i) => window.alert(`You clicked on:\nIndex: ${row.index.toString()}\nText: ${row.text}\nColor: ${row.color}\nDescription: ${row.description}`),
-  // onRowMouseEnter: (row, i) => {console.log(row); console.log(i)},
-  // onCellMouseEnter: (cellValue, rowIndex, colIndex) => {console.log(cellValue); console.log("cellRowIndex: " + rowIndex); console.log("colIndex: " + colIndex)}
-  // onRowMouseLeave: () => console.log("moused out of row"),
-  // onCellMouseLeave: () => console.log("moused out of cell")
 }
 
 HeaderColored.args = {
@@ -714,6 +714,99 @@ const denseCols = [{
             itemsPerPage={5}
             tableTitle="Dense Test"
             dense
+            searchable
+        />
+    );
+  }
+
+  const headeRenderCOLUMNS = (func: any) => { 
+    return( [{
+    header: "Index",
+    value: row => row.index
+  },{
+    header: "Text",
+    value: row => row.text
+  }, {
+    header: "Color",
+    value: row => row.color,
+    render: (row: Row) => <div style={{ width: "100%", height: "100%", backgroundColor: row.color }}>&nbsp;</div>
+  },
+  {
+  header: "Description",
+  value: row => row.description,
+  headerRender: () => {
+    const [distanceChecked, setDistanceChecked] = useState(true)
+    const [CTCF_ChIAPETChecked, setCTCF_ChIAPETChecked] = useState(false)
+    const [RNAPII_ChIAPETChecked, setRNAPII_ChIAPETChecked] = useState(false)
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(() => {
+      console.log("initialization performed")
+      return null})
+  
+    const open = Boolean(anchorEl)
+  
+    const handleClose = () => {
+      console.log("menu closed, state of checkboxes pushed to main state")
+      setAnchorEl(null);
+    };
+  
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      console.log("New Anchor Set")
+      setAnchorEl(event.currentTarget);
+    };
+  
+    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, value: 0 | 1 | 2) => {
+      switch (value) {
+        case 0:
+          setDistanceChecked(event.target.checked)
+          func(event.target.checked)
+          break
+        case 1:
+          setCTCF_ChIAPETChecked(event.target.checked)
+          break
+        case 2:
+          setRNAPII_ChIAPETChecked(event.target.checked)
+          break
+      }
+    };
+  
+    return (
+      <Box>
+        <Stack direction="row" alignItems="flex-start" component="button" onClick={handleClick}>
+          <Typography variant="body2">Linked Genes</Typography>
+        </Stack>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button',
+          }}
+        >
+          <FormGroup>
+            <MenuItem>
+              <FormControlLabel control={<Checkbox checked={distanceChecked} onChange={(event) => handleCheckboxChange(event, 0)} />} label={`Distance`} />
+            </MenuItem>
+            <MenuItem>
+              <FormControlLabel control={<Checkbox checked={CTCF_ChIAPETChecked} onChange={(event) => handleCheckboxChange(event, 1)} />} label={`CTCF-ChIAPET`} />
+            </MenuItem>
+            <MenuItem>
+              <FormControlLabel control={<Checkbox checked={RNAPII_ChIAPETChecked} onChange={(event) => handleCheckboxChange(event, 2)} />} label={`RNAPII-ChIAPET`} />
+            </MenuItem>
+          </FormGroup>
+        </Menu>
+      </Box>)
+  }}])}
+
+  export const HeaderRender = (props?: Partial<DataTableProps<Row>>) => {
+    const [x, setX] = React.useState(null)
+    useEffect(() => console.log(x))
+    return (
+        <DataTable
+            rows={ROWS}
+            columns={headeRenderCOLUMNS(setX)}
+            itemsPerPage={5}
+            tableTitle="Header Render Test"
             searchable
         />
     );
