@@ -2,7 +2,7 @@ import React from "react"
 
 export type DataTableColumn<T> = {
   header: string
-  headerRender?: React.FC<any> | (() => JSX.Element)
+  HeaderRender?: React.FC<any>
   value: (row: T) => string | number
   search?: (row: T) => boolean
   unsearchable?: boolean

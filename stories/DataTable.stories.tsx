@@ -734,7 +734,7 @@ const denseCols = [{
   {
   header: "Description",
   value: row => row.description,
-  headerRender: () => {
+  HeaderRender: () => {
     const [distanceChecked, setDistanceChecked] = useState(true)
     const [CTCF_ChIAPETChecked, setCTCF_ChIAPETChecked] = useState(false)
     const [RNAPII_ChIAPETChecked, setRNAPII_ChIAPETChecked] = useState(false)

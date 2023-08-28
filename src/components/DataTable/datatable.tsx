@@ -308,7 +308,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
                       setPage(0);
                       }}>
                       <TableSortLabel active={i === state.sort.column} direction={state.sort.asc ? "asc" : "desc"}>
-                        {column.headerRender ? <column.headerRender /> : column.header}
+                        {column.HeaderRender ? <column.HeaderRender /> : column.header}
                         
                       </TableSortLabel>
                     </TableCell>
