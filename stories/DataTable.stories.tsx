@@ -29,7 +29,7 @@ type Row = {
 const FCCOLUMNS: DataTableColumn<Row>[] = [{
   header: "Functional Column",
   value: row => row.index,
-  functionalRender: () => {
+  FunctionalRender: () => {
     const [ index, setIndex ] = useState(0);
     return (
       <>
@@ -734,6 +734,7 @@ const denseCols = [{
   {
   header: "Description",
   value: row => row.description,
+  unsortable: true,
   HeaderRender: () => {
     const [distanceChecked, setDistanceChecked] = useState(true)
     const [CTCF_ChIAPETChecked, setCTCF_ChIAPETChecked] = useState(false)

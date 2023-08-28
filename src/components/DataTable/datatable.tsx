@@ -303,8 +303,8 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
               <TableHead>
                 <TableRow>
                   {state.columns.map((column, i) => (
-                    <TableCell  key={`${column.header}${i}`} onClick={() => {
-                      dispatch({ type: "sortChanged", sortColumn: i });
+                    <TableCell key={`${column.header}${i}`} onClick={() => {
+                      !column.unsortable && dispatch({ type: "sortChanged", sortColumn: i });
                       setPage(0);
                       }}>
                       <TableSortLabel active={i === state.sort.column} direction={state.sort.asc ? "asc" : "desc"}>
@@ -342,7 +342,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
                           onMouseEnter={() => props.onCellMouseEnter && props.onCellMouseEnter(column.value(row), i, j)}
                           onMouseLeave={() => props.onCellMouseLeave && props.onCellMouseLeave()}
                         >
-                          {column.functionalRender ? (<column.functionalRender {...row} />) : column.render ? (
+                          {column.FunctionalRender ? (<column.FunctionalRender {...row} />) : column.render ? (
                             column.render(row)
                           ) : (
                             column.value(row)

@@ -7,8 +7,9 @@ export type DataTableColumn<T> = {
   search?: (row: T) => boolean
   unsearchable?: boolean
   render?: (row: T) => string | JSX.Element
-  functionalRender?: React.FC<any>
+  FunctionalRender?: React.FC<any>
   sort?: (a: T, b: T) => number
+  unsortable?: boolean
 }
 
 type RGB = `rgb(${number}, ${number}, ${number})` | `rgb(${number},${number},${number})`;
