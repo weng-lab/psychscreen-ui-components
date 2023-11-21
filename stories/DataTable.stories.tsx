@@ -124,7 +124,7 @@ AddMoreColumnsOnSelect.args = {
   tableTitle: "Table Title",
   searchable: true,
   showMoreColumns: true,        
-  noOfDefaultColumns: 3
+  noOfDefaultColumns: 2
 }
 
 HoverInfo.args = {

@@ -331,6 +331,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
                     hover
                     key={"row" + i}
                     onClick={() => props.onRowClick && props.onRowClick(row, i + page * rowsPerPage)}
+                    sx={{cursor: props.onRowClick ? "pointer" : "auto"}}
                     onMouseEnter={() => props.onRowMouseEnter && props.onRowMouseEnter(row, i + page * rowsPerPage)}
                     onMouseLeave={() => props.onRowMouseLeave && props.onRowMouseLeave()}
                   >
@@ -382,6 +383,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
             <Typography variant="h4">Add Columns</Typography>
             {(props.defaultColumnsToShow
               ? props.columns.filter((c) => !props.defaultColumnsToShow?.includes(c.header))
+              //Why is this "or 5" here? Kinda makes no sense?
               : props.columns.slice(props.noOfDefaultColumns || 5, props.columns.length)
             ).map((col, i) => (
               <Fragment key={i}>
