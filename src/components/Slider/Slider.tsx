@@ -22,7 +22,8 @@ export type SliderProps = MuiSliderProps & {
   defaultEnd: number;
   //Could do more strict input checking here by checking the min/max of the slider
   minDistance?: number;
-  onChange?: (value: number[]) => void;
+  onSliderChange?: (value: number[]) => void;
+  onSliderChangeCommitted?: (value: number[]) => void;
 };
 
 function valuetext(value: number) {
@@ -35,9 +36,9 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
     [props.defaultStart, props.defaultEnd]
   );
 
-  //Triggers when component updates, allows the value to be extraced in an onChange() function
+  // Triggers when component updates, allows the value to be extraced in an onChange() function
   useEffect(() => {
-    props.onChange && props.onChange(value);
+    props.onSliderChange && props.onSliderChange(value);
   })
 
   //Check if declared, if not set to MUI slider defaults
@@ -80,6 +81,8 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
       setTempValue([value[0], Number(Math.max(newValue[1], value[0] + minDistance).toFixed(5))]);
     }
   };
+
+  const handleSliderChangeCommited = () => {props.onSliderChangeCommitted && props.onSliderChangeCommitted(value)}
 
 
   //On a user pressing enter, decides if the temp value is valid and posts it, or corrects the temp value
@@ -172,12 +175,14 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
         getAriaLabel={() => 'Minimum distance'}
         value={value}
         onChange={handleSliderChange}
+        onChangeCommitted={handleSliderChangeCommited}
         valueLabelDisplay="auto"
         getAriaValueText={valuetext}
         disableSwap
         min={sliderMin}
         max={sliderMax}
         step={sliderStep}
+        {...props}
       />
       <Grid2 container spacing={1}>
         <Grid2 xs={5.5}>
