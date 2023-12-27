@@ -273,13 +273,17 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
             <TableHead>
               <TableRow>
                 {state.columns.map((column, i) => (
-                  <TableCell key={`${column.header}${i}`} onClick={() => {
+                  //remove padding from right unless last column
+                  <TableCell sx={i !== (state.columns.length - 1) ? {pr: 0} : {}} key={`${column.header}${i}`} onClick={() => {
                     !column.unsortable && dispatch({ type: "sortChanged", sortColumn: i });
                     setPage(0);
                   }}>
-                    <TableSortLabel active={i === state.sort.column} direction={state.sort.asc ? "asc" : "desc"}>
+                    <TableSortLabel
+                      active={i === state.sort.column}
+                      direction={state.sort.asc ? "asc" : "desc"}
+                      hideSortIcon
+                    >
                       {column.HeaderRender ? <column.HeaderRender /> : column.header}
-
                     </TableSortLabel>
                   </TableCell>
                 ))}
@@ -308,7 +312,8 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
                   {state.columns.map((column, j) => {
                     return (
                       <TableCell
-                        // sx={{pl: 1}}
+                        //remove padding from right unless last column
+                        sx={j !== (state.columns.length - 1) ? {pr: 0} : {}}
                         key={column.header + "Row" + i + "Column" + j}
                         onMouseEnter={() => props.onCellMouseEnter && props.onCellMouseEnter(column.value(row), i, j)}
                         onMouseLeave={() => props.onCellMouseLeave && props.onCellMouseLeave()}
