@@ -182,7 +182,6 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
         min={sliderMin}
         max={sliderMax}
         step={sliderStep}
-        {...props}
       />
       <Grid2 container spacing={1}>
         <Grid2 xs={5.5}>
