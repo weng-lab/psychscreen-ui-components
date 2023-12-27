@@ -210,71 +210,69 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
   }, [state.columns, displayedRows])
 
   return (
-    <Paper elevation={3}>
-      <TableContainer
-        // For alignment of the title. Padding scales in multiples of the theme's spacing scaling factor (8px default)
-        sx={{ maxHeight: props.maxHeight ? props.maxHeight : 'none', "& .MuiToolbar-root": { pl: 2 } }}>
-        <Toolbar sx={{ backgroundColor: `${props.headerColor ? props.headerColor.backgroundColor : "transparent"}`, borderTopLeftRadius: 4, borderTopRightRadius: 4 }}>
-          <Typography
-            variant="h5"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" }, fontWeight: "normal", color: `${props.headerColor ? props.headerColor.textColor : "inherit"}` }}
+    <Paper elevation={3} sx={{ maxHeight: props.maxHeight ? props.maxHeight : 'none', "& .MuiToolbar-root": { pl: 2 } }}>
+      <Toolbar sx={{ backgroundColor: `${props.headerColor ? props.headerColor.backgroundColor : "transparent"}`, borderTopLeftRadius: 4, borderTopRightRadius: 4 }}>
+        <Typography
+          variant="h5"
+          noWrap
+          component="div"
+          sx={{ flexGrow: 1, display: { xs: "none", sm: "block" }, fontWeight: "normal", color: `${props.headerColor ? props.headerColor.textColor : "inherit"}` }}
+        >
+          {props.tableTitle}
+          {props.titleHoverInfo && (
+            <Tooltip title={props.titleHoverInfo} color="primary" sx={{ ml: 1 }} placement="right-start">
+              <InfoIcon />
+            </Tooltip>
+          )}
+        </Typography>
+        {props.showMoreColumns && props.columns.length > (props.noOfDefaultColumns || 5) && (
+          <Button
+            variant="outlined"
+            size="small"
+            color="primary"
+            onClick={() =>
+              dispatch({
+                type: "modalChanged",
+                showAddColumnsModal: true,
+              })
+            }
           >
-            {props.tableTitle}
-            {props.titleHoverInfo && (
-              <Tooltip title={props.titleHoverInfo} color="primary" sx={{ ml: 1 }} placement="right-start">
-                <InfoIcon />
-              </Tooltip>
-            )}
-          </Typography>
-          {props.showMoreColumns && props.columns.length > (props.noOfDefaultColumns || 5) && (
-            <Button
-              variant="outlined"
-              size="small"
-              color="primary"
-              onClick={() =>
+            <AddIcon />
+            Manage Columns
+          </Button>
+        )}
+        {props.searchable && (
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              id="table-search"
+              placeholder="Filter Items"
+              inputProps={{ "aria-label": "search" }}
+              onChange={(e) => {
                 dispatch({
-                  type: "modalChanged",
-                  showAddColumnsModal: true,
-                })
+                  type: "searchChanged",
+                  value: e.target.value,
+                });
+                setPage(0);
               }
-            >
-              <AddIcon />
-              Manage Columns
-            </Button>
-          )}
-          {props.searchable && (
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                id="table-search"
-                placeholder="Filter Items"
-                inputProps={{ "aria-label": "search" }}
-                onChange={(e) => {
-                  dispatch({
-                    type: "searchChanged",
-                    value: e.target.value,
-                  });
-                  setPage(0);
-                }
-                }
-              />
-            </Search>
-          )}
-          <IconButton onClick={download}>
-            <DownloadIcon htmlColor={`${props.headerColor?.textColor || 'inherit'}`} />
-          </IconButton>
-        </Toolbar>
+              }
+            />
+          </Search>
+        )}
+        <IconButton onClick={download}>
+          <DownloadIcon htmlColor={`${props.headerColor?.textColor || 'inherit'}`} />
+        </IconButton>
+      </Toolbar>
+      <TableContainer>
         <Table stickyHeader aria-label="sticky table" padding={props.dense ? "checkbox" : "normal"}>
           {!props.hideHeader && (
             <TableHead>
               <TableRow>
                 {state.columns.map((column, i) => (
                   //remove padding from right unless last column
-                  <TableCell sx={i !== (state.columns.length - 1) ? {pr: 0} : {}} key={`${column.header}${i}`} onClick={() => {
+                  <TableCell sx={i !== (state.columns.length - 1) ? { pr: 0 } : {}} key={`${column.header}${i}`} onClick={() => {
                     !column.unsortable && dispatch({ type: "sortChanged", sortColumn: i });
                     setPage(0);
                   }}>
@@ -313,7 +311,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
                     return (
                       <TableCell
                         //remove padding from right unless last column
-                        sx={j !== (state.columns.length - 1) ? {pr: 0} : {}}
+                        sx={j !== (state.columns.length - 1) ? { pr: 0 } : {}}
                         key={column.header + "Row" + i + "Column" + j}
                         onMouseEnter={() => props.onCellMouseEnter && props.onCellMouseEnter(column.value(row), i, j)}
                         onMouseLeave={() => props.onCellMouseLeave && props.onCellMouseLeave()}
