@@ -172,10 +172,10 @@ HeaderColored.args = {
 ConstrainSize.args = {
   rows: ROWS,
   columns: COLUMNS,
-  itemsPerPage: 4,
+  itemsPerPage: 8,
   tableTitle: "Table Title",
   searchable: true,
-  maxHeight: '350px',
+  maxHeight: '300px',
 }
 
 DensePadding.args = {

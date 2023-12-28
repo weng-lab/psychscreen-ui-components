@@ -38,7 +38,7 @@ export type DataTableProps<T> = {
   headerColor?: {backgroundColor: RGB | RGBA | HEX , textColor: RGB | RGBA | HEX | 'inherit'};
   
   /**
-   * Note: This currently does not account for the size of the pagination element,
+   * Note: This currently does not account for the size of the title or pagination element,
    * sets max-height of the table header and body.
    */
   maxHeight?: number | string

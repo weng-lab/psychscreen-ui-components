@@ -244,7 +244,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
 
 
   return (
-    <Paper elevation={3} sx={{ maxHeight: props.maxHeight ? props.maxHeight : 'none', "& .MuiToolbar-root": { pl: 2 }, position: "relative" }}>
+    <Paper elevation={3} sx={{ "& .MuiToolbar-root": { pl: 2 }, position: "relative" }}>
       <Toolbar sx={{ backgroundColor: `${props.headerColor ? props.headerColor.backgroundColor : "transparent"}`, borderTopLeftRadius: 4, borderTopRightRadius: 4 }}>
         <Typography
           variant="h5"
@@ -299,7 +299,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
           <DownloadIcon htmlColor={`${props.headerColor?.textColor || 'inherit'}`} />
         </IconButton>
       </Toolbar>
-      <TableContainer ref={containerRef}>
+      <TableContainer ref={containerRef} sx={{maxHeight: props.maxHeight ? props.maxHeight : 'none'}}>
         <Table stickyHeader aria-label="sticky table" padding={props.dense ? "checkbox" : "normal"}>
           {!props.hideHeader && (
             <TableHead>
