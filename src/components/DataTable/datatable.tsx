@@ -266,6 +266,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
             variant="outlined"
             size="small"
             color="primary"
+            sx={{textTransform: "none"}}
             onClick={() =>
               dispatch({
                 type: "modalChanged",
@@ -273,7 +274,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
               })
             }
           >
-            <AddIcon />
+            <AddIcon fontSize="small" />
             Manage Columns
           </Button>
         )}
