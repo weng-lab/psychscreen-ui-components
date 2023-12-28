@@ -57,7 +57,7 @@ const COLUMNS: DataTableColumn<Row>[] = [{
 }];
 
 const ROWS = [
-    { index: 0, text: "this is row 0", color: "#ff0000", description: "this is row 0" },
+    { index: 0, text: "this_is_row_0", color: "#ff0000", description: "this_is_row_0" },
     { index: 1, text: "this is row 1", color: "#dd0000", description: "this is row 1" },
     { index: 2, text: "this is row 2", color: "#bb0000", description: "this is row 2" },
     { index: 3, text: "this is row 3", color: "#990000", description: "this is row 3" },
@@ -172,10 +172,10 @@ HeaderColored.args = {
 ConstrainSize.args = {
   rows: ROWS,
   columns: COLUMNS,
-  itemsPerPage: 4,
+  itemsPerPage: 8,
   tableTitle: "Table Title",
   searchable: true,
-  maxHeight: '350px',
+  maxHeight: '300px',
 }
 
 DensePadding.args = {
@@ -714,6 +714,18 @@ const denseCols = [{
             itemsPerPage={5}
             tableTitle="Dense Test"
             dense
+            searchable
+        />
+    );
+  }
+
+  export const LotsOfCols = (props?: Partial<DataTableProps<Row>>) => {
+    return (
+        <DataTable
+            rows={ROWS}
+            columns={COLUMNS.concat(COLUMNS)}
+            itemsPerPage={10}
+            tableTitle="Lots of Columns"
             searchable
         />
     );

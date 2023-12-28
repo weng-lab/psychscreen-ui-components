@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer, Reducer, useMemo, Fragment, useState } from "react"
+import React, { useCallback, useReducer, Reducer, useMemo, Fragment, useState, useEffect, useRef } from "react"
 // import * as os from "os"
 import { genericSort } from "../utilities"
 import { DataTableProps, DataTableState, DataTableAction } from "./types"
@@ -29,35 +29,9 @@ import Modal from "@mui/material/Modal"
 import Toolbar from "@mui/material/Toolbar"
 import Tooltip from "@mui/material/Tooltip"
 import { styled, alpha } from "@mui/material/styles"
-import { createTheme, ThemeProvider } from "@mui/material/styles"
 import { Stack } from "@mui/material"
-
-const theme = createTheme({
-  palette: {
-    //For accessibility
-    contrastThreshold: 4.5,
-  },
-  typography: {
-    fontFamily: "inherit",
-  },
-  shape: {
-    borderRadius: 4,
-  },
-  components: {
-    MuiTableCell: {
-      styleOverrides: {
-        head: {
-          fontWeight: "normal",
-        },
-      },
-    },
-    MuiToolbar: {
-      styleOverrides: {
-
-      }
-    }
-  },
-})
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 //Styling for Search component
 const Search = styled("div")(({ theme }) => ({
@@ -117,7 +91,6 @@ const boxStyle = {
   p: 4,
 }
 
-//const RangeSlider: React.FC<SliderProps> = (props: SliderProps) =>
 // function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTableProps<T>> {
 const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) => {
   // Sets default rows to display at 5 if unspecified
@@ -238,183 +211,246 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
     a.remove()
   }, [state.columns, displayedRows])
 
+  //Refs used in tracking overflow
+  const containerRef = useRef<HTMLDivElement>(null)
+  const arrowRightRef = useRef<HTMLButtonElement>(null)
+  const arrowLeftRef = useRef<HTMLButtonElement>(null)
+
+  //Shows/hides scroll indicators based on refs
+  const monitorOverflow = (
+    containerRef: React.RefObject<HTMLDivElement>, 
+    arrowRightRef: React.RefObject<HTMLButtonElement>,
+    arrowLeftRef: React.RefObject<HTMLButtonElement>
+  ) => {
+    if (containerRef.current && arrowRightRef.current && arrowLeftRef.current) {
+      const isOverflowing = containerRef.current.scrollWidth > containerRef.current.clientWidth
+      const isOverflowingLeft = containerRef.current.scrollLeft > 0
+      const isOverflowingRight = containerRef.current.scrollLeft + 1 < containerRef.current.scrollWidth - containerRef.current.clientWidth
+      arrowRightRef.current.style.visibility = isOverflowing && isOverflowingRight ? "visible" : "hidden"
+      arrowLeftRef.current.style.visibility = isOverflowing && isOverflowingLeft ? "visible" : "hidden"
+    }
+  }
+
+  //Attaches scroll and resize listeners to scrollable container
+  useEffect(() => {
+    if (containerRef.current !== null) {
+      containerRef.current.addEventListener('scroll', () => monitorOverflow(containerRef, arrowRightRef, arrowLeftRef))
+
+      new ResizeObserver((entries) => {
+        for (const _ of entries) {
+          monitorOverflow(containerRef, arrowRightRef, arrowLeftRef)
+        }
+      }).observe(containerRef.current)
+    }
+  }, [containerRef, arrowLeftRef, arrowRightRef])
+
+
   return (
-    <ThemeProvider theme={theme}>
-      <Paper elevation={3}>
-        <TableContainer
-          // For alignment of the title. Padding scales in multiples of the theme's spacing scaling factor (8px default)
-          sx={{ maxHeight: props.maxHeight ? props.maxHeight : 'none', "& .MuiToolbar-root": { pl: 2 } }}>
-          <Toolbar sx={{ backgroundColor: `${props.headerColor ? props.headerColor.backgroundColor : "transparent"}`, borderTopLeftRadius: theme.shape.borderRadius, borderTopRightRadius: theme.shape.borderRadius }}>
-            <Typography
-              variant="h5"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" }, fontWeight: "normal", color: `${props.headerColor ? props.headerColor.textColor : "inherit"}` }}
-            >
-              {props.tableTitle}
-              {props.titleHoverInfo && (
-                <Tooltip title={props.titleHoverInfo} color="primary" sx={{ ml: 1 }} placement="right-start">
-                  <InfoIcon />
-                </Tooltip>
-              )}
-            </Typography>
-            {props.showMoreColumns && props.columns.length > (props.noOfDefaultColumns || 5) && (
-              <Button
-                variant="outlined"
-                size="small"
-                color="primary"
-                onClick={() =>
-                  dispatch({
-                    type: "modalChanged",
-                    showAddColumnsModal: true,
-                  })
-                }
-              >
-                <AddIcon />
-                Manage Columns
-              </Button>
-            )}
-            {props.searchable && (
-              <Search>
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  id="table-search"
-                  placeholder="Filter Items"
-                  inputProps={{ "aria-label": "search" }}
-                  onChange={(e) => {
-                    dispatch({
-                      type: "searchChanged",
-                      value: e.target.value,
-                    });
-                    setPage(0);
-                  }
-                  }
-                />
-              </Search>
-            )}
-            <IconButton onClick={download}>
-              <DownloadIcon htmlColor={`${props.headerColor?.textColor || 'inherit'}`} />
-            </IconButton>
-          </Toolbar>
-          <Table stickyHeader aria-label="sticky table" padding={props.dense ? "checkbox" : "normal"}>
-            {!props.hideHeader && (
-              <TableHead>
-                <TableRow>
-                  {state.columns.map((column, i) => (
-                    <TableCell key={`${column.header}${i}`} onClick={() => {
-                      !column.unsortable && dispatch({ type: "sortChanged", sortColumn: i });
-                      setPage(0);
-                      }}>
-                      <TableSortLabel active={i === state.sort.column} direction={state.sort.asc ? "asc" : "desc"}>
-                        {column.HeaderRender ? <column.HeaderRender /> : column.header}
-                        
-                      </TableSortLabel>
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-            )}
-            <TableBody>
-              {props.rows.length === 0 ? (
-                <TableRow>
-                  <TableCell>{props.emptyText || "No data available."}</TableCell>
-                  {/* Render needed number of empty cells to fill row */}
-                  {handleEmptyTable(props.columns.length)}
-                </TableRow>
-              ) : (
-                displayedRows.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((row, i) => (
-                  <TableRow
-                    // Check that there's a row to select, it's the right one, and either none have been highlighted or it's the correct one
-                    selected={props.highlighted ? highlightCheck(row) : false}
-                    hover
-                    key={"row" + i}
-                    onClick={() => props.onRowClick && props.onRowClick(row, i + page * rowsPerPage)}
-                    sx={{cursor: props.onRowClick ? "pointer" : "auto"}}
-                    onMouseEnter={() => props.onRowMouseEnter && props.onRowMouseEnter(row, i + page * rowsPerPage)}
-                    onMouseLeave={() => props.onRowMouseLeave && props.onRowMouseLeave()}
-                  >
-                    {state.columns.map((column, j) => {
-                      return (
-                        <TableCell
-                          // sx={{pl: 1}}
-                          key={column.header + "Row" + i + "Column" + j}
-                          onMouseEnter={() => props.onCellMouseEnter && props.onCellMouseEnter(column.value(row), i, j)}
-                          onMouseLeave={() => props.onCellMouseLeave && props.onCellMouseLeave()}
-                        >
-                          {column.FunctionalRender ? (<column.FunctionalRender {...row} />) : column.render ? (
-                            column.render(row)
-                          ) : (
-                            column.value(row)
-                          )}
-                        </TableCell>
-                      )
-                    })}
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {!props.hidePageMenu && (
-          <Stack direction="column" useFlexGap justifyContent="space-between">
-            <Typography pl={props.dense ? '4px' : 2} sx={{ mt: 'auto', mb: 'auto' }}>
-              {displayedRows.length !== props.rows.length && `Showing ${displayedRows.length} matching rows of ${props.rows.length} total.`}
-            </Typography>
-            <TablePagination
-              rowsPerPageOptions={[itemsPerPage, 10, 25, 100]}
-              component="div"
-              count={displayedRows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              showFirstButton={props.dense ? false : true}
-              showLastButton={props.dense ? false : true}
-              labelRowsPerPage={props.dense ? "Rows:" : undefined}
-              sx={props.dense ? { "& .MuiTablePagination-toolbar": {pl: "6px"}, "& .css-h0cf5v-MuiInputBase-root-MuiTablePagination-select": {mr: "6px", ml: "0px"}, "& .MuiTablePagination-actions": {ml: "4px !important"} } : undefined}
-            />
-          </Stack>
+    <Paper elevation={3} sx={{ "& .MuiToolbar-root": { pl: 2 }, position: "relative" }}>
+      <Toolbar sx={{ backgroundColor: `${props.headerColor ? props.headerColor.backgroundColor : "transparent"}`, borderTopLeftRadius: 4, borderTopRightRadius: 4 }}>
+        <Typography
+          variant="h5"
+          noWrap
+          component="div"
+          sx={{ flexGrow: 1, display: { xs: "none", sm: "block" }, fontWeight: "normal", color: `${props.headerColor ? props.headerColor.textColor : "inherit"}` }}
+        >
+          {props.tableTitle}
+          {props.titleHoverInfo && (
+            <Tooltip title={props.titleHoverInfo} color="primary" sx={{ ml: 1 }} placement="right-start">
+              <InfoIcon />
+            </Tooltip>
+          )}
+        </Typography>
+        {props.showMoreColumns && props.columns.length > (props.noOfDefaultColumns || 5) && (
+          <Button
+            variant="outlined"
+            size="small"
+            color="primary"
+            onClick={() =>
+              dispatch({
+                type: "modalChanged",
+                showAddColumnsModal: true,
+              })
+            }
+          >
+            <AddIcon />
+            Manage Columns
+          </Button>
         )}
-        {/* Add columns modal */}
-        <Modal open={state.showAddColumnsModal} onClose={() => dispatch({ type: "modalChanged", showAddColumnsModal: false })}>
-          <Box sx={boxStyle}>
-            <Typography variant="h4">Add Columns</Typography>
-            {(props.defaultColumnsToShow
-              ? props.columns.filter((c) => !props.defaultColumnsToShow?.includes(c.header))
-              //Why is this "or 5" here? Kinda makes no sense?
-              : props.columns.slice(props.noOfDefaultColumns || 5, props.columns.length)
-            ).map((col, i) => (
-              <Fragment key={i}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={state.columns.find((c) => c.header === col.header) !== undefined}
-                      onChange={(event) => {
-                        if (event.target.checked && props.columns.find((c) => c.header === col.header))
-                          dispatch({
-                            type: "columnsChanged",
-                            columns: [...state.columns, col],
-                          })
-                        else
-                          dispatch({
-                            type: "columnsChanged",
-                            columns: state.columns.filter((u) => u.header !== col.header),
-                          })
-                      }}
-                    />
-                  }
-                  label={col.header}
-                />
-                <br />
-              </Fragment>
-            ))}
-            <Button onClick={() => dispatch({ type: "modalChanged", showAddColumnsModal: false })}>Cancel</Button>
-          </Box>
-        </Modal>
-      </Paper>
-    </ThemeProvider>
+        {props.searchable && (
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              id="table-search"
+              placeholder="Filter Items"
+              inputProps={{ "aria-label": "search" }}
+              onChange={(e) => {
+                dispatch({
+                  type: "searchChanged",
+                  value: e.target.value,
+                });
+                setPage(0);
+              }
+              }
+            />
+          </Search>
+        )}
+        <IconButton onClick={download}>
+          <DownloadIcon htmlColor={`${props.headerColor?.textColor || 'inherit'}`} />
+        </IconButton>
+      </Toolbar>
+      <TableContainer ref={containerRef} sx={{maxHeight: props.maxHeight ? props.maxHeight : 'none'}}>
+        <Table stickyHeader aria-label="sticky table" padding={props.dense ? "checkbox" : "normal"}>
+          {!props.hideHeader && (
+            <TableHead>
+              <TableRow>
+                {state.columns.map((column, i) => (
+                  //remove padding from right unless last column
+                  <TableCell sx={i !== (state.columns.length - 1) ? { pr: 0 } : {}} key={`${column.header}${i}`} onClick={() => {
+                    !column.unsortable && dispatch({ type: "sortChanged", sortColumn: i });
+                    setPage(0);
+                  }}>
+                    <TableSortLabel
+                      active={i === state.sort.column}
+                      direction={state.sort.asc ? "asc" : "desc"}
+                      hideSortIcon
+                    >
+                      {column.HeaderRender ? <column.HeaderRender /> : column.header}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+          )}
+          <TableBody>
+            {props.rows.length === 0 ? (
+              <TableRow>
+                <TableCell>{props.emptyText || "No data available."}</TableCell>
+                {/* Render needed number of empty cells to fill row */}
+                {handleEmptyTable(props.columns.length)}
+              </TableRow>
+            ) : (
+              displayedRows.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((row, i) => (
+                <TableRow
+                  // Check that there's a row to select, it's the right one, and either none have been highlighted or it's the correct one
+                  selected={props.highlighted ? highlightCheck(row) : false}
+                  hover
+                  key={"row" + i}
+                  onClick={() => props.onRowClick && props.onRowClick(row, i + page * rowsPerPage)}
+                  sx={{ cursor: props.onRowClick ? "pointer" : "auto" }}
+                  onMouseEnter={() => props.onRowMouseEnter && props.onRowMouseEnter(row, i + page * rowsPerPage)}
+                  onMouseLeave={() => props.onRowMouseLeave && props.onRowMouseLeave()}
+                >
+                  {state.columns.map((column, j) => {
+                    return (
+                      <TableCell
+                        //remove padding from right unless last column
+                        sx={j !== (state.columns.length - 1) ? { pr: 0 } : {}}
+                        key={column.header + "Row" + i + "Column" + j}
+                        onMouseEnter={() => props.onCellMouseEnter && props.onCellMouseEnter(column.value(row), i, j)}
+                        onMouseLeave={() => props.onCellMouseLeave && props.onCellMouseLeave()}
+                      >
+                        {column.FunctionalRender ? (<column.FunctionalRender {...row} />) : column.render ? (
+                          column.render(row)
+                        ) : (
+                          column.value(row)
+                        )}
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+        <IconButton
+          ref={arrowLeftRef}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "10px",
+            transform: 'translateY(-50%)',
+            background: "rgba(0,0,0,0.15)",
+            visibility: "hidden"
+          }}
+          onClick={() => {if (containerRef.current) containerRef.current.scrollLeft = 0}}
+        >
+          <ArrowBackIosNewIcon />
+        </IconButton>
+        <IconButton
+          ref={arrowRightRef}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: "10px",
+            transform: 'translateY(-50%)',
+            background: "rgba(0,0,0,0.15)",
+            visibility: "hidden"
+          }}
+          onClick={() => {if (containerRef.current) containerRef.current.scrollLeft = containerRef.current.scrollWidth - containerRef.current.clientWidth}}
+        >
+          <ArrowForwardIosIcon />
+        </IconButton>
+      </TableContainer>
+      {!props.hidePageMenu && (
+        <Stack direction="column" useFlexGap justifyContent="space-between">
+          <Typography pl={props.dense ? '4px' : 2} sx={{ mt: 'auto', mb: 'auto' }}>
+            {displayedRows.length !== props.rows.length && `Showing ${displayedRows.length} matching rows of ${props.rows.length} total.`}
+          </Typography>
+          <TablePagination
+            rowsPerPageOptions={[itemsPerPage, 10, 25, 100]}
+            component="div"
+            count={displayedRows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            showFirstButton={props.dense ? false : true}
+            showLastButton={props.dense ? false : true}
+            labelRowsPerPage={props.dense ? "Rows:" : undefined}
+            sx={props.dense ? { "& .MuiTablePagination-toolbar": { pl: "6px" }, "& .css-h0cf5v-MuiInputBase-root-MuiTablePagination-select": { mr: "6px", ml: "0px" }, "& .MuiTablePagination-actions": { ml: "4px !important" } } : undefined}
+          />
+        </Stack>
+      )}
+      {/* Add columns modal */}
+      <Modal open={state.showAddColumnsModal} onClose={() => dispatch({ type: "modalChanged", showAddColumnsModal: false })}>
+        <Box sx={boxStyle}>
+          <Typography variant="h4">Add Columns</Typography>
+          {(props.defaultColumnsToShow
+            ? props.columns.filter((c) => !props.defaultColumnsToShow?.includes(c.header))
+            //Why is this "or 5" here? Kinda makes no sense?
+            : props.columns.slice(props.noOfDefaultColumns || 5, props.columns.length)
+          ).map((col, i) => (
+            <Fragment key={i}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={state.columns.find((c) => c.header === col.header) !== undefined}
+                    onChange={(event) => {
+                      if (event.target.checked && props.columns.find((c) => c.header === col.header))
+                        dispatch({
+                          type: "columnsChanged",
+                          columns: [...state.columns, col],
+                        })
+                      else
+                        dispatch({
+                          type: "columnsChanged",
+                          columns: state.columns.filter((u) => u.header !== col.header),
+                        })
+                    }}
+                  />
+                }
+                label={col.header}
+              />
+              <br />
+            </Fragment>
+          ))}
+          <Button onClick={() => dispatch({ type: "modalChanged", showAddColumnsModal: false })}>Cancel</Button>
+        </Box>
+      </Modal>
+    </Paper>
   )
 }
 export default DataTable
