@@ -222,11 +222,13 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
     arrowRightRef: React.RefObject<HTMLButtonElement>,
     arrowLeftRef: React.RefObject<HTMLButtonElement>
   ) => {
-    const isOverflowingLeft = containerRef.current && containerRef.current.scrollLeft > 0
-    const isOverflowingRight =  containerRef.current && (containerRef.current.scrollLeft + 1 < containerRef.current.scrollWidth - containerRef.current.clientWidth);
-    const isOverflowing = containerRef.current && containerRef.current.scrollWidth > containerRef.current.clientWidth
-    if (arrowRightRef.current) arrowRightRef.current.style.visibility = isOverflowing && isOverflowingRight ? "visible" : "hidden";
-    if (arrowLeftRef.current) arrowLeftRef.current.style.visibility = isOverflowing && isOverflowingLeft ? "visible" : "hidden";
+    if (containerRef.current && arrowRightRef.current && arrowLeftRef.current) {
+      const isOverflowing = containerRef.current.scrollWidth > containerRef.current.clientWidth
+      const isOverflowingLeft = containerRef.current.scrollLeft > 0
+      const isOverflowingRight = containerRef.current.scrollLeft + 1 < containerRef.current.scrollWidth - containerRef.current.clientWidth
+      arrowRightRef.current.style.visibility = isOverflowing && isOverflowingRight ? "visible" : "hidden"
+      arrowLeftRef.current.style.visibility = isOverflowing && isOverflowingLeft ? "visible" : "hidden"
+    }
   }
 
   //Attaches scroll and resize listeners to scrollable container
