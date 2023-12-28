@@ -724,7 +724,7 @@ const denseCols = [{
         <DataTable
             rows={ROWS}
             columns={COLUMNS.concat(COLUMNS)}
-            itemsPerPage={5}
+            itemsPerPage={10}
             tableTitle="Lots of Columns"
             searchable
         />

@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer, Reducer, useMemo, Fragment, useState } from "react"
+import React, { useCallback, useReducer, Reducer, useMemo, Fragment, useState, useEffect, useRef } from "react"
 // import * as os from "os"
 import { genericSort } from "../utilities"
 import { DataTableProps, DataTableState, DataTableAction } from "./types"
@@ -30,6 +30,8 @@ import Toolbar from "@mui/material/Toolbar"
 import Tooltip from "@mui/material/Tooltip"
 import { styled, alpha } from "@mui/material/styles"
 import { Stack } from "@mui/material"
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 //Styling for Search component
 const Search = styled("div")(({ theme }) => ({
@@ -209,8 +211,40 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
     a.remove()
   }, [state.columns, displayedRows])
 
+  //Refs used in tracking overflow
+  const containerRef = useRef<HTMLDivElement>(null)
+  const arrowRightRef = useRef<HTMLButtonElement>(null)
+  const arrowLeftRef = useRef<HTMLButtonElement>(null)
+
+  //Shows/hides scroll indicators based on refs
+  const monitorOverflow = (
+    containerRef: React.RefObject<HTMLDivElement>, 
+    arrowRightRef: React.RefObject<HTMLButtonElement>,
+    arrowLeftRef: React.RefObject<HTMLButtonElement>
+  ) => {
+    const isOverflowingLeft = containerRef.current && containerRef.current.scrollLeft > 0
+    const isOverflowingRight =  containerRef.current && (containerRef.current.scrollLeft + 1 < containerRef.current.scrollWidth - containerRef.current.clientWidth);
+    const isOverflowing = containerRef.current && containerRef.current.scrollWidth > containerRef.current.clientWidth
+    if (arrowRightRef.current) arrowRightRef.current.style.visibility = isOverflowing && isOverflowingRight ? "visible" : "hidden";
+    if (arrowLeftRef.current) arrowLeftRef.current.style.visibility = isOverflowing && isOverflowingLeft ? "visible" : "hidden";
+  }
+
+  //Attaches scroll and resize listeners to scrollable container
+  useEffect(() => {
+    if (containerRef.current !== null) {
+      containerRef.current.addEventListener('scroll', () => monitorOverflow(containerRef, arrowRightRef, arrowLeftRef))
+
+      new ResizeObserver((entries) => {
+        for (const _ of entries) {
+          monitorOverflow(containerRef, arrowRightRef, arrowLeftRef)
+        }
+      }).observe(containerRef.current)
+    }
+  }, [containerRef, arrowLeftRef, arrowRightRef])
+
+
   return (
-    <Paper elevation={3} sx={{ maxHeight: props.maxHeight ? props.maxHeight : 'none', "& .MuiToolbar-root": { pl: 2 } }}>
+    <Paper elevation={3} sx={{ maxHeight: props.maxHeight ? props.maxHeight : 'none', "& .MuiToolbar-root": { pl: 2 }, position: "relative" }}>
       <Toolbar sx={{ backgroundColor: `${props.headerColor ? props.headerColor.backgroundColor : "transparent"}`, borderTopLeftRadius: 4, borderTopRightRadius: 4 }}>
         <Typography
           variant="h5"
@@ -265,7 +299,7 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
           <DownloadIcon htmlColor={`${props.headerColor?.textColor || 'inherit'}`} />
         </IconButton>
       </Toolbar>
-      <TableContainer>
+      <TableContainer ref={containerRef}>
         <Table stickyHeader aria-label="sticky table" padding={props.dense ? "checkbox" : "normal"}>
           {!props.hideHeader && (
             <TableHead>
@@ -329,6 +363,34 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
             )}
           </TableBody>
         </Table>
+        <IconButton
+          ref={arrowLeftRef}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "10px",
+            transform: 'translateY(-50%)',
+            background: "rgba(0,0,0,0.15)",
+            visibility: "hidden"
+          }}
+          onClick={() => {if (containerRef.current) containerRef.current.scrollLeft = 0}}
+        >
+          <ArrowBackIosNewIcon />
+        </IconButton>
+        <IconButton
+          ref={arrowRightRef}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: "10px",
+            transform: 'translateY(-50%)',
+            background: "rgba(0,0,0,0.15)",
+            visibility: "hidden"
+          }}
+          onClick={() => {if (containerRef.current) containerRef.current.scrollLeft = containerRef.current.scrollWidth - containerRef.current.clientWidth}}
+        >
+          <ArrowForwardIosIcon />
+        </IconButton>
       </TableContainer>
       {!props.hidePageMenu && (
         <Stack direction="column" useFlexGap justifyContent="space-between">
