@@ -18,12 +18,13 @@ TODO: Have a browser popup when an invalid number is chosen
 export type SliderProps = MuiSliderProps & {
   title: string;
   width: number | string;
-  defaultStart: number;
-  defaultEnd: number;
+  defaultStart?: number;
+  defaultEnd?: number;
   //Could do more strict input checking here by checking the min/max of the slider
   minDistance?: number;
   onSliderChange?: (value: number[]) => void;
   onSliderChangeCommitted?: (value: number[]) => void;
+  value?: number[];
 };
 
 function valuetext(value: number) {
@@ -33,8 +34,16 @@ function valuetext(value: number) {
 const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
   //value that the slider uses
   const [value, setValue] = React.useState<number[]>(
-    [props.defaultStart, props.defaultEnd]
+    [props.defaultStart || props.value && props.value[0] || -10,
+     props.defaultEnd || props.value && props.value[1] || 10]
   );
+
+  useEffect(() => {
+    if (props.value) {
+      setValue(props.value)
+      setTempValue(props.value)
+    }
+  }, [props.value])
 
   // Triggers when component updates, allows the value to be extraced in an onChange() function
   useEffect(() => {
