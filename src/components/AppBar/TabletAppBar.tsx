@@ -15,7 +15,7 @@ const PortalsMenu: React.FC<{ onItemClicked?: (index: number) => void }> = ({ on
     <>
         <OptionsMenuItem onClick={() => onItemClicked && onItemClicked(-1)}>About</OptionsMenuItem>
         <OptionsMenuItem onClick={() => onItemClicked && onItemClicked(0)}>Disease/Trait Portal</OptionsMenuItem>
-        <OptionsMenuItem onClick={() => onItemClicked && onItemClicked(1)}>Gene/bCRE Portal</OptionsMenuItem>
+        <OptionsMenuItem onClick={() => onItemClicked && onItemClicked(1)}>Gene/b-cCRE Portal</OptionsMenuItem>
         <OptionsMenuItem onClick={() => onItemClicked && onItemClicked(2)}>SNP/QTL Portal</OptionsMenuItem>
         <OptionsMenuItem onClick={() => onItemClicked && onItemClicked(3)}>Single-Cell Portal</OptionsMenuItem>
     </>

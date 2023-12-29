@@ -2,7 +2,7 @@
   "name": "@weng-lab/psychscreen-ui-components",
   "description": "Typescript and Material UI based components used for psychSCREEN",
   "author": "SCREEN Team @ UMass Chan Medical School",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

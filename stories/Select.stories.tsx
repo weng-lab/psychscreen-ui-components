@@ -24,7 +24,7 @@ export default meta;
 const Template: Story<SelectProps> = args => (
     <Select variant="standard" defaultValue="disease/trait" {...args}>
       <MenuItem value="disease/trait">Disease/Trait</MenuItem>
-      <MenuItem value="gene/bcre">Gene/bCRE</MenuItem>
+      <MenuItem value="gene/bcre">Gene/b-cCRE</MenuItem>
       <MenuItem value="snp/qtl">SNP/QTL</MenuItem>
       <MenuItem value="single-cell">Single Cell</MenuItem>
     </Select>

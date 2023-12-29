@@ -42,7 +42,7 @@ export default meta;
 
 const SELECT_OPTIONS = [
   { name: "Disease/Trait", value: "disease", helperText: "e.g. schizophrenia, years of education" },
-  { name: "Gene/bCRE", value: "gene", helperText: "e.g. APOE, PPIF1" },
+  { name: "Gene/b-cCRE", value: "gene", helperText: "e.g. APOE, PPIF1" },
   { name: "SNP/QTL", value: "SNP", helperText: "e.g. rs2836883, rs7690700" }
 ]
 

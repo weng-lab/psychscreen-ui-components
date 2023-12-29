@@ -48,7 +48,7 @@ export const PortalsMenuItem: React.FC<{ children?: React.ReactNode, onClick?: (
 const PortalsMenu: React.FC<{ onPortalClicked?: (index: number) => void }> = ({ onPortalClicked }) => (
     <>
         <PortalsMenuItem onClick={() => onPortalClicked && onPortalClicked(0)}>Disease/Trait</PortalsMenuItem>
-        <PortalsMenuItem onClick={() => onPortalClicked && onPortalClicked(1)}>Gene/bCRE</PortalsMenuItem>
+        <PortalsMenuItem onClick={() => onPortalClicked && onPortalClicked(1)}>Gene/b-cCRE</PortalsMenuItem>
         <PortalsMenuItem onClick={() => onPortalClicked && onPortalClicked(2)}>SNP/QTL</PortalsMenuItem>
         <PortalsMenuItem onClick={() => onPortalClicked && onPortalClicked(3)}>Single-Cell</PortalsMenuItem>
     </>

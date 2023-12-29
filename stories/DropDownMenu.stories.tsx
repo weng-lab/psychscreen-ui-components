@@ -25,7 +25,7 @@ export default meta;
 const Template: Story<DropDownMenuProps> = args => (
   <DropDownMenu>
     <MenuItem>Disease/Trait</MenuItem>
-    <MenuItem>Gene/bCRE</MenuItem>
+    <MenuItem>Gene/b-cCRE</MenuItem>
     <MenuItem>SNP/QTL</MenuItem>
     <MenuItem>Single-Cell</MenuItem>
   </DropDownMenu>
