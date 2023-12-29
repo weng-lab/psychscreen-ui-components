@@ -372,7 +372,6 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
             position: "absolute",
             top: "50%",
             left: "10px",
-            transform: 'translateY(-50%)',
             background: "rgba(0,0,0,0.15)",
             visibility: "hidden"
           }}
@@ -386,7 +385,6 @@ const DataTable: React.FC<DataTableProps<any>> = (props: DataTableProps<any>) =>
             position: "absolute",
             top: "50%",
             right: "10px",
-            transform: 'translateY(-50%)',
             background: "rgba(0,0,0,0.15)",
             visibility: "hidden"
           }}
