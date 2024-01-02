@@ -14,14 +14,12 @@ import DropDownMenuItem from './DropDownMenuItem';
  * @member onHomepageClicked event handler for when the homepage link is clicked.
  * @member onAboutClicked event handler for when the about page link is clicked.
  * @member onPortalClicked event handler for when the portal link is clicked.
- * @member onResourcesClicked event handler for when the resources link is clicked.
  * @member onDownloadsClicked event handler for when the downloads link is clicked.
  */
 export type AppBarProps = MUIAppBarProps & {
     onHomepageClicked?: () => void;
     onAboutClicked?: () => void;
     onPortalClicked?: (index: number) => void;
-    onResourcesClicked?: () => void;
     onDownloadsClicked?: () => void;
     centered?: boolean;
 };
@@ -79,12 +77,6 @@ const AppBar: React.FC<AppBarProps> = props => (
                 >
                     Portals
                 </DropDownMenuItem>
-                <MenuItem
-                    onClick={props.onHomepageClicked}
-                    marginRight="32px"
-                >
-                    Resources
-                </MenuItem>
                 <MenuItem
                     onClick={props.onDownloadsClicked}
                     flexGrow={1}
