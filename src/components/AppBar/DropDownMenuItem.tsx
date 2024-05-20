@@ -45,10 +45,9 @@ const DropDownMenuItem: React.FC<MenuItemProps> = props => {
             { anchorRef.current && (
                 <Popper
                     anchorEl={anchorRef.current}
-                    open={open}                
+                    open={open}
                     placement="bottom-start"
-                    transition                    
-                    disablePortal
+                    transition
                     onMouseLeave={()=> setOpen(false)}
                 >
                     { ({ TransitionProps, placement }) => (
