@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { ClickAwayListener, Grow, MenuList, Popper } from '@mui/material';
+import { ClickAwayListener, Grow, MenuList, Popper, Stack } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 import { DropDownMenu } from '../DropDownMenu';
@@ -19,7 +19,7 @@ const DropDownMenuItem: React.FC<MenuItemProps> = props => {
     const anchorRef = React.useRef<HTMLDivElement>(null);
     const [ open, setOpen ] = useState(false);
     return (
-        <>
+        <Stack direction="row">
             <div
                 onClick={props.onClick}
                 ref={anchorRef}
@@ -38,7 +38,6 @@ const DropDownMenuItem: React.FC<MenuItemProps> = props => {
                     {props.children}
                 </Typography>
             </div>
-            &nbsp;
             <ArrowDropDownIcon
                 style={{ marginRight: props.flexGrow ? "0px" : props.marginRight, marginTop: "-3px", cursor: "pointer" }}
                 onMouseOver={() => setOpen(true)}
@@ -70,7 +69,7 @@ const DropDownMenuItem: React.FC<MenuItemProps> = props => {
                     )}
                 </Popper>
             )}
-        </>
+        </Stack>
     );
 };
 export default DropDownMenuItem;

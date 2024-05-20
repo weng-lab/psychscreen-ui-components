@@ -55,32 +55,28 @@ const PortalsMenu: React.FC<{ onPortalClicked?: (index: number) => void }> = ({ 
 const AppBar: React.FC<AppBarProps> = props => (
     <Box sx={{ flexGrow: 1 }}>
         <StyledAppBar position="static" {...props}>
-            <Toolbar style={{ marginLeft: "60px" }}>
+            <Toolbar sx={{gap: 4}}>
                 <MenuItem
                     onClick={props.onHomepageClicked}
-                    marginRight="32px"
                     fontWeight={700}
                     fontSize="20px"
                     lineHeight="15px"
+                    flexGrow={1}
                 >
                     psych<br />&nbsp;screen
                 </MenuItem>
-                <MenuItem
-                    onClick={props.onAboutClicked}
-                    marginRight="32px"
-                >
-                    About Us
-                </MenuItem>
                 <DropDownMenuItem
-                    marginRight="32px"
                     menu={<PortalsMenu onPortalClicked={props.onPortalClicked} />}
                 >
                     Portals
                 </DropDownMenuItem>
                 <MenuItem
+                    onClick={props.onAboutClicked}
+                >
+                    About Us
+                </MenuItem>
+                <MenuItem
                     onClick={props.onDownloadsClicked}
-                    flexGrow={1}
-                    marginRight="32px"
                 >
                     Downloads
                 </MenuItem>
