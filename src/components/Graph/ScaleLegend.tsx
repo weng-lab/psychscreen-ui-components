@@ -1,5 +1,5 @@
-import React, { CSSProperties, useState } from 'react';
-import GraphButton from './GraphButton';
+import React, { useState } from 'react';
+// import '../styles/ScaleLegend.css';
 
 interface ScaleProps {
   scales: number[];
@@ -17,44 +17,19 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
 
   const calculateWidth = (weight: number) => 10 * Math.log(weight * 4 + 1); // my scaling
 
-  const buttonStyle: CSSProperties = {
-    zIndex: 1000,
-    margin: '2px',
-    backgroundColor: '#0095ff',
-    border: '0px',
-    borderRadius: '3px',
-    color: '#fff',
-    cursor: 'pointer',
-    fontFamily:
-      '-apple-system,system-ui,"Segoe UI","Liberation Sans",sans-serif',
-    fontSize: '12px',
-    outline: 'none',
-    padding: '7px .8em',
-    textAlign: 'center',
-    textDecoration: 'none',
-    userSelect: 'none',
-    WebkitUserSelect: 'none',
-    whiteSpace: 'nowrap',
-    transition: 'background-color 0.3s, color 0.3s',
-  };
-
-  const divStyle: CSSProperties = {
-    position: 'absolute',
-    top: '200px',
-    right: '10px',
-    zIndex: 1000,
-    backgroundColor: 'white',
-    padding: '10px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-  };
-
-  const d = {
-    width: '230px',
-  };
   return (
-    <div style={{ ...divStyle, ...(collapsed ? null : d) }}>
+    <div
+      style={{
+        position: 'absolute',
+        top: '150px',
+        right: '10px',
+        zIndex: 1000,
+        backgroundColor: 'white',
+        padding: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ccc',
+      }}
+    >
       {!collapsed && (
         <>
           <h4>
@@ -108,11 +83,9 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
           </div>
         </>
       )}
-      <GraphButton
-        text={collapsed ? 'Show' : 'Hide'}
-        func={() => setCollapsed(!collapsed)}
-        styles={buttonStyle}
-      ></GraphButton>
+      <button onClick={() => setCollapsed(!collapsed)}>
+        {collapsed ? 'Show' : 'Hide'}
+      </button>
     </div>
   );
 };
