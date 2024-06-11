@@ -45,7 +45,7 @@ const Graph: React.FC<GraphProps> = ({ data, title }) => {
 
   // DOWNLOAD SCREENSHOT
   const ref = useRef<HTMLDivElement>(null);
-  const [image, takeScreenShot] = useScreenshot();
+  const [_, takeScreenShot] = useScreenshot();
 
   const downloadScreenshot = () => {
     if (ref.current && typeof takeScreenShot === 'function') {
