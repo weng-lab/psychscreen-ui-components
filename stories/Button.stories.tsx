@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { Button, ButtonProps } from '../src'; 
-import "../src/App.css";
+import { Button, ButtonProps } from '../src';
+import '../src/App.css';
 
 const meta: Meta = {
   title: 'Button',
@@ -20,10 +20,17 @@ const meta: Meta = {
 
 export default meta;
 
-const Template: Story<ButtonProps> = args => (
-  <div style={{ backgroundColor: args.btheme === "dark" ? "#1f1f1f" : "#ffffff", padding: "30px" }}>
+const Template: Story<ButtonProps> = (args) => (
+  <div
+    style={{
+      backgroundColor: args.btheme === 'dark' ? '#1f1f1f' : '#ffffff',
+      padding: '30px',
+    }}
+  >
     <Button {...args}>I'm Enabled.</Button>&nbsp;
-    <Button disabled {...args}>I'm Disabled.</Button>
+    <Button disabled {...args}>
+      I'm Disabled.
+    </Button>
   </div>
 );
 
@@ -32,5 +39,5 @@ const Template: Story<ButtonProps> = args => (
 export const Light = Template.bind({});
 export const Dark = Template.bind({});
 
-Light.args = { btheme: 'light', bvariant: "outlined" };
-Dark.args = { btheme: 'dark', bvariant: "outlined" };
+Light.args = { btheme: 'light', bvariant: 'outlined' };
+Dark.args = { btheme: 'dark', bvariant: 'outlined' };

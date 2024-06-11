@@ -1,0 +1,24 @@
+{
+    "data": {
+        "edge": [
+            {
+                "perturbed": "node_1",
+                "target": "node_2",
+                "effectSize": 0.1134,
+                "expressionImpact": "lower-expression"
+            }
+        ],
+        "node": [
+            {
+                "cCRE": "node_1",
+                "category": "PLS",
+                "simple": "Promoter"
+            },
+            {
+                "cCRE": "node_2",
+                "category": "CA-CTCF",
+                "simple": "Chromatin Accessible + CTCF"
+            }
+        ]
+    }
+}
