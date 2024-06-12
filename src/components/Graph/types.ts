@@ -14,7 +14,9 @@ export interface Edge {
   export interface GraphProps {
     data: {
         data: any; edge: Edge[], node: Node[] 
-},
-title?: string
+    },
+    title?: string,
+    width?: string,
+    height?: string,
   }
   
