@@ -23,10 +23,16 @@ const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
   a.click();
 };
 
-const Graph: React.FC<GraphProps> = ({ data, title }) => {
+const Graph: React.FC<GraphProps> = ({
+  data,
+  title,
+  width = '100%',
+  height = '100%',
+}) => {
   const cyRef = useRef<Core | null>(null);
 
   // state hooks
+  const [showControls, setShowControls] = useState(true);
   const [elements, setElements] = useState<Node[]>([]);
   const [scales, setScales] = useState<number[]>([]);
   const [expressionType, setExpressions] = useState<string[]>([]);
@@ -42,6 +48,10 @@ const Graph: React.FC<GraphProps> = ({ data, title }) => {
     'Lower-Expression': true,
     'Higher-Expression': true,
   });
+
+  const toggleControls = () => {
+    setShowControls(!showControls);
+  };
 
   // DOWNLOAD SCREENSHOT
   const ref = useRef<HTMLDivElement>(null);
@@ -99,7 +109,6 @@ const Graph: React.FC<GraphProps> = ({ data, title }) => {
       )
     );
   }, [data]);
-  console.log(scales);
 
   useEffect(() => {
     if (
@@ -239,7 +248,7 @@ const Graph: React.FC<GraphProps> = ({ data, title }) => {
       idx++;
       node.on('mouseout', hideTooltip);
     });
-    console.log(allcCREs);
+
     cy.edges().forEach((edge: EdgeSingular) => {
       edge.on('mousemove', (event) =>
         handleMouseOver(event, {
@@ -310,43 +319,71 @@ const Graph: React.FC<GraphProps> = ({ data, title }) => {
   }, [toggles]);
 
   return (
-    <div>
-      <button
-        onClick={downloadScreenshot}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          right: '5px',
-          zIndex: 1000,
-        }}
-      >
-        Download Screenshot
-      </button>
+    <div
+      style={{
+        width: width,
+        height: height,
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {showControls && (
+        <>
+          <button
+            onClick={downloadScreenshot}
+            style={{
+              position: 'absolute',
+              top: '5px',
+              right: '5px',
+              zIndex: 1000,
+            }}
+          >
+            Download Screenshot
+          </button>
+
+          <button
+            onClick={randomize}
+            type="button"
+            style={{
+              position: 'absolute',
+              top: '50px',
+              right: '5px',
+              zIndex: 1000,
+            }}
+          >
+            Randomize
+          </button>
+          <button
+            onClick={organize}
+            type="button"
+            style={{
+              position: 'absolute',
+              top: '95px',
+              right: '5px',
+              zIndex: 1000,
+            }}
+          >
+            Organize
+          </button>
+
+          <Legend toggles={toggles} onToggle={handleToggle} />
+          <ScaleLegend scales={scales} />
+        </>
+      )}
 
       <button
-        onClick={randomize}
-        type="button"
+        onClick={toggleControls}
         style={{
           position: 'absolute',
-          top: '50px',
-          right: '5px',
+          top: '20px',
+          left: '0px',
           zIndex: 1000,
+          fontSize: '11px',
         }}
       >
-        Randomize
+        {showControls ? 'Hide Controls' : 'Show Controls'}
       </button>
-      <button
-        onClick={organize}
-        type="button"
-        style={{
-          position: 'absolute',
-          top: '95px',
-          right: '5px',
-          zIndex: 1000,
-        }}
-      >
-        Organize
-      </button>
+
       <div ref={ref} className="App" style={{ position: 'relative' }}>
         <header className="App-header">
           <h1 className="App-title">{title}</h1>
@@ -380,8 +417,6 @@ const Graph: React.FC<GraphProps> = ({ data, title }) => {
           )}
         </TooltipInPortal>
       )}
-      <Legend toggles={toggles} onToggle={handleToggle} />
-      <ScaleLegend scales={scales} />
     </div>
   );
 };
