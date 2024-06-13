@@ -26,6 +26,7 @@ const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
 const Graph: React.FC<GraphProps> = ({
   data,
   title,
+  id,
   width = '100%',
   height = '100%',
 }) => {
@@ -97,6 +98,9 @@ const Graph: React.FC<GraphProps> = ({
     });
   };
 
+  // each graph needs a unique id
+  let k = 'cy-' + id;
+
   useEffect(() => {
     setElements(data.data.node);
     setEdges(data.data.edge);
@@ -147,7 +151,7 @@ const Graph: React.FC<GraphProps> = ({
     }
 
     const cy = cytoscape({
-      container: document.getElementById('cy'),
+      container: document.getElementById(k),
       style: [
         {
           selector: 'node',
@@ -365,7 +369,6 @@ const Graph: React.FC<GraphProps> = ({
           >
             Organize
           </button>
-
           <Legend toggles={toggles} onToggle={handleToggle} />
           <ScaleLegend scales={scales} />
         </>
@@ -384,13 +387,13 @@ const Graph: React.FC<GraphProps> = ({
         {showControls ? 'Hide Controls' : 'Show Controls'}
       </button>
 
-      <div ref={ref} className="App" style={{ position: 'relative' }}>
-        <header className="App-header">
-          <h1 className="App-title">{title}</h1>
+      <div ref={ref} style={{ position: 'relative' }}>
+        <header>
+          <h1>{title}</h1>
         </header>
         <div
           ref={containerRef}
-          id="cy"
+          id={k}
           style={{ width: '100%', height: '95vh' }}
         ></div>
       </div>
@@ -404,8 +407,8 @@ const Graph: React.FC<GraphProps> = ({
             fontSize: '12px',
           }}
           key={Math.random()}
-          top={tooltipTop || 0}
-          left={tooltipLeft || 0}
+          top={tooltipTop}
+          left={tooltipLeft}
         >
           {tooltipData.cCRE ? (
             <div>

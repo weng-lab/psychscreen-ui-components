@@ -16,6 +16,7 @@ export interface Edge {
         data: any; edge: Edge[], node: Node[] 
     },
     title?: string,
+    id: number | string,
     width?: string,
     height?: string,
   }
