@@ -9,6 +9,8 @@ import { GraphProps, Node, Edge } from './types';
 import Legend from './Legend';
 import ScaleLegend from './ScaleLegend';
 import GraphButton from './GraphButton';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 
 cytoscape.use(coseBilkent);
 
@@ -343,9 +345,19 @@ const Graph: React.FC<GraphProps> = ({
 
   const toggleControlsStyle = {
     ...buttonStyle,
-    top: '20px',
-    left: '0px',
-    marginTop: '15px',
+    top: '5px',
+    padding: '3px',
+    backgroundColor: 'white',
+    color: '#0095ff',
+  };
+
+  const r = {
+    collapsed: {
+      right: '175px',
+    },
+    uncollapsed: {
+      right: '2px',
+    },
   };
 
   return (
@@ -383,11 +395,19 @@ const Graph: React.FC<GraphProps> = ({
         </>
       )}
 
-      <GraphButton
-        text={showControls ? 'Hide Controls' : 'Show Controls'}
-        styles={toggleControlsStyle}
-        func={toggleControls}
-      ></GraphButton>
+      <button
+        onClick={toggleControls}
+        style={{
+          ...toggleControlsStyle,
+          ...(showControls ? r.collapsed : r.uncollapsed),
+        }}
+      >
+        {showControls ? (
+          <KeyboardDoubleArrowRightIcon />
+        ) : (
+          <KeyboardDoubleArrowLeftIcon />
+        )}
+      </button>
 
       <div
         ref={ref}
