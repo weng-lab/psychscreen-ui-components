@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import { cCREConstants } from './constants';
+import GraphButton from './GraphButton';
 // import '../styles/Legend.css';
 
 interface LegendProps {
@@ -9,6 +10,27 @@ interface LegendProps {
 
 const Legend: React.FC<LegendProps> = ({ toggles, onToggle }) => {
   const [collapsed, setCollapsed] = useState(false);
+
+  const buttonStyle: CSSProperties = {
+    zIndex: 1000,
+    margin: '2px',
+    backgroundColor: '#0095ff',
+    border: '0px',
+    borderRadius: '3px',
+    color: '#fff',
+    cursor: 'pointer',
+    fontFamily:
+      '-apple-system,system-ui,"Segoe UI","Liberation Sans",sans-serif',
+    fontSize: '12px',
+    outline: 'none',
+    padding: '7px .8em',
+    textAlign: 'center',
+    textDecoration: 'none',
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
+    whiteSpace: 'nowrap',
+    transition: 'background-color 0.3s, color 0.3s',
+  };
 
   return (
     <div
@@ -24,9 +46,11 @@ const Legend: React.FC<LegendProps> = ({ toggles, onToggle }) => {
         boxShadow: '0 0 10px rgba(0,0,0,0.5)',
       }}
     >
-      <button onClick={() => setCollapsed(!collapsed)}>
-        {collapsed ? 'Show' : 'Hide'}
-      </button>
+      <GraphButton
+        text={collapsed ? 'Show' : 'Hide'}
+        func={() => setCollapsed(!collapsed)}
+        styles={buttonStyle}
+      ></GraphButton>
 
       {!collapsed && (
         <div>

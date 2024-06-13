@@ -1,13 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, CSSProperties } from 'react';
 import cytoscape, { Core, EdgeSingular, NodeSingular } from 'cytoscape';
 import coseBilkent from 'cytoscape-cose-bilkent';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { useScreenshot } from 'use-react-screenshot';
-import { cCREConstants, cCREClass } from './constants';
-import './Graph.css';
+import { cCREConstants, cCREClass, buttonStyle } from './constants';
+// import './Graph.css';
 import { GraphProps, Node, Edge } from './types';
 import Legend from './Legend';
 import ScaleLegend from './ScaleLegend';
+import GraphButton from './GraphButton';
 
 cytoscape.use(coseBilkent);
 
@@ -322,6 +323,47 @@ const Graph: React.FC<GraphProps> = ({
     }
   }, [toggles]);
 
+  const downloadStyle = {
+    ...buttonStyle,
+    top: '5px',
+    right: '5px',
+  };
+
+  const randomizeStyle = {
+    ...buttonStyle,
+    top: '50px',
+    right: '5px',
+  };
+
+  const organizeStyle = {
+    ...buttonStyle,
+    top: '95px',
+    right: '5px',
+  };
+
+  const toggleControlsStyle = {
+    ...buttonStyle,
+    top: '20px',
+    left: '0px',
+    marginTop: '15px',
+  };
+
+  function mouseover(this: any) {
+    const c = document.getElementById(this.id());
+    if (c === null) {
+      return null;
+    }
+    c.style.backgroundColor = '#07c';
+  }
+
+  function mouseout() {
+    const c = document.getElementById('b1');
+    if (c === null) {
+      return null;
+    }
+    c.style.backgroundColor = '#0095ff';
+  }
+
   return (
     <div
       style={{
@@ -329,72 +371,63 @@ const Graph: React.FC<GraphProps> = ({
         height: height,
         position: 'relative',
         overflow: 'hidden',
+        fontSize: '14px',
+        fontFamily: 'helvetica',
       }}
     >
       {showControls && (
         <>
-          <button
-            onClick={downloadScreenshot}
-            style={{
-              position: 'absolute',
-              top: '5px',
-              right: '5px',
-              zIndex: 1000,
-            }}
-          >
-            Download Screenshot
-          </button>
+          <GraphButton
+            text="Download Screenshot"
+            styles={downloadStyle}
+            func={download}
+          ></GraphButton>
 
-          <button
-            onClick={randomize}
-            type="button"
-            style={{
-              position: 'absolute',
-              top: '50px',
-              right: '5px',
-              zIndex: 1000,
-            }}
-          >
-            Randomize
-          </button>
-          <button
-            onClick={organize}
-            type="button"
-            style={{
-              position: 'absolute',
-              top: '95px',
-              right: '5px',
-              zIndex: 1000,
-            }}
-          >
-            Organize
-          </button>
+          <GraphButton
+            text="Randomize"
+            styles={randomizeStyle}
+            func={randomize}
+          ></GraphButton>
+          <GraphButton
+            text="Organize"
+            styles={organizeStyle}
+            func={organize}
+          ></GraphButton>
+
           <Legend toggles={toggles} onToggle={handleToggle} />
           <ScaleLegend scales={scales} />
         </>
       )}
 
-      <button
-        onClick={toggleControls}
+      <GraphButton
+        text={showControls ? 'Hide Controls' : 'Show Controls'}
+        styles={toggleControlsStyle}
+        func={toggleControls}
+      ></GraphButton>
+
+      <div
+        ref={ref}
         style={{
-          position: 'absolute',
-          top: '20px',
-          left: '0px',
-          zIndex: 1000,
-          fontSize: '11px',
+          position: 'relative',
         }}
       >
-        {showControls ? 'Hide Controls' : 'Show Controls'}
-      </button>
-
-      <div ref={ref} style={{ position: 'relative' }}>
-        <header>
-          <h1>{title}</h1>
+        <header
+          style={{
+            opacity: 0.5,
+            fontSize: '1em',
+            margin: 0,
+          }}
+        >
+          <h1 style={{ fontSize: '14px' }}>{title}</h1>
         </header>
         <div
           ref={containerRef}
           id={k}
-          style={{ width: '100%', height: '95vh' }}
+          style={{
+            width: '100%',
+            height: '95vh',
+            zIndex: 999,
+          }}
         ></div>
       </div>
       {tooltipOpen && tooltipData && (
@@ -411,12 +444,14 @@ const Graph: React.FC<GraphProps> = ({
           left={tooltipLeft}
         >
           {tooltipData.cCRE ? (
-            <div>
+            <div style={{ fontFamily: 'helvetica' }}>
               cCRE: {tooltipData.cCRE} <br />
               Type: {tooltipData.type}
             </div>
           ) : (
-            <div>Type: {tooltipData.type}</div>
+            <div style={{ fontFamily: 'helvetica' }}>
+              Type: {tooltipData.type}
+            </div>
           )}
         </TooltipInPortal>
       )}
