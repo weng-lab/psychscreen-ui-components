@@ -20,4 +20,3 @@ export interface Edge {
     width?: string,
     height?: string,
   }
-  
