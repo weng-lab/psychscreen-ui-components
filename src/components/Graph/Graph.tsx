@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, CSSProperties } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import cytoscape, { Core, EdgeSingular, NodeSingular } from 'cytoscape';
 import coseBilkent from 'cytoscape-cose-bilkent';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
@@ -348,22 +348,6 @@ const Graph: React.FC<GraphProps> = ({
     marginTop: '15px',
   };
 
-  function mouseover(this: any) {
-    const c = document.getElementById(this.id());
-    if (c === null) {
-      return null;
-    }
-    c.style.backgroundColor = '#07c';
-  }
-
-  function mouseout() {
-    const c = document.getElementById('b1');
-    if (c === null) {
-      return null;
-    }
-    c.style.backgroundColor = '#0095ff';
-  }
-
   return (
     <div
       style={{
@@ -380,7 +364,7 @@ const Graph: React.FC<GraphProps> = ({
           <GraphButton
             text="Download Screenshot"
             styles={downloadStyle}
-            func={download}
+            func={downloadScreenshot}
           ></GraphButton>
 
           <GraphButton

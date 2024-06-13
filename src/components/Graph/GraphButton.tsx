@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 
 interface buttonProps {
   text: string;
@@ -10,7 +10,7 @@ const GraphButton: React.FC<buttonProps> = ({ text, styles, func }) => {
   const randID = Math.random() * 1000000;
   const r = randID + '';
 
-  function mouseover() {
+  function mouseover(): null | undefined | void {
     const c = document.getElementById(r);
     if (c === null) {
       return null;
@@ -18,7 +18,7 @@ const GraphButton: React.FC<buttonProps> = ({ text, styles, func }) => {
     c.style.backgroundColor = '#07c';
   }
 
-  function mouseout() {
+  function mouseout(): null | undefined | void {
     const c = document.getElementById(r);
     if (c === null) {
       return null;
