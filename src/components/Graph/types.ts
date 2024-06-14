@@ -13,7 +13,7 @@ export interface Edge {
   
   export interface GraphProps {
     data: {
-        data: any; edge: Edge[], node: Node[] 
+      edge: Edge[], node: Node[] 
     },
     title?: string,
     id: number | string,
