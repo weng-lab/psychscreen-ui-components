@@ -32,20 +32,23 @@ const Legend: React.FC<LegendProps> = ({ toggles, onToggle }) => {
     transition: 'background-color 0.3s, color 0.3s',
   };
 
+  const divStyle: CSSProperties = {
+    position: 'absolute',
+    bottom: '20px',
+    right: '3px',
+    zIndex: 1000,
+    backgroundColor: 'white',
+    padding: '10px',
+    borderRadius: '5px',
+    boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+  };
+
+  const d = {
+    width: '237px',
+  };
+
   return (
-    <div
-      className="legend"
-      style={{
-        position: 'absolute',
-        bottom: '20px',
-        right: '3px',
-        zIndex: 1000,
-        backgroundColor: 'white',
-        padding: '7px',
-        borderRadius: '5px',
-        boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-      }}
-    >
+    <div className="legend" style={{ ...divStyle, ...(collapsed ? null : d) }}>
       <GraphButton
         text={collapsed ? 'Show' : 'Hide'}
         func={() => setCollapsed(!collapsed)}

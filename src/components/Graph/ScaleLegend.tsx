@@ -37,19 +37,24 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
     whiteSpace: 'nowrap',
     transition: 'background-color 0.3s, color 0.3s',
   };
+
+  const divStyle: CSSProperties = {
+    position: 'absolute',
+    top: '150px',
+    right: '10px',
+    zIndex: 1000,
+    backgroundColor: 'white',
+    padding: '10px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+  };
+
+  const d = {
+    width: '230px',
+  };
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: '150px',
-        right: '10px',
-        zIndex: 1000,
-        backgroundColor: 'white',
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
-      }}
-    >
+    <div style={{ ...divStyle, ...(collapsed ? null : d) }}>
       {!collapsed && (
         <>
           <h4>

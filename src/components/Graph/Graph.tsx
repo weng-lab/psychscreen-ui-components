@@ -105,11 +105,11 @@ const Graph: React.FC<GraphProps> = ({
   let k = 'cy-' + id;
 
   useEffect(() => {
-    setElements(data.data.node);
-    setEdges(data.data.edge);
-    setScales(data.data.edge.map((e: Edge) => e.effectSize));
+    setElements(data.node);
+    setEdges(data.edge);
+    setScales(data.edge.map((e: Edge) => e.effectSize));
     setExpressions(
-      data.data.edge.map((e: Edge) =>
+      data.edge.map((e: Edge) =>
         e.expressionImpact === 'higher-expression'
           ? 'Higher-Expression'
           : 'Lower-Expression'
@@ -372,7 +372,12 @@ const Graph: React.FC<GraphProps> = ({
       }}
     >
       {showControls && (
-        <>
+        <div
+          style={{
+            backgroundColor: 'white',
+            boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+          }}
+        >
           <GraphButton
             text="Download Screenshot"
             styles={downloadStyle}
@@ -392,7 +397,7 @@ const Graph: React.FC<GraphProps> = ({
 
           <Legend toggles={toggles} onToggle={handleToggle} />
           <ScaleLegend scales={scales} />
-        </>
+        </div>
       )}
 
       <button
