@@ -6,6 +6,12 @@
                 "target": "node_2",
                 "effectSize": 0.1134,
                 "expressionImpact": "lower-expression"
+            },
+            {
+                "perturbed": "node_3",
+                "target": "node_2",
+                "effectSize": 0.5,
+                "expressionImpact": "higher-expression"
             }
         ],
         "node": [
@@ -18,6 +24,11 @@
                 "cCRE": "node_2",
                 "category": "CA-CTCF",
                 "simple": "Chromatin Accessible + CTCF"
+            },
+            {
+                "cCRE": "node_3",
+                "category": "CA-TF",
+                "simple": "Transcription Factor"
             }
         ]
     }

@@ -40,7 +40,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
 
   const divStyle: CSSProperties = {
     position: 'absolute',
-    top: '150px',
+    top: '200px',
     right: '10px',
     zIndex: 1000,
     backgroundColor: 'white',

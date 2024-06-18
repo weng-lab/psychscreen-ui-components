@@ -1,38 +1,25 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 
 interface buttonProps {
   text: string;
-  styles: any;
+  styles: CSSProperties;
   func: any;
 }
 
 const GraphButton: React.FC<buttonProps> = ({ text, styles, func }) => {
   const randID = Math.random() * 1000000;
   const r = randID + '';
-
-  function mouseover(): null | undefined | void {
-    const c = document.getElementById(r);
-    if (c === null) {
-      return null;
-    }
-    c.style.backgroundColor = '#07c';
-  }
-
-  function mouseout(): null | undefined | void {
-    const c = document.getElementById(r);
-    if (c === null) {
-      return null;
-    }
-    c.style.backgroundColor = '#0095ff';
-  }
-
   return (
     <>
       <button
         id={r}
         style={styles}
-        onMouseEnter={() => mouseover()}
-        onMouseLeave={() => mouseout()}
+        onMouseEnter={(event) =>
+          (event.currentTarget.style.backgroundColor = '#07c')
+        }
+        onMouseLeave={(event) =>
+          (event.currentTarget.style.backgroundColor = '#0095ff')
+        }
         onClick={func}
       >
         {text}
