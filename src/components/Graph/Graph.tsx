@@ -4,7 +4,6 @@ import coseBilkent from 'cytoscape-cose-bilkent';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { useScreenshot } from 'use-react-screenshot';
 import { cCREConstants, cCREClass, buttonStyle } from './constants';
-// import './Graph.css';
 import { GraphProps, Node, Edge } from './types';
 import Legend from './Legend';
 import ScaleLegend from './ScaleLegend';
@@ -17,6 +16,12 @@ cytoscape.use(coseBilkent);
 interface ToolTipData {
   cCRE?: string;
   type: string;
+  centered?: string;
+}
+
+function shortHand(str: string): string {
+  const simple = str as cCREClass;
+  return cCREConstants[simple]?.label || 'n/a';
 }
 
 const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
@@ -41,6 +46,7 @@ const Graph: React.FC<GraphProps> = ({
   const [scales, setScales] = useState<number[]>([]);
   const [expressionType, setExpressions] = useState<string[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [showLabels, setShowLabels] = useState(true); // State for label visibility
   const [toggles, setToggles] = useState<{ [key: string]: boolean }>({
     Promoter: true,
     'Distal Enhancer': true,
@@ -52,6 +58,7 @@ const Graph: React.FC<GraphProps> = ({
     'Lower-Expression': true,
     'Higher-Expression': true,
   });
+  const [degree, setDegree] = useState<number>(3);
 
   const toggleControls = () => {
     setShowControls(!showControls);
@@ -83,7 +90,7 @@ const Graph: React.FC<GraphProps> = ({
     scroll: true,
   });
 
-  const handleMouseOver = (event: cytoscape.EventObject, datum: any) => {
+  const handleMouseMove = (event: cytoscape.EventObject, datum: any) => {
     if (!containerRef.current) {
       console.error('Container ref is not set');
       return;
@@ -104,18 +111,77 @@ const Graph: React.FC<GraphProps> = ({
   // each graph needs a unique id
   let k = 'cy-' + id;
 
-  useEffect(() => {
-    setElements(data.node);
-    setEdges(data.edge);
-    setScales(data.edge.map((e: Edge) => e.effectSize));
-    setExpressions(
-      data.edge.map((e: Edge) =>
-        e.expressionImpact === 'higher-expression'
-          ? 'Higher-Expression'
-          : 'Lower-Expression'
-      )
-    );
-  }, [data]);
+  if (data.centered) {
+    // function to filter nodes and edges based on degree - do some check here for if centered even exists in data
+    const filterNodesAndEdges = (degree: number) => {
+      const centeredNode = data.centered.cCRE;
+      let nodesToInclude = new Set<string>([centeredNode]);
+      let edgesToInclude: Edge[] = [];
+      let visited = new Set<string>([centeredNode]);
+
+      // queue to manage BFS traversal
+      let queue: { node: string; depth: number }[] = [
+        { node: centeredNode, depth: 0 },
+      ];
+
+      while (queue.length > 0) {
+        const { node, depth } = queue.shift()!;
+
+        // if the curr depth = to the degree, skip further expansion
+        if (depth >= degree) continue;
+
+        // find edges involving the current node
+        data.edge.forEach((edge) => {
+          const neighbors = [
+            { target: edge.target, perturbed: edge.perturbed },
+            { target: edge.perturbed, perturbed: edge.target },
+          ];
+
+          neighbors.forEach(({ target, perturbed }) => {
+            if (perturbed === node && !visited.has(target)) {
+              visited.add(target);
+              nodesToInclude.add(target);
+              edgesToInclude.push(edge);
+              queue.push({ node: target, depth: depth + 1 });
+            }
+          });
+        });
+      }
+
+      // filter nodes to include only those found within the specified degrees of separation
+      const filteredNodes = data.node.filter((node) =>
+        nodesToInclude.has(node.cCRE)
+      );
+      return { nodes: filteredNodes, edges: edgesToInclude };
+    };
+
+    useEffect(() => {
+      const filteredData = filterNodesAndEdges(degree);
+      setElements(filteredData.nodes);
+      setEdges(filteredData.edges);
+      setScales(filteredData.edges.map((e) => e.effectSize));
+      setExpressions(
+        filteredData.edges.map((e) =>
+          e.expressionImpact === 'higher-expression'
+            ? 'Higher-Expression'
+            : 'Lower-Expression'
+        )
+      );
+    }, [data, degree]);
+  } else {
+    useEffect(() => {
+      setElements(data.node);
+      setEdges(data.edge);
+      setScales(data.edge.map((e: Edge) => e.effectSize));
+      setExpressions(
+        data.edge.map((e: Edge) =>
+          e.expressionImpact === 'higher-expression'
+            ? 'Higher-Expression'
+            : 'Lower-Expression'
+        )
+      );
+    }, [data]);
+  }
 
   useEffect(() => {
     if (
@@ -148,18 +214,13 @@ const Graph: React.FC<GraphProps> = ({
       return cCREConstants[simple]?.color || 'grey';
     }
 
-    function shortHand(str: string): string {
-      const simple = str as cCREClass;
-      return cCREConstants[simple]?.label || 'n/a';
-    }
-
     const cy = cytoscape({
       container: document.getElementById(k),
       style: [
         {
           selector: 'node',
           style: {
-            label: 'data(id)',
+            label: '',
             'font-size': 15,
           },
         },
@@ -206,7 +267,7 @@ const Graph: React.FC<GraphProps> = ({
           style: {
             // find color based on CRE
             'background-color': chooseColor(i),
-            label: shortHand(elements[i].simple),
+            label: showLabels ? shortHand(elements[i].simple) : '',
           },
         });
       }
@@ -246,19 +307,29 @@ const Graph: React.FC<GraphProps> = ({
     cy.nodes().forEach((node: NodeSingular) => {
       let cre = allcCREs[idx].toString();
       let simple = elements[idx].simple.toString();
-      node.on('mousemove', (event) =>
-        handleMouseOver(event, {
-          cCRE: cre,
-          type: simple,
-        })
-      );
+      if (data.centered && cre === data.centered.cCRE) {
+        node.on('mousemove', (event) =>
+          handleMouseMove(event, {
+            cCRE: cre,
+            type: simple,
+            centered: 'Centered Node',
+          })
+        );
+      } else {
+        node.on('mousemove', (event) =>
+          handleMouseMove(event, {
+            cCRE: cre,
+            type: simple,
+          })
+        );
+      }
       idx++;
       node.on('mouseout', hideTooltip);
     });
 
     cy.edges().forEach((edge: EdgeSingular) => {
       edge.on('mousemove', (event) =>
-        handleMouseOver(event, {
+        handleMouseMove(event, {
           type:
             edge.style('line-color').toString() === 'rgb(0,0,0)'
               ? 'Lower-Expression'
@@ -267,6 +338,7 @@ const Graph: React.FC<GraphProps> = ({
       );
       edge.on('mouseout', hideTooltip);
     });
+    organize();
 
     return () => {
       cy.destroy();
@@ -280,6 +352,19 @@ const Graph: React.FC<GraphProps> = ({
     showTooltip,
     hideTooltip,
   ]);
+
+  useEffect(() => {
+    const allSIMPLE: string[] = elements.map((e) => e.simple);
+
+    if (!cyRef.current) return;
+    let ind = 0;
+    cyRef.current.nodes().forEach((node) => {
+      node.style({
+        label: showLabels ? shortHand(allSIMPLE[ind]) : '', // Update label based on `showLabels`
+      });
+      ind++;
+    });
+  }, [showLabels]);
 
   // RANDOMIZE
   const randomize = () => {
@@ -318,37 +403,36 @@ const Graph: React.FC<GraphProps> = ({
     }));
   };
 
-  // organize on any toggle change
-  useEffect(() => {
-    if (cyRef.current) {
-      organize();
-    }
-  }, [toggles]);
-
   const downloadStyle = {
     ...buttonStyle,
-    top: '5px',
+    top: '0px',
     right: '5px',
   };
 
   const randomizeStyle = {
     ...buttonStyle,
-    top: '50px',
+    top: '45px',
     right: '5px',
   };
 
   const organizeStyle = {
     ...buttonStyle,
-    top: '95px',
+    top: '90px',
     right: '5px',
   };
 
   const toggleControlsStyle = {
     ...buttonStyle,
-    top: '5px',
+    top: '0px',
     padding: '3px',
     backgroundColor: 'white',
     color: '#0095ff',
+  };
+
+  const labelStyle = {
+    ...buttonStyle,
+    top: '135px',
+    right: '5px',
   };
 
   const r = {
@@ -359,6 +443,7 @@ const Graph: React.FC<GraphProps> = ({
       right: '2px',
     },
   };
+  console.log(showLabels);
 
   return (
     <div
@@ -371,6 +456,29 @@ const Graph: React.FC<GraphProps> = ({
         fontFamily: 'helvetica',
       }}
     >
+      <header
+        style={{
+          opacity: 0.5,
+          fontSize: '1em',
+          margin: 0,
+        }}
+      >
+        <h1 style={{ fontSize: '17px' }}>{title}</h1>
+      </header>
+      {data.centered ? (
+        <div style={{ top: '55px', left: '15px' }}>
+          <label htmlFor="degree">Degrees of Separation: </label>
+          <input
+            id="degree"
+            type="number"
+            value={degree}
+            min={1}
+            max={5}
+            onChange={(e) => setDegree(parseInt(e.target.value))}
+          />
+        </div>
+      ) : null}
+
       {showControls && (
         <div
           style={{
@@ -393,6 +501,11 @@ const Graph: React.FC<GraphProps> = ({
             text="Organize"
             styles={organizeStyle}
             func={organize}
+          ></GraphButton>
+          <GraphButton
+            text="Toggle Labels"
+            styles={labelStyle}
+            func={() => setShowLabels(!showLabels)}
           ></GraphButton>
 
           <Legend toggles={toggles} onToggle={handleToggle} />
@@ -420,21 +533,12 @@ const Graph: React.FC<GraphProps> = ({
           position: 'relative',
         }}
       >
-        <header
-          style={{
-            opacity: 0.5,
-            fontSize: '1em',
-            margin: 0,
-          }}
-        >
-          <h1 style={{ fontSize: '14px' }}>{title}</h1>
-        </header>
         <div
           ref={containerRef}
           id={k}
           style={{
             width: '100%',
-            height: '95vh',
+            height: '90vh',
             zIndex: 999,
           }}
         ></div>
@@ -456,6 +560,7 @@ const Graph: React.FC<GraphProps> = ({
             <div style={{ fontFamily: 'helvetica' }}>
               cCRE: {tooltipData.cCRE} <br />
               Type: {tooltipData.type}
+              {tooltipData.centered ? <div> Centered Node </div> : null}
             </div>
           ) : (
             <div style={{ fontFamily: 'helvetica' }}>

@@ -1,7 +1,6 @@
 import React, { CSSProperties, useState } from 'react';
 import { cCREConstants } from './constants';
 import GraphButton from './GraphButton';
-// import '../styles/Legend.css';
 
 interface LegendProps {
   toggles: { [key: string]: boolean };
@@ -34,7 +33,7 @@ const Legend: React.FC<LegendProps> = ({ toggles, onToggle }) => {
 
   const divStyle: CSSProperties = {
     position: 'absolute',
-    bottom: '20px',
+    bottom: '10px',
     right: '3px',
     zIndex: 1000,
     backgroundColor: 'white',
@@ -64,7 +63,10 @@ const Legend: React.FC<LegendProps> = ({ toggles, onToggle }) => {
                 checked={toggles[key]}
                 onChange={() => onToggle(key)}
               />
-              <span style={{ color: value.color, marginLeft: '8px' }}>
+              <span
+                style={{ color: value.color, marginLeft: '8px' }}
+                onClick={() => onToggle(key)}
+              >
                 {key} ({value.label})
               </span>
             </div>

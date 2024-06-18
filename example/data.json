@@ -602,6 +602,9 @@
                 "category": "pELS",
                 "simple": "Proximal Enhancer"
             }
-        ]
+        ],
+        "centered": {
+            "cCRE": "EH38E4193211"
+        }
     }
 }
