@@ -3,7 +3,7 @@ import React, { CSSProperties } from 'react';
 interface buttonProps {
   text: string;
   styles: CSSProperties;
-  func: any;
+  func: () => any;
 }
 
 const GraphButton: React.FC<buttonProps> = ({ text, styles, func }) => {
