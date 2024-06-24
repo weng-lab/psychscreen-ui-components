@@ -1,13 +1,19 @@
 import React, { CSSProperties, useState } from 'react';
-import { cCREConstants } from './constants';
-import GraphButton from './GraphButton';
+import { cCREClass, cCREConstants } from './constants';
 
 interface LegendProps {
   toggles: { [key: string]: boolean };
   onToggle: (category: string) => void;
+  simpleCategories: string[];
+  edgeType: boolean;
 }
 
-const Legend: React.FC<LegendProps> = ({ toggles, onToggle }) => {
+const Legend: React.FC<LegendProps> = ({
+  toggles,
+  onToggle,
+  simpleCategories,
+  edgeType,
+}) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const buttonStyle: CSSProperties = {
@@ -42,37 +48,81 @@ const Legend: React.FC<LegendProps> = ({ toggles, onToggle }) => {
     boxShadow: '0 0 10px rgba(0,0,0,0.5)',
   };
 
-  const d = {
-    width: '237px',
-  };
+  const d = { width: '237px' };
+  const lower = 'Lower-Expression';
+  const higher = 'Higher-Expression';
+
+  const uniqueCategories = Array.from(new Set(simpleCategories));
 
   return (
     <div className="legend" style={{ ...divStyle, ...(collapsed ? null : d) }}>
-      <GraphButton
-        text={collapsed ? 'Show' : 'Hide'}
-        func={() => setCollapsed(!collapsed)}
-        styles={buttonStyle}
-      ></GraphButton>
+      <button style={buttonStyle} onClick={() => setCollapsed(!collapsed)}>
+        {collapsed ? 'Show' : 'Hide'}
+      </button>
 
       {!collapsed && (
         <div>
-          {Object.entries(cCREConstants).map(([key, value]) => (
-            <div key={key}>
-              <input
-                type="checkbox"
-                checked={toggles[key]}
-                onChange={() => onToggle(key)}
-              />
-              <span
-                style={{ color: value.color, marginLeft: '8px' }}
-                onClick={() => onToggle(key)}
-              >
-                {key} ({value.label})
-              </span>
-            </div>
-          ))}
+          {uniqueCategories.map((category) => {
+            const typedCategory = category as cCREClass;
+            const categoryData = cCREConstants[typedCategory];
+            return (
+              <div key={category}>
+                <input
+                  type="checkbox"
+                  checked={toggles[category]}
+                  onChange={() => onToggle(category)}
+                />
+                <span
+                  style={{
+                    color: categoryData?.color || '#000',
+                    marginLeft: '8px',
+                  }}
+                  onClick={() => onToggle(category)}
+                >
+                  {category} ({categoryData?.label || 'n/a'})
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
+      {/* Conditional rendering based on edgeType */}
+      {edgeType ? (
+        <>
+          <div>
+            <input
+              type="checkbox"
+              checked={toggles[lower]}
+              onChange={() => onToggle(lower)}
+            />
+            <span
+              style={{
+                color: cCREConstants[lower].color,
+                marginLeft: '8px',
+              }}
+              onClick={() => onToggle(lower)}
+            >
+              {lower} (Edge)
+            </span>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              checked={toggles[higher]}
+              onChange={() => onToggle(higher)}
+            />
+            <span
+              style={{
+                color: cCREConstants[higher].color,
+                marginLeft: '8px',
+              }}
+              onClick={() => onToggle(higher)}
+            >
+              {higher} (Edge)
+            </span>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };
