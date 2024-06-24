@@ -31,6 +31,29 @@ const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
   a.click();
 };
 
+function convertToSimple(str: string): string {
+  switch (str) {
+    case 'PLS':
+      return 'Promoter';
+    case 'dELS':
+      return 'Distal Enhancer';
+    case 'pELS':
+      return 'Proximal Enhancer';
+    case 'CA-CTCF':
+      return 'Chromatin Accessible + CTCF';
+    case 'CA-H3K4me3':
+      return 'Chromatin Accessible + H3K4me3';
+    case 'CA-TF':
+      return 'Chromatin Accessible + Transcription Factor';
+    case 'Low-DNase':
+      return 'Low DNase';
+    case 'CA-only':
+      return 'Chromatin Accessible';
+    default:
+      return '';
+  }
+}
+
 const Graph: React.FC<GraphProps> = ({
   data,
   title,
@@ -46,7 +69,7 @@ const Graph: React.FC<GraphProps> = ({
   const [scales, setScales] = useState<number[]>([]);
   const [expressionType, setExpressions] = useState<string[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
-  const [showLabels, setShowLabels] = useState(true); // State for label visibility
+  const [showLabels, setShowLabels] = useState(true);
   const [toggles, setToggles] = useState<{ [key: string]: boolean }>({
     Promoter: true,
     'Distal Enhancer': true,
@@ -58,6 +81,7 @@ const Graph: React.FC<GraphProps> = ({
     'Lower-Expression': true,
     'Higher-Expression': true,
   });
+
   const [degree, setDegree] = useState<number>(3);
 
   const toggleControls = () => {
@@ -161,11 +185,13 @@ const Graph: React.FC<GraphProps> = ({
       setEdges(filteredData.edges);
       setScales(filteredData.edges.map((e) => e.effectSize));
       setExpressions(
-        filteredData.edges.map((e) =>
-          e.expressionImpact === 'higher-expression'
-            ? 'Higher-Expression'
-            : 'Lower-Expression'
-        )
+        data.edge.map((e) => {
+          if (e.expressionImpact === 'higher-expression')
+            return 'Higher-Expression';
+          if (e.expressionImpact === 'lower-expression')
+            return 'Lower-Expression';
+          return 'Edge';
+        })
       );
     }, [data, degree]);
   } else {
@@ -174,14 +200,20 @@ const Graph: React.FC<GraphProps> = ({
       setEdges(data.edge);
       setScales(data.edge.map((e: Edge) => e.effectSize));
       setExpressions(
-        data.edge.map((e: Edge) =>
-          e.expressionImpact === 'higher-expression'
-            ? 'Higher-Expression'
-            : 'Lower-Expression'
-        )
+        data.edge.map((e: Edge) => {
+          if (e.expressionImpact === 'higher-expression')
+            return 'Higher-Expression';
+          if (e.expressionImpact === 'lower-expression')
+            return 'Lower-Expression';
+          return 'Edge';
+        })
       );
     }, [data]);
   }
+  const simple: string[] = elements
+    .map((e) => e.category)
+    .map((elem) => convertToSimple(elem));
+  const createID = (index: number): string => elements[index].cCRE;
 
   useEffect(() => {
     if (
@@ -194,7 +226,7 @@ const Graph: React.FC<GraphProps> = ({
 
     const allcCREs: string[] = elements.map((e) => e.cCRE);
 
-    const connect: number[][] = [];
+    let connect: number[][] = [];
     for (let i = 0; i < elements.length; i++) {
       connect.push([]); // does not work with Array.fill
     }
@@ -205,13 +237,14 @@ const Graph: React.FC<GraphProps> = ({
       connect[allcCREs.indexOf(e.perturbed)].push(allcCREs.indexOf(e.target));
     });
 
-    const createID = (index: number): string => elements[index].cCRE;
-    const edgeColor = (idx: number): string =>
-      expressionType[idx] === 'Lower-Expression' ? 'black' : 'blue';
-
+    const edgeColor = (idx: number): string => {
+      if (expressionType[idx] === 'Lower-Expression') return 'black';
+      if (expressionType[idx] === 'Higher-Expression') return 'blue';
+      return 'grey';
+    };
     function chooseColor(index: number): string {
-      const simple = elements[index].simple as cCREClass;
-      return cCREConstants[simple]?.color || 'grey';
+      const s = simple[index] as cCREClass;
+      return cCREConstants[s]?.color || 'grey';
     }
 
     const cy = cytoscape({
@@ -229,7 +262,6 @@ const Graph: React.FC<GraphProps> = ({
           style: {
             'line-color': '#ccc',
             'curve-style': 'bezier',
-            'target-arrow-shape': 'triangle',
           },
         },
       ],
@@ -256,7 +288,7 @@ const Graph: React.FC<GraphProps> = ({
 
     // ADD NODES
     for (var i = 0; i < elements.length; i++) {
-      if (toggles[elements[i].simple] !== false) {
+      if (toggles[simple[i]] !== false) {
         cy.add({
           data: { id: createID(i) }, // create name
           position: {
@@ -267,7 +299,7 @@ const Graph: React.FC<GraphProps> = ({
           style: {
             // find color based on CRE
             'background-color': chooseColor(i),
-            label: showLabels ? shortHand(elements[i].simple) : '',
+            label: showLabels ? shortHand(simple[i]) : '',
           },
         });
       }
@@ -277,12 +309,12 @@ const Graph: React.FC<GraphProps> = ({
     let edgeCount = 0;
     for (var j = 0; j < elements.length; j++) {
       // add # of edges per node based on the target connections
-      if (toggles[elements[j].simple] !== false) {
+      if (toggles[simple[j]] !== false) {
         // toggle
         let len = connect[j].length;
         for (let s = 0; s < len; s++) {
           if (
-            toggles[elements[connect[j][s]].simple] !== false && // toggle
+            toggles[simple[connect[j][s]]] !== false && // toggle
             toggles[expressionType[j]] !== false
           ) {
             cy.add({
@@ -293,6 +325,11 @@ const Graph: React.FC<GraphProps> = ({
               },
               style: {
                 'line-color': edgeColor(j),
+                'target-arrow-shape':
+                  expressionType[j] === 'Higher-Expression' ||
+                  expressionType[j] === 'Lower-Expression'
+                    ? 'triangle'
+                    : null,
                 'target-arrow-color': edgeColor(j),
                 width: 10 * Math.log(scales[j] * 4 + 1),
               },
@@ -306,12 +343,12 @@ const Graph: React.FC<GraphProps> = ({
     let idx = 0;
     cy.nodes().forEach((node: NodeSingular) => {
       let cre = allcCREs[idx].toString();
-      let simple = elements[idx].simple.toString();
+      let s = simple[idx].toString();
       if (data.centered && cre === data.centered.cCRE) {
         node.on('mousemove', (event) =>
           handleMouseMove(event, {
             cCRE: cre,
-            type: simple,
+            type: s,
             centered: 'Centered Node',
           })
         );
@@ -319,7 +356,7 @@ const Graph: React.FC<GraphProps> = ({
         node.on('mousemove', (event) =>
           handleMouseMove(event, {
             cCRE: cre,
-            type: simple,
+            type: s,
           })
         );
       }
@@ -327,15 +364,25 @@ const Graph: React.FC<GraphProps> = ({
       node.on('mouseout', hideTooltip);
     });
 
+    console.log(data.edge.every((e) => e.expressionImpact));
+
     cy.edges().forEach((edge: EdgeSingular) => {
-      edge.on('mousemove', (event) =>
-        handleMouseMove(event, {
-          type:
-            edge.style('line-color').toString() === 'rgb(0,0,0)'
-              ? 'Lower-Expression'
-              : 'Higher-Expression',
-        })
-      );
+      if (data.edge.every((e) => e.expressionImpact)) {
+        edge.on('mousemove', (event) =>
+          handleMouseMove(event, {
+            type:
+              edge.style('line-color').toString() === 'rgb(0,0,0)'
+                ? 'Lower-Expression'
+                : 'Higher-Expression',
+          })
+        );
+      } else {
+        edge.on('mousemove', (event) =>
+          handleMouseMove(event, {
+            type: 'Edge',
+          })
+        );
+      }
       edge.on('mouseout', hideTooltip);
     });
     organize();
@@ -354,13 +401,15 @@ const Graph: React.FC<GraphProps> = ({
   ]);
 
   useEffect(() => {
-    const allSIMPLE: string[] = elements.map((e) => e.simple);
+    const simple: string[] = elements
+      .map((e) => e.category)
+      .map((elem) => convertToSimple(elem));
 
     if (!cyRef.current) return;
     let ind = 0;
     cyRef.current.nodes().forEach((node) => {
       node.style({
-        label: showLabels ? shortHand(allSIMPLE[ind]) : '', // Update label based on `showLabels`
+        label: showLabels ? shortHand(simple[ind]) : '',
       });
       ind++;
     });
@@ -443,7 +492,6 @@ const Graph: React.FC<GraphProps> = ({
       right: '2px',
     },
   };
-  console.log(showLabels);
 
   return (
     <div
@@ -473,7 +521,7 @@ const Graph: React.FC<GraphProps> = ({
             type="number"
             value={degree}
             min={1}
-            max={5}
+            max={3}
             onChange={(e) => setDegree(parseInt(e.target.value))}
           />
         </div>
@@ -508,7 +556,12 @@ const Graph: React.FC<GraphProps> = ({
             func={() => setShowLabels(!showLabels)}
           ></GraphButton>
 
-          <Legend toggles={toggles} onToggle={handleToggle} />
+          <Legend
+            toggles={toggles}
+            onToggle={handleToggle}
+            simpleCategories={simple}
+            edgeType={data.edge.every((e) => e.expressionImpact)}
+          />
           <ScaleLegend scales={scales} />
         </div>
       )}

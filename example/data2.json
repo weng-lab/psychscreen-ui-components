@@ -4,14 +4,12 @@
             {
                 "perturbed": "node_1",
                 "target": "node_2",
-                "effectSize": 0.1134,
-                "expressionImpact": "lower-expression"
+                "effectSize": 0.1134
             },
             {
                 "perturbed": "node_3",
                 "target": "node_2",
-                "effectSize": 0.5,
-                "expressionImpact": "higher-expression"
+                "effectSize": 0.5
             }
         ],
         "node": [

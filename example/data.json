@@ -409,198 +409,159 @@
         "node": [
             {
                 "cCRE": "EH38E1939823",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E1939855",
-                "category": "CA-CTCF",
-                "simple": "Chromatin Accessible + CTCF"
+                "category": "CA-CTCF"
             },
             {
                 "cCRE": "EH38E1940335",
-                "category": "dELS",
-                "simple": "Distal Enhancer"
+                "category": "dELS"
             },
             {
                 "cCRE": "EH38E1960374",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E1960377",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "cCRE": "EH38E3291096",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291121",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291122",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291174",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291218",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291222",
-                "category": "dELS",
-                "simple": "Distal Enhancer"
+                "category": "dELS"
             },
             {
                 "cCRE": "EH38E3291226",
-                "category": "dELS",
-                "simple": "Distal Enhancer"
+                "category": "dELS"
             },
             {
                 "cCRE": "EH38E3291232",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "cCRE": "EH38E3291244",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "cCRE": "EH38E3291249",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291263",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "cCRE": "EH38E3291271",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291279",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291318",
-                "category": "CA-CTCF",
-                "simple": "Chromatin Accessible + CTCF"
+                "category": "CA-CTCF"
             },
             {
                 "cCRE": "EH38E3291346",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291358",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291364",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291374",
-                "category": "CA-TF",
-                "simple": "Chromatin Accessible + Transcription Factor"
+                "category": "CA-TF"
             },
             {
                 "cCRE": "EH38E3291392",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291410",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291664",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3291668",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "cCRE": "EH38E3291779",
-                "category": "CA-CTCF",
-                "simple": "Chromatin Accessible + CTCF"
+                "category": "CA-CTCF"
             },
             {
                 "cCRE": "EH38E3312736",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "cCRE": "EH38E3312746",
-                "category": "dELS",
-                "simple": "Distal Enhancer"
+                "category": "dELS"
             },
             {
                 "cCRE": "EH38E3312765",
-                "category": "CA-TF",
-                "simple": "Chromatin Accessible + Transcription Factor"
+                "category": "CA-TF"
             },
             {
                 "cCRE": "EH38E3312774",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E3312787",
-                "category": "CA-TF",
-                "simple": "Chromatin Accessible + Transcription Factor"
+                "category": "CA-TF"
             },
             {
                 "cCRE": "EH38E4193211",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "cCRE": "EH38E4193228",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "cCRE": "EH38E4193243",
-                "category": "CA-H3K4me3",
-                "simple": "Chromatin Accessible + H3K4me3"
+                "category": "CA-H3K4me3"
             },
             {
                 "cCRE": "EH38E4193273",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "cCRE": "EH38E4193467",
-                "category": "CA-CTCF",
-                "simple": "Chromatin Accessible + CTCF"
+                "category": "CA-CTCF"
             },
             {
                 "cCRE": "EH38E4201343",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             }
         ],
         "centered": {

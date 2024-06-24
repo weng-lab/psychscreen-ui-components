@@ -10,6 +10,7 @@ export const cCREConstants = {
     "Chromatin Accessible + H3K4me3": { label: "CA+H3K4me3", color: "#ffaaaa" },
     "Lower-Expression": { label: "Edge", color: "#000000" },
     "Higher-Expression": { label: "Edge", color: "#0000FF" },
+    "Edge": { label: "Edge", color: "grey"},
   };
   
   export type cCREClass = keyof typeof cCREConstants;

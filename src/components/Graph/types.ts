@@ -2,13 +2,12 @@ export interface Edge {
     perturbed: string;
     target: string;
     effectSize: number;
-    expressionImpact: string;
+    expressionImpact?: string;
   }
   
   export interface Node {
     cCRE: string;
     category: string;
-    simple: string;
   }
   
   export interface GraphProps {
