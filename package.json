@@ -65,6 +65,7 @@
     "@storybook/addons": "^7.0.7",
     "@storybook/react": "^7.0.7",
     "@storybook/react-webpack5": "^7.0.7",
+    "@types/cytoscape": "^3.21.3",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.1",
     "babel-loader": "^9.1.2",
@@ -78,5 +79,12 @@
     "tslib": "^2.5.0",
     "typescript": "^5.0.4",
     "webpack": "^5.80.0"
+  },
+  "dependencies": {
+    "@visx/tooltip": "^3.3.0",
+    "cytoscape": "^3.29.2",
+    "cytoscape-cose-bilkent": "^4.1.0",
+    "html2canvas": "^1.4.1",
+    "use-react-screenshot": "^4.0.0"
   }
 }
