@@ -8,7 +8,7 @@ import data from '../example/data.json';
 import '../src/App.css';
 
 const meta: Meta = {
-  title: 'Components/Graph',
+  title: 'Graph',
   component: Graph,
 };
 export default meta;
