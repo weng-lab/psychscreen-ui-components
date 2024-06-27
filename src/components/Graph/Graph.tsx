@@ -80,6 +80,7 @@ const Graph: React.FC<GraphProps> = ({
     'Chromatin Accessible + CTCF': true,
     'Lower-Expression': true,
     'Higher-Expression': true,
+    'Low DNase': true,
   });
 
   const [degree, setDegree] = useState<number>(3);

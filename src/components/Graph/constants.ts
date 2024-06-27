@@ -11,6 +11,7 @@ export const cCREConstants = {
     "Lower-Expression": { label: "Edge", color: "#000000" },
     "Higher-Expression": { label: "Edge", color: "#0000FF" },
     "Edge": { label: "Edge", color: "grey"},
+    "Low DNase": {label: "Low DNase", color: "#e1e1e1"}
   };
   
   export type cCREClass = keyof typeof cCREConstants;
