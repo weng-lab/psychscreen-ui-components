@@ -1,6 +1,7 @@
 import React from "react"
 
 export type DataTableColumn<T> = {
+  tooltip?: string
   header: string
   HeaderRender?: React.FC<any>
   value: (row: T) => string | number
