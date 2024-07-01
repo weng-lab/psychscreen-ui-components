@@ -9,7 +9,7 @@ import { Edge, Node } from '../src/components/Graph/types';
 import '../src/App.css';
 
 const meta: Meta = {
-  title: 'Components/Graph',
+  title: 'Graph',
   component: Graph,
 };
 export default meta;
@@ -28,27 +28,23 @@ const convertNodeData = (data: {
     centered?: { id: string };
   };
 }): { nodes: Node[]; edges: Edge[]; centered?: { id: string } } => {
-  // Convert nodes to required format
   const nodes = data.data.node.map((node) => ({
     id: node.id,
     info: { category: node.category },
   }));
 
-  // Convert edges to required format
   const edges = data.data.edge.map((edge) => ({
-    from: edge.perturbed, // Map 'perturbed' to 'from'
-    to: edge.target, // Map 'target' to 'to'
+    from: edge.perturbed,
+    to: edge.target,
     effectSize: edge.effectSize,
-    ...(edge.expressionImpact && { expressionImpact: edge.expressionImpact }), // Only include expressionImpact if it exists
+    ...(edge.expressionImpact && { expressionImpact: edge.expressionImpact }),
   }));
 
-  // Create the result object
   const result: { nodes: Node[]; edges: Edge[]; centered?: { id: string } } = {
     nodes,
     edges,
   };
 
-  // Include centered if it exists
   if (data.data.centered) {
     result.centered = data.data.centered;
   }
@@ -72,7 +68,7 @@ PilotDataWithCentered.args = {
 
 export const FiftyPercent = Template.bind({});
 FiftyPercent.args = {
-  data: convertNodeData(data),
+  data: data.data,
   title: '50% Width and Height',
   id: 2,
   width: '50%',
