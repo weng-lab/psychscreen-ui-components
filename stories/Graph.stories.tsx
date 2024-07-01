@@ -16,61 +16,25 @@ export default meta;
 
 const Template: Story<GraphProps> = (args) => <Graph {...args} />;
 
-const convertNodeData = (data: {
-  data: {
-    node: Array<{ id: string; category: string }>;
-    edge: Array<{
-      perturbed: string;
-      target: string;
-      effectSize: number;
-      expressionImpact?: string;
-    }>;
-    centered?: { id: string };
-  };
-}): { nodes: Node[]; edges: Edge[]; centered?: { id: string } } => {
-  const nodes = data.data.node.map((node) => ({
-    id: node.id,
-    info: { category: node.category },
-  }));
-
-  const edges = data.data.edge.map((edge) => ({
-    from: edge.perturbed,
-    to: edge.target,
-    effectSize: edge.effectSize,
-    ...(edge.expressionImpact && { expressionImpact: edge.expressionImpact }),
-  }));
-
-  const result: { nodes: Node[]; edges: Edge[]; centered?: { id: string } } = {
-    nodes,
-    edges,
-  };
-
-  if (data.data.centered) {
-    result.centered = data.data.centered;
-  }
-
-  return result;
-};
-
 export const SampleGraph = Template.bind({});
 SampleGraph.args = {
   data: data2.data,
   title: 'Sample Graph With No Centered cCRE',
-  id: 1,
+  id: 'Sample',
   scale: (n: number) => 10 * n,
 };
 export const PilotDataWithCentered = Template.bind({});
 PilotDataWithCentered.args = {
   data: data.data,
   title: 'cCRE Impact With Pilot Data With Centered cCRE',
-  id: 'hello',
+  id: 'PilotWithCentered',
 };
 
 export const FiftyPercent = Template.bind({});
 FiftyPercent.args = {
   data: data.data,
   title: '50% Width and Height',
-  id: 2,
+  id: '50Percent',
   width: '50%',
   height: '50%',
 };
@@ -79,5 +43,13 @@ export const PilotDataWithoutCentered = Template.bind({});
 PilotDataWithoutCentered.args = {
   data: data3.data,
   title: 'cCRE Impact With Pilot Data Without Centered cCRE',
-  id: 'hi',
+  id: 'PilotNoCentered',
+};
+
+export const DifferentLabel = Template.bind({});
+DifferentLabel.args = {
+  data: data3.data,
+  title: 'Different Label',
+  id: 'diffLabel',
+  getLabel: (node: Node) => node.category,
 };

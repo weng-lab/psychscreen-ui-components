@@ -3,9 +3,10 @@ import GraphButton from './GraphButton';
 
 interface ScaleProps {
   scales: number[];
+  width: (n: number) => number;
 }
 
-const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
+const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
   const [collapsed, setCollapsed] = useState(false);
   if (scales.length === 0) return null;
 
@@ -15,7 +16,9 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
   const mid1 = sorted[Math.floor(sorted.length / 4)];
   const mid2 = sorted[Math.floor((sorted.length * 3) / 4)];
 
-  const calculateWidth = (weight: number) => 10 * Math.log(weight * 4 + 1); // my scaling
+  const scaleFunctionStr = width.toString();
+  const scaleFormula =
+    scaleFunctionStr.match(/=>\s*(.*)/)?.[1]?.trim() || scaleFunctionStr;
 
   const buttonStyle: CSSProperties = {
     zIndex: 1000,
@@ -48,6 +51,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
     borderRadius: '5px',
     border: '1px solid #ccc',
     boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+    fontSize: '13px',
   };
 
   const d = {
@@ -57,14 +61,12 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
     <div style={{ ...divStyle, ...(collapsed ? null : d) }}>
       {!collapsed && (
         <>
-          <h4>
-            Edge Weight Scale: (log<sub>10</sub> * 4) + 1
-          </h4>
+          <h4>Edge Weight Scale: {scaleFormula}</h4>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ marginBottom: '5px' }}>
               <div
                 style={{
-                  width: calculateWidth(min),
+                  width: width(min),
                   height: '10px',
                   backgroundColor: 'black',
                   display: 'inline-block',
@@ -75,7 +77,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
             <div style={{ marginBottom: '10px' }}>
               <div
                 style={{
-                  width: calculateWidth(mid1),
+                  width: width(mid1),
                   height: '10px',
                   backgroundColor: 'black',
                   display: 'inline-block',
@@ -86,7 +88,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
             <div style={{ marginBottom: '10px' }}>
               <div
                 style={{
-                  width: calculateWidth(mid2),
+                  width: width(mid2),
                   height: '10px',
                   backgroundColor: 'black',
                   display: 'inline-block',
@@ -97,7 +99,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales }) => {
             <div style={{ marginBottom: '10px' }}>
               <div
                 style={{
-                  width: calculateWidth(max),
+                  width: width(max),
                   height: '10px',
                   backgroundColor: 'black',
                   display: 'inline-block',

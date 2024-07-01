@@ -2,13 +2,13 @@
     "data": {
         "edge": [
             {
-                "perturbed": "node_1",
-                "target": "node_2",
+                "from": "node_1",
+                "to": "node_2",
                 "effectSize": 0.1134
             },
             {
-                "perturbed": "node_3",
-                "target": "node_2",
+                "from": "node_3",
+                "to": "node_2",
                 "effectSize": 0.5
             }
         ],

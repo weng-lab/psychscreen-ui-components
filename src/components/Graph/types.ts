@@ -7,7 +7,8 @@ export interface Edge {
   
   export interface Node {
     id: string;
-    info?: {category: string};
+   category: string;
+   info?:{};
   }
   
   export interface GraphProps {
@@ -19,36 +20,9 @@ export interface Edge {
     width?: string,
     height?: string,
     scale?: (n: number) => number,
+    getLabel?: (node: Node) => string,
   }
 
-  export interface GraphPropsWithData {
-    accession: string;
-    celltype: string;
-    degreeOfSeparation: number;
-    id: number,
-  }
-
-  export type NewEdge = {
-    source: string;
-    destination: string;
-    distance: number;
-    path: string;
-    weights: string;
-  };
-
-  export type NewNode = {
-    accession: string;
-    ccre_group: string;
-  };
-  
-
-  export type OldFormat = {
-    data: {
-      node: Node[];
-      edge: Edge[];
-      centered: {cCRE: string};
-    };
-  };
 
   export type ToolTipData =  {
     cCRE?: string;

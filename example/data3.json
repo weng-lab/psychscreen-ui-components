@@ -2,405 +2,405 @@
     "data": {
         "edge": [
             {
-                "perturbed": "EH38E3291096",
-                "target": "EH38E1939823",
+                "from": "EH38E3291096",
+                "to": "EH38E1939823",
                 "effectSize": 0.1134,
                 "expressionImpact": "lower-expression"
             },
             {
-                "perturbed": "EH38E1939823",
-                "target": "EH38E1939823",
+                "from": "EH38E1939823",
+                "to": "EH38E1939823",
                 "effectSize": 0.1933,
                 "expressionImpact": "lower-expression"
             },
             {
-                "perturbed": "EH38E3291121",
-                "target": "EH38E1939823",
+                "from": "EH38E3291121",
+                "to": "EH38E1939823",
                 "effectSize": 0.0545,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291122",
-                "target": "EH38E1939823",
+                "from": "EH38E3291122",
+                "to": "EH38E1939823",
                 "effectSize": 0.0665,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291358",
-                "target": "EH38E1939823",
+                "from": "EH38E3291358",
+                "to": "EH38E1939823",
                 "effectSize": 0.0674,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291271",
-                "target": "EH38E3291279",
+                "from": "EH38E3291271",
+                "to": "EH38E3291279",
                 "effectSize": 0.0381,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291279",
-                "target": "EH38E3291279",
+                "from": "EH38E3291279",
+                "to": "EH38E3291279",
                 "effectSize": 0.1667,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291358",
-                "target": "EH38E3291279",
+                "from": "EH38E3291358",
+                "to": "EH38E3291279",
                 "effectSize": 0.0478,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291174",
-                "target": "EH38E3291410",
+                "from": "EH38E3291174",
+                "to": "EH38E3291410",
                 "effectSize": 0.0504,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E4193273",
-                "target": "EH38E3291410",
+                "from": "EH38E4193273",
+                "to": "EH38E3291410",
                 "effectSize": 0.0507,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291358",
-                "target": "EH38E3291410",
+                "from": "EH38E3291358",
+                "to": "EH38E3291410",
                 "effectSize": 0.0895,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291392",
-                "target": "EH38E3291410",
+                "from": "EH38E3291392",
+                "to": "EH38E3291410",
                 "effectSize": 0.0352,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291410",
-                "target": "EH38E3291410",
+                "from": "EH38E3291410",
+                "to": "EH38E3291410",
                 "effectSize": 0.2538,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291174",
-                "target": "EH38E4193228",
+                "from": "EH38E3291174",
+                "to": "EH38E4193228",
                 "effectSize": 0.0211,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291218",
-                "target": "EH38E4193228",
+                "from": "EH38E3291218",
+                "to": "EH38E4193228",
                 "effectSize": 0.0477,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291222",
-                "target": "EH38E4193228",
+                "from": "EH38E3291222",
+                "to": "EH38E4193228",
                 "effectSize": 0.0627,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291226",
-                "target": "EH38E4193228",
+                "from": "EH38E3291226",
+                "to": "EH38E4193228",
                 "effectSize": 0.0448,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E4193211",
-                "target": "EH38E4193228",
+                "from": "EH38E4193211",
+                "to": "EH38E4193228",
                 "effectSize": 0.0454,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291232",
-                "target": "EH38E4193228",
+                "from": "EH38E3291232",
+                "to": "EH38E4193228",
                 "effectSize": 0.0311,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291249",
-                "target": "EH38E4193228",
+                "from": "EH38E3291249",
+                "to": "EH38E4193228",
                 "effectSize": 0.0593,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E3291263",
-                "target": "EH38E4193228",
+                "from": "EH38E3291263",
+                "to": "EH38E4193228",
                 "effectSize": 0.1136,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291271",
-                "target": "EH38E4193228",
+                "from": "EH38E3291271",
+                "to": "EH38E4193228",
                 "effectSize": 0.4097,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291279",
-                "target": "EH38E4193228",
+                "from": "EH38E3291279",
+                "to": "EH38E4193228",
                 "effectSize": 0.1077,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E4193243",
-                "target": "EH38E4193228",
+                "from": "EH38E4193243",
+                "to": "EH38E4193228",
                 "effectSize": 0.026,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E3291318",
-                "target": "EH38E4193228",
+                "from": "EH38E3291318",
+                "to": "EH38E4193228",
                 "effectSize": 0.0297,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E4193273",
-                "target": "EH38E4193228",
+                "from": "EH38E4193273",
+                "to": "EH38E4193228",
                 "effectSize": 0.0405,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291358",
-                "target": "EH38E4193228",
+                "from": "EH38E3291358",
+                "to": "EH38E4193228",
                 "effectSize": 0.0918,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291779",
-                "target": "EH38E4193228",
+                "from": "EH38E3291779",
+                "to": "EH38E4193228",
                 "effectSize": 0.0263,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E4193467",
-                "target": "EH38E4193228",
+                "from": "EH38E4193467",
+                "to": "EH38E4193228",
                 "effectSize": 0.0374,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E1960374",
-                "target": "EH38E1960374",
+                "from": "EH38E1960374",
+                "to": "EH38E1960374",
                 "effectSize": 0.1853,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3312736",
-                "target": "EH38E1960374",
+                "from": "EH38E3312736",
+                "to": "EH38E1960374",
                 "effectSize": 0.0698,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E1960377",
-                "target": "EH38E1960374",
+                "from": "EH38E1960377",
+                "to": "EH38E1960374",
                 "effectSize": 0.1479,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E4201343",
-                "target": "EH38E1960374",
+                "from": "EH38E4201343",
+                "to": "EH38E1960374",
                 "effectSize": 0.1042,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E1960374",
-                "target": "EH38E3312774",
+                "from": "EH38E1960374",
+                "to": "EH38E3312774",
                 "effectSize": 0.143,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E3312736",
-                "target": "EH38E3312774",
+                "from": "EH38E3312736",
+                "to": "EH38E3312774",
                 "effectSize": 0.0864,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E1960377",
-                "target": "EH38E3312774",
+                "from": "EH38E1960377",
+                "to": "EH38E3312774",
                 "effectSize": 0.1641,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E4201343",
-                "target": "EH38E3312774",
+                "from": "EH38E4201343",
+                "to": "EH38E3312774",
                 "effectSize": 0.0652,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E3312746",
-                "target": "EH38E3312774",
+                "from": "EH38E3312746",
+                "to": "EH38E3312774",
                 "effectSize": 0.0835,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3312765",
-                "target": "EH38E3312774",
+                "from": "EH38E3312765",
+                "to": "EH38E3312774",
                 "effectSize": 0.0386,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3312774",
-                "target": "EH38E3312774",
+                "from": "EH38E3312774",
+                "to": "EH38E3312774",
                 "effectSize": 0.3507,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3312787",
-                "target": "EH38E3312774",
+                "from": "EH38E3312787",
+                "to": "EH38E3312774",
                 "effectSize": 0.0959,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E1940335",
-                "target": "EH38E3291664",
+                "from": "EH38E1940335",
+                "to": "EH38E3291664",
                 "effectSize": 0.0701,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291664",
-                "target": "EH38E3291664",
+                "from": "EH38E3291664",
+                "to": "EH38E3291664",
                 "effectSize": 0.3563,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291668",
-                "target": "EH38E3291664",
+                "from": "EH38E3291668",
+                "to": "EH38E3291664",
                 "effectSize": 0.1181,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291318",
-                "target": "EH38E3291358",
+                "from": "EH38E3291318",
+                "to": "EH38E3291358",
                 "effectSize": 0.0369,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291346",
-                "target": "EH38E3291358",
+                "from": "EH38E3291346",
+                "to": "EH38E3291358",
                 "effectSize": 0.108,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E4193273",
-                "target": "EH38E3291358",
+                "from": "EH38E4193273",
+                "to": "EH38E3291358",
                 "effectSize": 0.2005,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291358",
-                "target": "EH38E3291358",
+                "from": "EH38E3291358",
+                "to": "EH38E3291358",
                 "effectSize": 0.441,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291364",
-                "target": "EH38E3291358",
+                "from": "EH38E3291364",
+                "to": "EH38E3291358",
                 "effectSize": 0.0862,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291374",
-                "target": "EH38E3291358",
+                "from": "EH38E3291374",
+                "to": "EH38E3291358",
                 "effectSize": 0.0278,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E3291664",
-                "target": "EH38E3291358",
+                "from": "EH38E3291664",
+                "to": "EH38E3291358",
                 "effectSize": 0.0291,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E1939855",
-                "target": "EH38E3291249",
+                "from": "EH38E1939855",
+                "to": "EH38E3291249",
                 "effectSize": 0.0684,
                 "expressionImpact": "higher-expression"
 
             },
             {
-                "perturbed": "EH38E4193211",
-                "target": "EH38E3291249",
+                "from": "EH38E4193211",
+                "to": "EH38E3291249",
                 "effectSize": 0.0354,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291232",
-                "target": "EH38E3291249",
+                "from": "EH38E3291232",
+                "to": "EH38E3291249",
                 "effectSize": 0.0767,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291244",
-                "target": "EH38E3291249",
+                "from": "EH38E3291244",
+                "to": "EH38E3291249",
                 "effectSize": 0.0883,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291249",
-                "target": "EH38E3291249",
+                "from": "EH38E3291249",
+                "to": "EH38E3291249",
                 "effectSize": 0.1514,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291358",
-                "target": "EH38E3291249",
+                "from": "EH38E3291358",
+                "to": "EH38E3291249",
                 "effectSize": 0.0378,
                 "expressionImpact": "lower-expression"
 
             },
             {
-                "perturbed": "EH38E3291664",
-                "target": "EH38E3291249",
+                "from": "EH38E3291664",
+                "to": "EH38E3291249",
                 "effectSize": 0.0276,
                 "expressionImpact": "higher-expression"
 
@@ -409,198 +409,159 @@
         "node": [
             {
                 "id": "EH38E1939823",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E1939855",
-                "category": "CA-CTCF",
-                "simple": "Chromatin Accessible + CTCF"
+                "category": "CA-CTCF"
             },
             {
                 "id": "EH38E1940335",
-                "category": "dELS",
-                "simple": "Distal Enhancer"
+                "category": "dELS"
             },
             {
                 "id": "EH38E1960374",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E1960377",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "id": "EH38E3291096",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291121",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291122",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291174",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291218",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291222",
-                "category": "dELS",
-                "simple": "Distal Enhancer"
+                "category": "dELS"
             },
             {
                 "id": "EH38E3291226",
-                "category": "dELS",
-                "simple": "Distal Enhancer"
+                "category": "dELS"
             },
             {
                 "id": "EH38E3291232",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "id": "EH38E3291244",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "id": "EH38E3291249",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291263",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "id": "EH38E3291271",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291279",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291318",
-                "category": "CA-CTCF",
-                "simple": "Chromatin Accessible + CTCF"
+                "category": "CA-CTCF"
             },
             {
                 "id": "EH38E3291346",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291358",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291364",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291374",
-                "category": "CA-TF",
-                "simple": "Chromatin Accessible + Transcription Factor"
+                "category": "CA-TF"
             },
             {
                 "id": "EH38E3291392",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291410",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291664",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3291668",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "id": "EH38E3291779",
-                "category": "CA-CTCF",
-                "simple": "Chromatin Accessible + CTCF"
+                "category": "CA-CTCF"
             },
             {
                 "id": "EH38E3312736",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "id": "EH38E3312746",
-                "category": "dELS",
-                "simple": "Distal Enhancer"
+                "category": "dELS"
             },
             {
                 "id": "EH38E3312765",
-                "category": "CA-TF",
-                "simple": "Chromatin Accessible + Transcription Factor"
+                "category": "CA-TF"
             },
             {
                 "id": "EH38E3312774",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E3312787",
-                "category": "CA-TF",
-                "simple": "Chromatin Accessible + Transcription Factor"
+                "category": "CA-TF"
             },
             {
                 "id": "EH38E4193211",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "id": "EH38E4193228",
-                "category": "PLS",
-                "simple": "Promoter"
+                "category": "PLS"
             },
             {
                 "id": "EH38E4193243",
-                "category": "CA-H3K4me3",
-                "simple": "Chromatin Accessible + H3K4me3"
+                "category": "CA-H3K4me3"
             },
             {
                 "id": "EH38E4193273",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             },
             {
                 "id": "EH38E4193467",
-                "category": "CA-CTCF",
-                "simple": "Chromatin Accessible + CTCF"
+                "category": "CA-CTCF"
             },
             {
                 "id": "EH38E4201343",
-                "category": "pELS",
-                "simple": "Proximal Enhancer"
+                "category": "pELS"
             }
         ]
     }

@@ -4,7 +4,7 @@ import coseBilkent from 'cytoscape-cose-bilkent';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { useScreenshot } from 'use-react-screenshot';
 import { cCREConstants, cCREClass, buttonStyle } from './constants';
-import { GraphProps, Node, Edge } from './types';
+import { GraphProps, Node, Edge, ToolTipData } from './types';
 import Legend from './Legend';
 import ScaleLegend from './ScaleLegend';
 import GraphButton from './GraphButton';
@@ -12,12 +12,6 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 
 cytoscape.use(coseBilkent);
-
-interface ToolTipData {
-  cCRE?: string;
-  type: string;
-  centered?: string;
-}
 
 // function shortHand(str: string): string {
 //   const simple = str as cCREClass;
@@ -63,6 +57,7 @@ const Graph: React.FC<GraphProps> = ({
   width = '100%',
   height = '100%',
   scale = defaultScale,
+  getLabel,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -214,10 +209,9 @@ const Graph: React.FC<GraphProps> = ({
     }, [data]);
   }
   const simple: string[] = elements
-    .map((e) => e.info?.category)
-    .map((elem) => convertToSimple(elem !== undefined ? elem : ''));
+    .map((e) => e.category)
+    .map((elem) => convertToSimple(elem));
   const createID = (index: number): string => elements[index].id;
-
   useEffect(() => {
     if (
       elements.length === 0 ||
@@ -303,7 +297,7 @@ const Graph: React.FC<GraphProps> = ({
             style: {
               // find color based on CRE
               'background-color': chooseColor(i),
-              label: showLabels ? createID(i) : '',
+              label: showLabels ? elements[i].id : '',
               fontSize: '12px',
               borderWidth: '2px',
               borderColor: 'black',
@@ -320,7 +314,11 @@ const Graph: React.FC<GraphProps> = ({
             style: {
               // find color based on CRE
               'background-color': chooseColor(i),
-              label: showLabels ? createID(i) : '',
+              label: showLabels
+                ? getLabel
+                  ? getLabel(elements[i])
+                  : elements[i].id
+                : '',
               fontSize: '12px',
             },
           });
@@ -580,7 +578,7 @@ const Graph: React.FC<GraphProps> = ({
             simpleCategories={simple}
             edgeType={data.edge.every((e) => e.expressionImpact)}
           />
-          <ScaleLegend scales={scales} />
+          <ScaleLegend scales={scales} width={scale} />
         </div>
       )}
 
