@@ -19,10 +19,10 @@ interface ToolTipData {
   centered?: string;
 }
 
-function shortHand(str: string): string {
-  const simple = str as cCREClass;
-  return cCREConstants[simple]?.label || 'n/a';
-}
+// function shortHand(str: string): string {
+//   const simple = str as cCREClass;
+//   return cCREConstants[simple]?.label || 'n/a';
+// }
 
 const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
   const a = document.createElement('a');
@@ -50,9 +50,11 @@ function convertToSimple(str: string): string {
     case 'CA-only':
       return 'Chromatin Accessible';
     default:
-      return '';
+      return str;
   }
 }
+
+const defaultScale = (n: number) => 10 * Math.log(n * 4 + 1);
 
 const Graph: React.FC<GraphProps> = ({
   data,
@@ -60,6 +62,7 @@ const Graph: React.FC<GraphProps> = ({
   id,
   width = '100%',
   height = '100%',
+  scale = defaultScale,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -138,7 +141,7 @@ const Graph: React.FC<GraphProps> = ({
   if (data.centered) {
     // function to filter nodes and edges based on degree - do some check here for if centered even exists in data
     const filterNodesAndEdges = (degree: number) => {
-      const centeredNode = data.centered.cCRE;
+      const centeredNode = data.centered.id;
       let nodesToInclude = new Set<string>([centeredNode]);
       let edgesToInclude: Edge[] = [];
       let visited = new Set<string>([centeredNode]);
@@ -157,16 +160,16 @@ const Graph: React.FC<GraphProps> = ({
         // find edges involving the current node
         data.edge.forEach((edge) => {
           const neighbors = [
-            { target: edge.target, perturbed: edge.perturbed },
-            { target: edge.perturbed, perturbed: edge.target },
+            { to: edge.to, from: edge.from },
+            { to: edge.from, from: edge.to },
           ];
 
-          neighbors.forEach(({ target, perturbed }) => {
-            if (perturbed === node && !visited.has(target)) {
-              visited.add(target);
-              nodesToInclude.add(target);
+          neighbors.forEach(({ to, from }) => {
+            if (from === node && !visited.has(to)) {
+              visited.add(to);
+              nodesToInclude.add(to);
               edgesToInclude.push(edge);
-              queue.push({ node: target, depth: depth + 1 });
+              queue.push({ node: to, depth: depth + 1 });
             }
           });
         });
@@ -174,7 +177,7 @@ const Graph: React.FC<GraphProps> = ({
 
       // filter nodes to include only those found within the specified degrees of separation
       const filteredNodes = data.node.filter((node) =>
-        nodesToInclude.has(node.cCRE)
+        nodesToInclude.has(node.id)
       );
       return { nodes: filteredNodes, edges: edgesToInclude };
     };
@@ -211,9 +214,9 @@ const Graph: React.FC<GraphProps> = ({
     }, [data]);
   }
   const simple: string[] = elements
-    .map((e) => e.category)
-    .map((elem) => convertToSimple(elem));
-  const createID = (index: number): string => elements[index].cCRE;
+    .map((e) => e.info?.category)
+    .map((elem) => convertToSimple(elem !== undefined ? elem : ''));
+  const createID = (index: number): string => elements[index].id;
 
   useEffect(() => {
     if (
@@ -224,7 +227,7 @@ const Graph: React.FC<GraphProps> = ({
     )
       return;
 
-    const allcCREs: string[] = elements.map((e) => e.cCRE);
+    const allcCREs: string[] = elements.map((e) => e.id);
 
     let connect: number[][] = [];
     for (let i = 0; i < elements.length; i++) {
@@ -234,7 +237,7 @@ const Graph: React.FC<GraphProps> = ({
     // connect holds all the connections between nodes
     // connect[0] holds the target node INDICES for the FIRST node
     edges.forEach((e) => {
-      connect[allcCREs.indexOf(e.perturbed)].push(allcCREs.indexOf(e.target));
+      connect[allcCREs.indexOf(e.from)].push(allcCREs.indexOf(e.to));
     });
 
     const edgeColor = (idx: number): string => {
@@ -254,7 +257,7 @@ const Graph: React.FC<GraphProps> = ({
           selector: 'node',
           style: {
             label: '',
-            'font-size': 15,
+            'font-size': 12,
           },
         },
         {
@@ -289,19 +292,39 @@ const Graph: React.FC<GraphProps> = ({
     // ADD NODES
     for (var i = 0; i < elements.length; i++) {
       if (toggles[simple[i]] !== false) {
-        cy.add({
-          data: { id: createID(i) }, // create name
-          position: {
-            // random position
-            x: Math.random() * (1250 - 100) + 100,
-            y: Math.random() * (600 - 100) + 100,
-          },
-          style: {
-            // find color based on CRE
-            'background-color': chooseColor(i),
-            label: showLabels ? shortHand(simple[i]) : '',
-          },
-        });
+        if (data.centered && elements[i].id === data.centered.id) {
+          cy.add({
+            data: { id: createID(i) }, // create name
+            position: {
+              // random position
+              x: Math.random() * (1250 - 100) + 100,
+              y: Math.random() * (600 - 100) + 100,
+            },
+            style: {
+              // find color based on CRE
+              'background-color': chooseColor(i),
+              label: showLabels ? createID(i) : '',
+              fontSize: '12px',
+              borderWidth: '2px',
+              borderColor: 'black',
+            },
+          });
+        } else {
+          cy.add({
+            data: { id: createID(i) }, // create name
+            position: {
+              // random position
+              x: Math.random() * (1250 - 100) + 100,
+              y: Math.random() * (600 - 100) + 100,
+            },
+            style: {
+              // find color based on CRE
+              'background-color': chooseColor(i),
+              label: showLabels ? createID(i) : '',
+              fontSize: '12px',
+            },
+          });
+        }
       }
     }
 
@@ -331,7 +354,7 @@ const Graph: React.FC<GraphProps> = ({
                     ? 'triangle'
                     : null,
                 'target-arrow-color': edgeColor(j),
-                width: 10 * Math.log(scales[j] * 4 + 1),
+                width: scale(scales[j]),
               },
             });
             edgeCount++;
@@ -344,10 +367,10 @@ const Graph: React.FC<GraphProps> = ({
     cy.nodes().forEach((node: NodeSingular) => {
       let cre = allcCREs[idx].toString();
       let s = simple[idx].toString();
-      if (data.centered && cre === data.centered.cCRE) {
+      if (data.centered && cre === data.centered.id) {
         node.on('mousemove', (event) =>
           handleMouseMove(event, {
-            cCRE: cre,
+            id: cre,
             type: s,
             centered: 'Centered Node',
           })
@@ -363,8 +386,6 @@ const Graph: React.FC<GraphProps> = ({
       idx++;
       node.on('mouseout', hideTooltip);
     });
-
-    console.log(data.edge.every((e) => e.expressionImpact));
 
     cy.edges().forEach((edge: EdgeSingular) => {
       if (data.edge.every((e) => e.expressionImpact)) {
@@ -401,15 +422,12 @@ const Graph: React.FC<GraphProps> = ({
   ]);
 
   useEffect(() => {
-    const simple: string[] = elements
-      .map((e) => e.category)
-      .map((elem) => convertToSimple(elem));
-
     if (!cyRef.current) return;
     let ind = 0;
+
     cyRef.current.nodes().forEach((node) => {
       node.style({
-        label: showLabels ? shortHand(simple[ind]) : '',
+        label: showLabels ? createID(ind) : '',
       });
       ind++;
     });

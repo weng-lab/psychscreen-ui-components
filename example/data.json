@@ -408,164 +408,164 @@
         ],
         "node": [
             {
-                "cCRE": "EH38E1939823",
+                "id": "EH38E1939823",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E1939855",
+                "id": "EH38E1939855",
                 "category": "CA-CTCF"
             },
             {
-                "cCRE": "EH38E1940335",
+                "id": "EH38E1940335",
                 "category": "dELS"
             },
             {
-                "cCRE": "EH38E1960374",
+                "id": "EH38E1960374",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E1960377",
+                "id": "EH38E1960377",
                 "category": "pELS"
             },
             {
-                "cCRE": "EH38E3291096",
+                "id": "EH38E3291096",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291121",
+                "id": "EH38E3291121",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291122",
+                "id": "EH38E3291122",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291174",
+                "id": "EH38E3291174",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291218",
+                "id": "EH38E3291218",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291222",
+                "id": "EH38E3291222",
                 "category": "dELS"
             },
             {
-                "cCRE": "EH38E3291226",
+                "id": "EH38E3291226",
                 "category": "dELS"
             },
             {
-                "cCRE": "EH38E3291232",
+                "id": "EH38E3291232",
                 "category": "pELS"
             },
             {
-                "cCRE": "EH38E3291244",
+                "id": "EH38E3291244",
                 "category": "pELS"
             },
             {
-                "cCRE": "EH38E3291249",
+                "id": "EH38E3291249",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291263",
+                "id": "EH38E3291263",
                 "category": "pELS"
             },
             {
-                "cCRE": "EH38E3291271",
+                "id": "EH38E3291271",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291279",
+                "id": "EH38E3291279",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291318",
+                "id": "EH38E3291318",
                 "category": "CA-CTCF"
             },
             {
-                "cCRE": "EH38E3291346",
+                "id": "EH38E3291346",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291358",
+                "id": "EH38E3291358",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291364",
+                "id": "EH38E3291364",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291374",
+                "id": "EH38E3291374",
                 "category": "CA-TF"
             },
             {
-                "cCRE": "EH38E3291392",
+                "id": "EH38E3291392",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291410",
+                "id": "EH38E3291410",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291664",
+                "id": "EH38E3291664",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3291668",
+                "id": "EH38E3291668",
                 "category": "pELS"
             },
             {
-                "cCRE": "EH38E3291779",
+                "id": "EH38E3291779",
                 "category": "CA-CTCF"
             },
             {
-                "cCRE": "EH38E3312736",
+                "id": "EH38E3312736",
                 "category": "pELS"
             },
             {
-                "cCRE": "EH38E3312746",
+                "id": "EH38E3312746",
                 "category": "dELS"
             },
             {
-                "cCRE": "EH38E3312765",
+                "id": "EH38E3312765",
                 "category": "CA-TF"
             },
             {
-                "cCRE": "EH38E3312774",
+                "id": "EH38E3312774",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E3312787",
+                "id": "EH38E3312787",
                 "category": "CA-TF"
             },
             {
-                "cCRE": "EH38E4193211",
+                "id": "EH38E4193211",
                 "category": "pELS"
             },
             {
-                "cCRE": "EH38E4193228",
+                "id": "EH38E4193228",
                 "category": "PLS"
             },
             {
-                "cCRE": "EH38E4193243",
+                "id": "EH38E4193243",
                 "category": "CA-H3K4me3"
             },
             {
-                "cCRE": "EH38E4193273",
+                "id": "EH38E4193273",
                 "category": "pELS"
             },
             {
-                "cCRE": "EH38E4193467",
+                "id": "EH38E4193467",
                 "category": "CA-CTCF"
             },
             {
-                "cCRE": "EH38E4201343",
+                "id": "EH38E4201343",
                 "category": "pELS"
             }
         ],
         "centered": {
-            "cCRE": "EH38E4193211"
+            "id": "EH38E4193211"
         }
     }
 }

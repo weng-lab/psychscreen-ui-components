@@ -86,8 +86,7 @@ const Legend: React.FC<LegendProps> = ({
           })}
         </div>
       )}
-      {/* Conditional rendering based on edgeType */}
-      {edgeType ? (
+      {!collapsed && edgeType ? (
         <>
           <div>
             <input
