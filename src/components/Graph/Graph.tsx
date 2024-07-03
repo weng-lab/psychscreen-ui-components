@@ -3,7 +3,7 @@ import cytoscape, { Core, EdgeSingular, NodeSingular } from 'cytoscape';
 import coseBilkent from 'cytoscape-cose-bilkent';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { useScreenshot } from 'use-react-screenshot';
-import { cCREConstants, cCREClass, buttonStyle } from './constants';
+import { buttonStyle } from './constants';
 import { GraphProps, Node, Edge, ToolTipData } from './types';
 import Legend from './Legend';
 import ScaleLegend from './ScaleLegend';
@@ -12,11 +12,6 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 
 cytoscape.use(coseBilkent);
-
-// function shortHand(str: string): string {
-//   const simple = str as cCREClass;
-//   return cCREConstants[simple]?.label || 'n/a';
-// }
 
 const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
   const a = document.createElement('a');
@@ -58,6 +53,7 @@ const Graph: React.FC<GraphProps> = ({
   height = '100%',
   scale = defaultScale,
   getLabel,
+  getColor,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -76,8 +72,8 @@ const Graph: React.FC<GraphProps> = ({
     'Chromatin Accessible + Transcription Factor': true,
     'Chromatin Accessible + H3K4me3': true,
     'Chromatin Accessible + CTCF': true,
-    'Lower-Expression': true,
-    'Higher-Expression': true,
+    'lower-expression': true,
+    'higher-expression': true,
   });
 
   const [degree, setDegree] = useState<number>(3);
@@ -184,11 +180,8 @@ const Graph: React.FC<GraphProps> = ({
       setScales(filteredData.edges.map((e) => e.effectSize));
       setExpressions(
         data.edge.map((e) => {
-          if (e.expressionImpact === 'higher-expression')
-            return 'Higher-Expression';
-          if (e.expressionImpact === 'lower-expression')
-            return 'Lower-Expression';
-          return 'Edge';
+          if (e.category !== undefined) return e.category;
+          return '';
         })
       );
     }, [data, degree]);
@@ -198,12 +191,9 @@ const Graph: React.FC<GraphProps> = ({
       setEdges(data.edge);
       setScales(data.edge.map((e: Edge) => e.effectSize));
       setExpressions(
-        data.edge.map((e: Edge) => {
-          if (e.expressionImpact === 'higher-expression')
-            return 'Higher-Expression';
-          if (e.expressionImpact === 'lower-expression')
-            return 'Lower-Expression';
-          return 'Edge';
+        data.edge.map((e) => {
+          if (e.category !== undefined) return e.category;
+          return '';
         })
       );
     }, [data]);
@@ -211,6 +201,7 @@ const Graph: React.FC<GraphProps> = ({
   const simple: string[] = elements
     .map((e) => e.category)
     .map((elem) => convertToSimple(elem));
+
   const createID = (index: number): string => elements[index].id;
   useEffect(() => {
     if (
@@ -233,16 +224,6 @@ const Graph: React.FC<GraphProps> = ({
     edges.forEach((e) => {
       connect[allcCREs.indexOf(e.from)].push(allcCREs.indexOf(e.to));
     });
-
-    const edgeColor = (idx: number): string => {
-      if (expressionType[idx] === 'Lower-Expression') return 'black';
-      if (expressionType[idx] === 'Higher-Expression') return 'blue';
-      return 'grey';
-    };
-    function chooseColor(index: number): string {
-      const s = simple[index] as cCREClass;
-      return cCREConstants[s]?.color || 'grey';
-    }
 
     const cy = cytoscape({
       container: document.getElementById(k),
@@ -296,7 +277,7 @@ const Graph: React.FC<GraphProps> = ({
             },
             style: {
               // find color based on CRE
-              'background-color': chooseColor(i),
+              'background-color': getColor ? getColor(elements[i]) : 'grey',
               label: showLabels ? elements[i].id : '',
               fontSize: '12px',
               borderWidth: '2px',
@@ -313,7 +294,7 @@ const Graph: React.FC<GraphProps> = ({
             },
             style: {
               // find color based on CRE
-              'background-color': chooseColor(i),
+              'background-color': getColor ? getColor(elements[i]) : 'grey',
               label: showLabels
                 ? getLabel
                   ? getLabel(elements[i])
@@ -345,13 +326,10 @@ const Graph: React.FC<GraphProps> = ({
                 target: createID(connect[j][s]),
               },
               style: {
-                'line-color': edgeColor(j),
+                'line-color': getColor ? getColor(edges[j]) : 'grey',
                 'target-arrow-shape':
-                  expressionType[j] === 'Higher-Expression' ||
-                  expressionType[j] === 'Lower-Expression'
-                    ? 'triangle'
-                    : null,
-                'target-arrow-color': edgeColor(j),
+                  expressionType[j] !== 'Edge' ? 'triangle' : null,
+                'target-arrow-color': getColor ? getColor(edges[j]) : 'grey',
                 width: scale(scales[j]),
               },
             });
@@ -360,7 +338,6 @@ const Graph: React.FC<GraphProps> = ({
         }
       }
     }
-
     let idx = 0;
     cy.nodes().forEach((node: NodeSingular) => {
       let cre = allcCREs[idx].toString();
@@ -368,7 +345,7 @@ const Graph: React.FC<GraphProps> = ({
       if (data.centered && cre === data.centered.id) {
         node.on('mousemove', (event) =>
           handleMouseMove(event, {
-            id: cre,
+            cCRE: cre,
             type: s,
             centered: 'Centered Node',
           })
@@ -386,7 +363,7 @@ const Graph: React.FC<GraphProps> = ({
     });
 
     cy.edges().forEach((edge: EdgeSingular) => {
-      if (data.edge.every((e) => e.expressionImpact)) {
+      if (data.edge.every((e) => e.category)) {
         edge.on('mousemove', (event) =>
           handleMouseMove(event, {
             type:
@@ -576,7 +553,10 @@ const Graph: React.FC<GraphProps> = ({
             toggles={toggles}
             onToggle={handleToggle}
             simpleCategories={simple}
-            edgeType={data.edge.every((e) => e.expressionImpact)}
+            edgeType={data.edge.every((e) => e.category)}
+            colorFunc={getColor}
+            elements={elements}
+            edges={edges}
           />
           <ScaleLegend scales={scales} width={scale} />
         </div>

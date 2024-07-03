@@ -1,11 +1,41 @@
 import React, { CSSProperties, useState } from 'react';
-import { cCREClass, cCREConstants } from './constants';
+import { Node, Edge } from './types';
 
 interface LegendProps {
   toggles: { [key: string]: boolean };
   onToggle: (category: string) => void;
   simpleCategories: string[];
   edgeType: boolean;
+  colorFunc?: (node: Node | Edge) => string;
+  elements: Node[];
+  edges: Edge[];
+}
+
+function convertToSimple(str: string): string {
+  switch (str) {
+    case 'PLS':
+      return 'Promoter';
+    case 'dELS':
+      return 'Distal Enhancer';
+    case 'pELS':
+      return 'Proximal Enhancer';
+    case 'CA-CTCF':
+      return 'Chromatin Accessible + CTCF';
+    case 'CA-H3K4me3':
+      return 'Chromatin Accessible + H3K4me3';
+    case 'CA-TF':
+      return 'Chromatin Accessible + Transcription Factor';
+    case 'Low-DNase':
+      return 'Low DNase';
+    case 'CA-only':
+      return 'Chromatin Accessible';
+    case 'lower-expression':
+      return 'Lower-Expression';
+    case 'higher-expression':
+      return 'Higher-Expression';
+    default:
+      return str;
+  }
 }
 
 const Legend: React.FC<LegendProps> = ({
@@ -13,6 +43,9 @@ const Legend: React.FC<LegendProps> = ({
   onToggle,
   simpleCategories,
   edgeType,
+  colorFunc,
+  elements,
+  edges,
 }) => {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -49,9 +82,8 @@ const Legend: React.FC<LegendProps> = ({
   };
 
   const d = { width: '237px' };
-  const lower = 'Lower-Expression';
-  const higher = 'Higher-Expression';
 
+  const edgeTypes = Array.from(new Set(edges.map((e) => e.category)));
   const uniqueCategories = Array.from(new Set(simpleCategories));
 
   return (
@@ -63,8 +95,15 @@ const Legend: React.FC<LegendProps> = ({
       {!collapsed && (
         <div>
           {uniqueCategories.map((category) => {
-            const typedCategory = category as cCREClass;
-            const categoryData = cCREConstants[typedCategory];
+            let n = 'grey';
+            let cat = '';
+            elements.forEach((node) => {
+              if (colorFunc && convertToSimple(node.category) === category) {
+                n = colorFunc(node);
+                cat = node.category;
+              }
+            });
+
             return (
               <div key={category}>
                 <input
@@ -74,53 +113,55 @@ const Legend: React.FC<LegendProps> = ({
                 />
                 <span
                   style={{
-                    color: categoryData?.color || '#000',
+                    color: n,
                     marginLeft: '8px',
                   }}
                   onClick={() => onToggle(category)}
                 >
-                  {category} ({categoryData?.label || 'n/a'})
+                  {category} ({cat})
                 </span>
               </div>
             );
           })}
         </div>
       )}
-      {!collapsed && edgeType ? (
-        <>
-          <div>
-            <input
-              type="checkbox"
-              checked={toggles[lower]}
-              onChange={() => onToggle(lower)}
-            />
-            <span
-              style={{
-                color: cCREConstants[lower].color,
-                marginLeft: '8px',
-              }}
-              onClick={() => onToggle(lower)}
-            >
-              {lower} (Edge)
-            </span>
-          </div>
-          <div>
-            <input
-              type="checkbox"
-              checked={toggles[higher]}
-              onChange={() => onToggle(higher)}
-            />
-            <span
-              style={{
-                color: cCREConstants[higher].color,
-                marginLeft: '8px',
-              }}
-              onClick={() => onToggle(higher)}
-            >
-              {higher} (Edge)
-            </span>
-          </div>
-        </>
+      {!collapsed && edgeType && edgeTypes.every((e) => e !== undefined) ? (
+        <div>
+          {edgeTypes.map((category) => {
+            if (category === undefined) {
+              return;
+            }
+            let n = 'grey';
+            edges.forEach((edge) => {
+              if (
+                colorFunc &&
+                edge.category !== undefined &&
+                edge.category === category
+              ) {
+                n = colorFunc(edge);
+              }
+            });
+
+            return (
+              <div key={category}>
+                <input
+                  type="checkbox"
+                  checked={toggles[category]}
+                  onChange={() => onToggle(category)}
+                />
+                <span
+                  style={{
+                    color: n,
+                    marginLeft: '8px',
+                  }}
+                  onClick={() => onToggle(category)}
+                >
+                  {convertToSimple(category)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       ) : null}
     </div>
   );
