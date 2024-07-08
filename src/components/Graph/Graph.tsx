@@ -61,7 +61,7 @@ const Graph: React.FC<GraphProps> = ({
   const [showControls, setShowControls] = useState(true);
   const [elements, setElements] = useState<Node[]>([]);
   const [scales, setScales] = useState<number[]>([]);
-  const [expressionType, setExpressions] = useState<string[]>([]);
+  const [edgeTypes, setEdgeTypes] = useState<string[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [showLabels, setShowLabels] = useState(true);
   const [toggles, setToggles] = useState<{ [key: string]: boolean }>({
@@ -178,7 +178,7 @@ const Graph: React.FC<GraphProps> = ({
       setElements(filteredData.nodes);
       setEdges(filteredData.edges);
       setScales(filteredData.edges.map((e) => e.effectSize));
-      setExpressions(
+      setEdgeTypes(
         data.edge.map((e) => {
           if (e.category !== undefined) return e.category;
           return '';
@@ -190,9 +190,10 @@ const Graph: React.FC<GraphProps> = ({
       setElements(data.node);
       setEdges(data.edge);
       setScales(data.edge.map((e: Edge) => e.effectSize));
-      setExpressions(
+      setEdgeTypes(
         data.edge.map((e) => {
-          if (e.category !== undefined) return e.category;
+          if (e.category === 'lower-expression') return 'Lower-Expression';
+          if (e.category === 'higher-expression') return 'Higher-Expression';
           return '';
         })
       );
@@ -207,7 +208,7 @@ const Graph: React.FC<GraphProps> = ({
     if (
       elements.length === 0 ||
       scales.length === 0 ||
-      expressionType.length === 0 ||
+      edgeTypes.length === 0 ||
       edges.length === 0
     )
       return;
@@ -317,7 +318,7 @@ const Graph: React.FC<GraphProps> = ({
         for (let s = 0; s < len; s++) {
           if (
             toggles[simple[connect[j][s]]] !== false && // toggle
-            toggles[expressionType[j]] !== false
+            toggles[edgeTypes[j]] !== false
           ) {
             cy.add({
               data: {
@@ -326,10 +327,18 @@ const Graph: React.FC<GraphProps> = ({
                 target: createID(connect[j][s]),
               },
               style: {
-                'line-color': getColor ? getColor(edges[j]) : 'grey',
+                'line-color': getColor
+                  ? edges[edgeCount].category
+                    ? getColor(edges[edgeCount])
+                    : 'grey'
+                  : 'grey',
                 'target-arrow-shape':
-                  expressionType[j] !== 'Edge' ? 'triangle' : null,
-                'target-arrow-color': getColor ? getColor(edges[j]) : 'grey',
+                  edgeTypes[j] !== 'Edge' ? 'triangle' : null,
+                'target-arrow-color': getColor
+                  ? edges[edgeCount].category
+                    ? getColor(edges[edgeCount])
+                    : 'grey'
+                  : 'grey',
                 width: scale(scales[j]),
               },
             });
@@ -386,15 +395,7 @@ const Graph: React.FC<GraphProps> = ({
     return () => {
       cy.destroy();
     };
-  }, [
-    elements,
-    scales,
-    expressionType,
-    edges,
-    toggles,
-    showTooltip,
-    hideTooltip,
-  ]);
+  }, [elements, scales, edgeTypes, edges, toggles, showTooltip, hideTooltip]);
 
   useEffect(() => {
     if (!cyRef.current) return;
