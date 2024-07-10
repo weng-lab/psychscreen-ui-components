@@ -1,20 +1,4 @@
 import { CSSProperties } from "react";
-
-export const cCREConstants = {
-    "Promoter": { label: "Pr", color: "#FF0000" },
-    "Distal Enhancer": { label: "D.E.", color: "#FFCD00" },
-    "Proximal Enhancer": { label: "P.E.", color: "#FFA700" },
-    "Transcription Factor": { label: "TF", color: "#d876ec" },
-    "Chromatin Accessible + Transcription Factor": { label: "CA+TF", color: "#be28e5" },
-    "Chromatin Accessible + CTCF": { label: "CA+CTCF", color: "#00B0F0" },
-    "Chromatin Accessible + H3K4me3": { label: "CA+H3K4me3", color: "#ffaaaa" },
-    "Lower-Expression": { label: "Edge", color: "#000000" },
-    "Higher-Expression": { label: "Edge", color: "#0000FF" },
-    "Edge": { label: "Edge", color: "grey"},
-    "Low DNase": { label: "Low DNase", color: "#e1e1e1"},
-  };
-  
-  export type cCREClass = keyof typeof cCREConstants;
   
   export const buttonStyle: CSSProperties = {
     position: 'absolute',
@@ -38,4 +22,36 @@ export const cCREConstants = {
     WebkitUserSelect: 'none',
     whiteSpace: 'nowrap',
     transition: 'background-color 0.3s, color 0.3s',
+  };
+
+  export const downloadStyle = {
+    ...buttonStyle,
+    top: '0px',
+    right: '5px',
+  };
+
+  export const randomizeStyle = {
+    ...buttonStyle,
+    top: '45px',
+    right: '5px',
+  };
+
+  export const organizeStyle = {
+    ...buttonStyle,
+    top: '90px',
+    right: '5px',
+  };
+
+  export const toggleControlsStyle = {
+    ...buttonStyle,
+    top: '0px',
+    padding: '3px',
+    backgroundColor: 'white',
+    color: '#0095ff',
+  };
+
+  export const labelStyle = {
+    ...buttonStyle,
+    top: '135px',
+    right: '5px',
   };

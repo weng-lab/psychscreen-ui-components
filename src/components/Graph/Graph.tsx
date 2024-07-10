@@ -20,29 +20,6 @@ const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
   a.click();
 };
 
-function convertToSimple(str: string): string {
-  switch (str) {
-    case 'PLS':
-      return 'Promoter';
-    case 'dELS':
-      return 'Distal Enhancer';
-    case 'pELS':
-      return 'Proximal Enhancer';
-    case 'CA-CTCF':
-      return 'Chromatin Accessible + CTCF';
-    case 'CA-H3K4me3':
-      return 'Chromatin Accessible + H3K4me3';
-    case 'CA-TF':
-      return 'Chromatin Accessible + Transcription Factor';
-    case 'Low-DNase':
-      return 'Low DNase';
-    case 'CA-only':
-      return 'Chromatin Accessible';
-    default:
-      return str;
-  }
-}
-
 const defaultScale = (n: number) => 10 * Math.log(n * 4 + 1);
 
 const Graph: React.FC<GraphProps> = ({
@@ -54,6 +31,7 @@ const Graph: React.FC<GraphProps> = ({
   scale = defaultScale,
   getLabel,
   getColor,
+  legendToggle,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -64,19 +42,38 @@ const Graph: React.FC<GraphProps> = ({
   const [edgeTypes, setEdgeTypes] = useState<string[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [showLabels, setShowLabels] = useState(true);
-  const [toggles, setToggles] = useState<{ [key: string]: boolean }>({
-    Promoter: true,
-    'Distal Enhancer': true,
-    'Proximal Enhancer': true,
-    'Transcription Factor': true,
-    'Chromatin Accessible + Transcription Factor': true,
-    'Chromatin Accessible + H3K4me3': true,
-    'Chromatin Accessible + CTCF': true,
-    'lower-expression': true,
-    'higher-expression': true,
-  });
-
+  const [toggles, setToggles] = useState<{ [key: string]: boolean }>({});
   const [degree, setDegree] = useState<number>(3);
+
+  // unique categories for legend toggles
+  const uniqueCategories = new Set<string>();
+
+  if (legendToggle !== undefined) {
+    data.node.forEach((node) => {
+      uniqueCategories.add(legendToggle(node));
+    });
+
+    data.edge.forEach((edge) => {
+      if (edge.category) {
+        uniqueCategories.add(legendToggle(edge));
+      }
+    });
+  } else {
+    data.node.forEach((node) => {
+      uniqueCategories.add(node.category);
+    });
+
+    data.edge.forEach((edge) => {
+      if (edge.category) {
+        uniqueCategories.add(edge.category);
+      }
+    });
+  }
+
+  const initialToggles: { [key: string]: boolean } = {};
+  uniqueCategories.forEach((category) => {
+    initialToggles[category] = true;
+  });
 
   const toggleControls = () => {
     setShowControls(!showControls);
@@ -176,14 +173,16 @@ const Graph: React.FC<GraphProps> = ({
     useEffect(() => {
       const filteredData = filterNodesAndEdges(degree);
       setElements(filteredData.nodes);
-      setEdges(filteredData.edges);
+      setEdges(data.edge);
       setScales(filteredData.edges.map((e) => e.effectSize));
       setEdgeTypes(
         data.edge.map((e) => {
+          if (legendToggle) return legendToggle(e);
           if (e.category !== undefined) return e.category;
           return '';
         })
       );
+      setToggles(initialToggles);
     }, [data, degree]);
   } else {
     useEffect(() => {
@@ -192,17 +191,20 @@ const Graph: React.FC<GraphProps> = ({
       setScales(data.edge.map((e: Edge) => e.effectSize));
       setEdgeTypes(
         data.edge.map((e) => {
-          if (e.category === 'lower-expression') return 'Lower-Expression';
-          if (e.category === 'higher-expression') return 'Higher-Expression';
+          if (legendToggle) return legendToggle(e);
+          if (e.category !== undefined) return e.category;
           return '';
         })
       );
+      setToggles(initialToggles);
     }, [data]);
   }
-  const simple: string[] = elements
-    .map((e) => e.category)
-    .map((elem) => convertToSimple(elem));
-
+  const simple: string[] = elements.map((e) => {
+    if (legendToggle) return legendToggle(e);
+    else {
+      return e.category;
+    }
+  });
   const createID = (index: number): string => elements[index].id;
   useEffect(() => {
     if (
@@ -223,9 +225,13 @@ const Graph: React.FC<GraphProps> = ({
     // connect holds all the connections between nodes
     // connect[0] holds the target node INDICES for the FIRST node
     edges.forEach((e) => {
-      connect[allcCREs.indexOf(e.from)].push(allcCREs.indexOf(e.to));
-    });
+      const fromIndex = allcCREs.indexOf(e.from);
+      const toIndex = allcCREs.indexOf(e.to);
 
+      if (fromIndex !== -1 && toIndex !== -1) {
+        connect[fromIndex].push(toIndex);
+      }
+    });
     const cy = cytoscape({
       container: document.getElementById(k),
       style: [
@@ -313,7 +319,6 @@ const Graph: React.FC<GraphProps> = ({
     for (var j = 0; j < elements.length; j++) {
       // add # of edges per node based on the target connections
       if (toggles[simple[j]] !== false) {
-        // toggle
         let len = connect[j].length;
         for (let s = 0; s < len; s++) {
           if (
@@ -327,18 +332,10 @@ const Graph: React.FC<GraphProps> = ({
                 target: createID(connect[j][s]),
               },
               style: {
-                'line-color': getColor
-                  ? edges[edgeCount].category
-                    ? getColor(edges[edgeCount])
-                    : 'grey'
-                  : 'grey',
+                'line-color': getColor ? getColor(edges[j]) : 'grey',
                 'target-arrow-shape':
                   edgeTypes[j] !== 'Edge' ? 'triangle' : null,
-                'target-arrow-color': getColor
-                  ? edges[edgeCount].category
-                    ? getColor(edges[edgeCount])
-                    : 'grey'
-                  : 'grey',
+                'target-arrow-color': getColor ? getColor(edges[j]) : 'grey',
                 width: scale(scales[j]),
               },
             });
@@ -349,12 +346,12 @@ const Graph: React.FC<GraphProps> = ({
     }
     let idx = 0;
     cy.nodes().forEach((node: NodeSingular) => {
-      let cre = allcCREs[idx].toString();
+      let ID = allcCREs[idx].toString();
       let s = simple[idx].toString();
-      if (data.centered && cre === data.centered.id) {
+      if (data.centered && ID === data.centered.id) {
         node.on('mousemove', (event) =>
           handleMouseMove(event, {
-            cCRE: cre,
+            id: ID,
             type: s,
             centered: 'Centered Node',
           })
@@ -362,7 +359,7 @@ const Graph: React.FC<GraphProps> = ({
       } else {
         node.on('mousemove', (event) =>
           handleMouseMove(event, {
-            cCRE: cre,
+            id: ID,
             type: s,
           })
         );
@@ -555,6 +552,7 @@ const Graph: React.FC<GraphProps> = ({
             onToggle={handleToggle}
             simpleCategories={simple}
             edgeType={data.edge.every((e) => e.category)}
+            legendToggle={legendToggle}
             colorFunc={getColor}
             elements={elements}
             edges={edges}
@@ -606,9 +604,9 @@ const Graph: React.FC<GraphProps> = ({
           top={tooltipTop}
           left={tooltipLeft}
         >
-          {tooltipData.cCRE ? (
+          {tooltipData.id ? (
             <div style={{ fontFamily: 'helvetica' }}>
-              cCRE: {tooltipData.cCRE} <br />
+              ID: {tooltipData.id} <br />
               Type: {tooltipData.type}
               {tooltipData.centered ? <div> Centered Node </div> : null}
             </div>

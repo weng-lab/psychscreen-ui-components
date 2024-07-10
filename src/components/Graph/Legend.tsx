@@ -9,33 +9,7 @@ interface LegendProps {
   colorFunc?: (node: Node | Edge) => string;
   elements: Node[];
   edges: Edge[];
-}
-
-function convertToSimple(str: string): string {
-  switch (str) {
-    case 'PLS':
-      return 'Promoter';
-    case 'dELS':
-      return 'Distal Enhancer';
-    case 'pELS':
-      return 'Proximal Enhancer';
-    case 'CA-CTCF':
-      return 'Chromatin Accessible + CTCF';
-    case 'CA-H3K4me3':
-      return 'Chromatin Accessible + H3K4me3';
-    case 'CA-TF':
-      return 'Chromatin Accessible + Transcription Factor';
-    case 'Low-DNase':
-      return 'Low DNase';
-    case 'CA-only':
-      return 'Chromatin Accessible';
-    case 'lower-expression':
-      return 'Lower-Expression';
-    case 'higher-expression':
-      return 'Higher-Expression';
-    default:
-      return str;
-  }
+  legendToggle?: (node: Node | Edge) => string;
 }
 
 const Legend: React.FC<LegendProps> = ({
@@ -46,6 +20,7 @@ const Legend: React.FC<LegendProps> = ({
   colorFunc,
   elements,
   edges,
+  legendToggle,
 }) => {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -82,10 +57,20 @@ const Legend: React.FC<LegendProps> = ({
   };
 
   const d = { width: '237px' };
+  const edgeTypes = Array.from(
+    new Set(
+      edges.map((e) => {
+        if (legendToggle) return legendToggle(e);
+        else if (e.category) {
+          return e.category;
+        } else {
+          return;
+        }
+      })
+    )
+  );
 
-  const edgeTypes = Array.from(new Set(edges.map((e) => e.category)));
   const uniqueCategories = Array.from(new Set(simpleCategories));
-
   return (
     <div className="legend" style={{ ...divStyle, ...(collapsed ? null : d) }}>
       <button style={buttonStyle} onClick={() => setCollapsed(!collapsed)}>
@@ -97,8 +82,13 @@ const Legend: React.FC<LegendProps> = ({
           {uniqueCategories.map((category) => {
             let n = 'grey';
             let cat = '';
+
             elements.forEach((node) => {
-              if (colorFunc && convertToSimple(node.category) === category) {
+              if (
+                colorFunc &&
+                legendToggle &&
+                legendToggle(node) === category
+              ) {
                 n = colorFunc(node);
                 cat = node.category;
               }
@@ -118,14 +108,14 @@ const Legend: React.FC<LegendProps> = ({
                   }}
                   onClick={() => onToggle(category)}
                 >
-                  {category} ({cat})
+                  {category} {legendToggle ? cat : null}
                 </span>
               </div>
             );
           })}
         </div>
       )}
-      {!collapsed && edgeType && edgeTypes.every((e) => e !== undefined) ? (
+      {!collapsed && edgeType && edgeTypes !== null ? (
         <div>
           {edgeTypes.map((category) => {
             if (category === undefined) {
@@ -135,8 +125,8 @@ const Legend: React.FC<LegendProps> = ({
             edges.forEach((edge) => {
               if (
                 colorFunc &&
-                edge.category !== undefined &&
-                edge.category === category
+                legendToggle &&
+                legendToggle(edge) === category
               ) {
                 n = colorFunc(edge);
               }
@@ -156,7 +146,7 @@ const Legend: React.FC<LegendProps> = ({
                   }}
                   onClick={() => onToggle(category)}
                 >
-                  {convertToSimple(category)}
+                  {category}
                 </span>
               </div>
             );

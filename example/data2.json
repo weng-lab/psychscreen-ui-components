@@ -15,16 +15,16 @@
         "node": [
             {
                 "id": "node_1",
-                "category": "PLS"
+                "category": "R"
 
             },
             {
                 "id": "node_2",
-                "category": "CA-CTCF"
+                "category": "B"
             },
             {
                 "id": "node_3",
-                "category": "CA-TF"
+                "category": "P"
             }
         ]
     }

@@ -25,11 +25,12 @@ export interface Edge {
     scale?: (n: number) => number,
     getLabel?: (node: Node) => string,
     getColor?: (node: Node | Edge) => string,
+    legendToggle?: (node: Node | Edge) => string,
   }
 
 
   export type ToolTipData =  {
-    cCRE?: string;
+    id?: string;
     type: string;
     centered?: string;
   }
