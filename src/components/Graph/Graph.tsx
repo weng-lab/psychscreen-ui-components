@@ -483,7 +483,7 @@ const Graph: React.FC<GraphProps> = ({
             type="number"
             value={degree}
             min={1}
-            max={3}
+            max={5}
             onChange={(e) => setDegree(parseInt(e.target.value))}
             style={{ marginLeft: '5px', marginTop: '5px' }}
           />

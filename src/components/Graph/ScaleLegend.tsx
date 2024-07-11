@@ -17,24 +17,26 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
 
   const scaleFunctionStr = width.toString();
   const scaleFormula =
-    scaleFunctionStr.match(/=>\s*(.*)/)?.[1]?.trim() || scaleFunctionStr;
+    scaleFunctionStr
+      .match(/=>\s*(.*)/)?.[1]
+      ?.trim()
+      .replace('Math.', '') || scaleFunctionStr;
 
   const divStyle: CSSProperties = {
-    position: 'absolute',
-    top: '28vh',
+    top: '25vh',
     zIndex: 1000,
     backgroundColor: 'white',
     padding: '10px',
     borderRadius: '5px',
     fontSize: '13px',
     width: '225px',
-    textAlign: 'center',
+    textAlign: 'left',
   };
 
   const scaleItemStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'left',
     marginBottom: '5px',
   };
 
@@ -68,7 +70,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
+            alignItems: 'left',
             marginTop: '10px',
           }}
         >

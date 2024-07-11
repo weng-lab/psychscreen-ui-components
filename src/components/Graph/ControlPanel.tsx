@@ -5,6 +5,8 @@ import Legend from './Legend';
 import ScaleLegend from './ScaleLegend';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import Stack from '@mui/material/Stack';
+import { Typography } from '@mui/material';
 
 interface ControlPanelProps {
   toggles: { [key: string]: boolean };
@@ -45,7 +47,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     position: 'absolute',
     top: '0',
     right: '0',
-    height: '91vh',
     width: collapsed ? '40px' : '250px',
     backgroundColor: 'white',
     transition: 'width 0.3s',
@@ -54,13 +55,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   };
 
   const buttonStyle: CSSProperties = {
-    left: collapsed ? '-12px' : '0px',
-    width: collapsed ? '0px' : '100%',
+    // left: collapsed ? '-12px' : '-10px',
+    width: collapsed ? '0px' : '10px',
+
     height: '40px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: 'inline-block',
+    alignItems: 'left',
+    justifyContent: 'left',
     cursor: 'pointer',
+    padding: '0px',
   };
   return (
     <div style={panelStyle}>
@@ -71,56 +74,77 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         style={buttonStyle}
       >
         {collapsed ? (
-          <KeyboardDoubleArrowLeftIcon />
+          <KeyboardDoubleArrowLeftIcon style={{ marginLeft: '-27px' }} />
         ) : (
-          <KeyboardDoubleArrowRightIcon />
+          <KeyboardDoubleArrowRightIcon style={{ marginRight: '30px' }} />
         )}
       </Button>
+
       {!collapsed && (
         <>
-          <Button
-            onClick={downloadScreenshot}
-            fullWidth
-            sx={{ typography: 'body2', textTransform: 'none' }}
-            style={{ fontSize: '15px' }}
+          <Typography
+            variant="body2"
+            style={{
+              fontSize: '20px',
+              marginLeft: '22px',
+              marginTop: '5px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              display: 'inline-block',
+            }}
           >
-            Download Screenshot
-          </Button>
-          <Button
-            onClick={randomize}
-            fullWidth
-            sx={{ typography: 'body2', textTransform: 'none' }}
-            style={{ fontSize: '15px' }}
-          >
-            Randomize
-          </Button>
-          <Button
-            onClick={organize}
-            fullWidth
-            sx={{ typography: 'body2', textTransform: 'none' }}
-            style={{ fontSize: '15px' }}
-          >
-            Organize
-          </Button>
-          <Button
-            onClick={toggleLabels}
-            fullWidth
-            sx={{ typography: 'body2', textTransform: 'none' }}
-            style={{ fontSize: '15px' }}
-          >
-            Toggle Labels
-          </Button>
-          <Legend
-            toggles={toggles}
-            onToggle={onToggle}
-            simpleCategories={simpleCategories}
-            edgeType={edgeType}
-            colorFunc={colorFunc}
-            elements={elements}
-            edges={edges}
-            legendToggle={legendToggle}
-          />
-          <ScaleLegend scales={scales} width={scaleWidth} />
+            Controls
+          </Typography>
+          <Stack spacing={1}>
+            <Button
+              onClick={downloadScreenshot}
+              fullWidth
+              sx={{ typography: 'body2', textTransform: 'none' }}
+              style={{ fontSize: '15px', margin: '5px', width: '95%' }}
+              variant="outlined"
+            >
+              Download Screenshot
+            </Button>
+            <Button
+              onClick={randomize}
+              fullWidth
+              sx={{ typography: 'body2', textTransform: 'none' }}
+              style={{ fontSize: '15px', margin: '5px', width: '95%' }}
+              variant="outlined"
+            >
+              Randomize
+            </Button>
+            <Button
+              onClick={organize}
+              fullWidth
+              sx={{ typography: 'body2', textTransform: 'none' }}
+              style={{ fontSize: '15px', margin: '5px', width: '95%' }}
+              variant="outlined"
+            >
+              Organize
+            </Button>
+            <Button
+              onClick={toggleLabels}
+              fullWidth
+              sx={{ typography: 'body2', textTransform: 'none' }}
+              style={{ fontSize: '15px', margin: '5px', width: '95%' }}
+              variant="outlined"
+            >
+              Toggle Labels
+            </Button>
+
+            <ScaleLegend scales={scales} width={scaleWidth} />
+            <Legend
+              toggles={toggles}
+              onToggle={onToggle}
+              simpleCategories={simpleCategories}
+              edgeType={edgeType}
+              colorFunc={colorFunc}
+              elements={elements}
+              edges={edges}
+              legendToggle={legendToggle}
+            />
+          </Stack>
         </>
       )}
     </div>

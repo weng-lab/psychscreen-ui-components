@@ -42,13 +42,12 @@ const Legend: React.FC<LegendProps> = ({
   return (
     <div
       style={{
-        position: 'absolute',
         bottom: '10px',
         zIndex: 1000,
         backgroundColor: 'white',
         borderRadius: '5px',
         width: '225px',
-        padding: '8px',
+        padding: '5px',
       }}
     >
       {uniqueCategories.map((category) => {
