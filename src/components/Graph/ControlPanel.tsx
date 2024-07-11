@@ -50,7 +50,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     backgroundColor: 'white',
     transition: 'width 0.3s',
     zIndex: 1000,
-    overflowY: 'auto',
     border: '1px solid grey',
   };
 
