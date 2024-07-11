@@ -45,7 +45,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     position: 'absolute',
     top: '0',
     right: '0',
-    height: '92vh',
+    height: '91vh',
     width: collapsed ? '40px' : '250px',
     backgroundColor: 'white',
     transition: 'width 0.3s',
