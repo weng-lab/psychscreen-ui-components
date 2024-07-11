@@ -3,13 +3,10 @@ import cytoscape, { Core, EdgeSingular, NodeSingular } from 'cytoscape';
 import coseBilkent from 'cytoscape-cose-bilkent';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { useScreenshot } from 'use-react-screenshot';
-import { buttonStyle } from './constants';
 import { GraphProps, Node, Edge, ToolTipData } from './types';
-import Legend from './Legend';
-import ScaleLegend from './ScaleLegend';
-import GraphButton from './GraphButton';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+
+import ControlPanel from './ControlPanel';
+import { Typography } from '@mui/material';
 
 cytoscape.use(coseBilkent);
 
@@ -36,7 +33,7 @@ const Graph: React.FC<GraphProps> = ({
   const cyRef = useRef<Core | null>(null);
 
   // state hooks
-  const [showControls, setShowControls] = useState(true);
+  const [showControls] = useState(true);
   const [elements, setElements] = useState<Node[]>([]);
   const [scales, setScales] = useState<number[]>([]);
   const [edgeTypes, setEdgeTypes] = useState<string[]>([]);
@@ -74,10 +71,6 @@ const Graph: React.FC<GraphProps> = ({
   uniqueCategories.forEach((category) => {
     initialToggles[category] = true;
   });
-
-  const toggleControls = () => {
-    setShowControls(!showControls);
-  };
 
   // DOWNLOAD SCREENSHOT
   const ref = useRef<HTMLDivElement>(null);
@@ -289,6 +282,7 @@ const Graph: React.FC<GraphProps> = ({
               fontSize: '12px',
               borderWidth: '2px',
               borderColor: 'black',
+              fontFamily: 'Roboto',
             },
           });
         } else {
@@ -443,47 +437,6 @@ const Graph: React.FC<GraphProps> = ({
     }));
   };
 
-  const downloadStyle = {
-    ...buttonStyle,
-    top: '0px',
-    right: '5px',
-  };
-
-  const randomizeStyle = {
-    ...buttonStyle,
-    top: '45px',
-    right: '5px',
-  };
-
-  const organizeStyle = {
-    ...buttonStyle,
-    top: '90px',
-    right: '5px',
-  };
-
-  const toggleControlsStyle = {
-    ...buttonStyle,
-    top: '0px',
-    padding: '3px',
-    backgroundColor: 'white',
-    color: '#0095ff',
-  };
-
-  const labelStyle = {
-    ...buttonStyle,
-    top: '135px',
-    right: '5px',
-  };
-
-  const r = {
-    collapsed: {
-      right: '175px',
-    },
-    uncollapsed: {
-      right: '2px',
-    },
-  };
-
   return (
     <div
       style={{
@@ -495,18 +448,36 @@ const Graph: React.FC<GraphProps> = ({
         fontFamily: 'helvetica',
       }}
     >
-      <header
+      <Typography
+        variant="h1"
         style={{
-          opacity: 0.5,
-          fontSize: '1em',
-          margin: 0,
+          marginLeft: '3px',
+          fontSize: '18px',
+          fontWeight: 'bold',
         }}
       >
-        <h1 style={{ fontSize: '17px' }}>{title}</h1>
-      </header>
+        {title}
+      </Typography>
+
       {data.centered ? (
-        <div style={{ top: '55px', left: '15px' }}>
-          <label htmlFor="degree">Degrees of Separation: </label>
+        <div
+          style={{
+            top: '55px',
+            left: '15px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Typography
+            variant="h1"
+            style={{
+              marginLeft: '3px',
+              marginTop: '5px',
+              fontSize: '15px',
+            }}
+          >
+            Degrees of Separation:
+          </Typography>
           <input
             id="degree"
             type="number"
@@ -514,6 +485,7 @@ const Graph: React.FC<GraphProps> = ({
             min={1}
             max={3}
             onChange={(e) => setDegree(parseInt(e.target.value))}
+            style={{ marginLeft: '5px', marginTop: '5px' }}
           />
         </div>
       ) : null}
@@ -525,55 +497,24 @@ const Graph: React.FC<GraphProps> = ({
             boxShadow: '0 0 10px rgba(0,0,0,0.5)',
           }}
         >
-          <GraphButton
-            text="Download Screenshot"
-            styles={downloadStyle}
-            func={downloadScreenshot}
-          ></GraphButton>
-
-          <GraphButton
-            text="Randomize"
-            styles={randomizeStyle}
-            func={randomize}
-          ></GraphButton>
-          <GraphButton
-            text="Organize"
-            styles={organizeStyle}
-            func={organize}
-          ></GraphButton>
-          <GraphButton
-            text="Toggle Labels"
-            styles={labelStyle}
-            func={() => setShowLabels(!showLabels)}
-          ></GraphButton>
-
-          <Legend
+          <ControlPanel
             toggles={toggles}
             onToggle={handleToggle}
             simpleCategories={simple}
             edgeType={data.edge.every((e) => e.category)}
-            legendToggle={legendToggle}
-            colorFunc={getColor}
             elements={elements}
             edges={edges}
+            scales={scales}
+            scaleWidth={scale}
+            downloadScreenshot={downloadScreenshot}
+            randomize={randomize}
+            organize={organize}
+            toggleLabels={() => setShowLabels(!showLabels)}
+            colorFunc={getColor}
+            legendToggle={legendToggle}
           />
-          <ScaleLegend scales={scales} width={scale} />
         </div>
       )}
-
-      <button
-        onClick={toggleControls}
-        style={{
-          ...toggleControlsStyle,
-          ...(showControls ? r.collapsed : r.uncollapsed),
-        }}
-      >
-        {showControls ? (
-          <KeyboardDoubleArrowRightIcon />
-        ) : (
-          <KeyboardDoubleArrowLeftIcon />
-        )}
-      </button>
 
       <div
         ref={ref}
@@ -585,7 +526,7 @@ const Graph: React.FC<GraphProps> = ({
           ref={containerRef}
           id={k}
           style={{
-            width: '100%',
+            width: '95%',
             height: '90vh',
             zIndex: 999,
           }}

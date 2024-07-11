@@ -188,3 +188,12 @@ DifferentColor.args = {
   getColor: setColor2,
   legendToggle: convertToSimple,
 };
+
+export const NoLegendToggle = Template.bind({});
+NoLegendToggle.args = {
+  data: data2.data,
+  title: 'No Legend Toggle',
+  id: 'noLegendToggle',
+  scale: (n: number) => 10 * n,
+  getColor: setColor3,
+};

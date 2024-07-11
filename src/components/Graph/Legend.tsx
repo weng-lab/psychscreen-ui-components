@@ -1,5 +1,7 @@
-import React, { CSSProperties, useState } from 'react';
+import React from 'react';
+import Checkbox from '@mui/material/Checkbox';
 import { Node, Edge } from './types';
+import { Typography } from '@mui/material';
 
 interface LegendProps {
   toggles: { [key: string]: boolean };
@@ -22,41 +24,6 @@ const Legend: React.FC<LegendProps> = ({
   edges,
   legendToggle,
 }) => {
-  const [collapsed, setCollapsed] = useState(false);
-
-  const buttonStyle: CSSProperties = {
-    zIndex: 1000,
-    margin: '2px',
-    backgroundColor: '#0095ff',
-    border: '0px',
-    borderRadius: '3px',
-    color: '#fff',
-    cursor: 'pointer',
-    fontFamily:
-      '-apple-system,system-ui,"Segoe UI","Liberation Sans",sans-serif',
-    fontSize: '12px',
-    outline: 'none',
-    padding: '7px .8em',
-    textAlign: 'center',
-    textDecoration: 'none',
-    userSelect: 'none',
-    WebkitUserSelect: 'none',
-    whiteSpace: 'nowrap',
-    transition: 'background-color 0.3s, color 0.3s',
-  };
-
-  const divStyle: CSSProperties = {
-    position: 'absolute',
-    bottom: '10px',
-    right: '3px',
-    zIndex: 1000,
-    backgroundColor: 'white',
-    padding: '10px',
-    borderRadius: '5px',
-    boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-  };
-
-  const d = { width: '237px' };
   const edgeTypes = Array.from(
     new Set(
       edges.map((e) => {
@@ -71,83 +38,110 @@ const Legend: React.FC<LegendProps> = ({
   );
 
   const uniqueCategories = Array.from(new Set(simpleCategories));
+
   return (
-    <div className="legend" style={{ ...divStyle, ...(collapsed ? null : d) }}>
-      <button style={buttonStyle} onClick={() => setCollapsed(!collapsed)}>
-        {collapsed ? 'Show' : 'Hide'}
-      </button>
+    <div
+      style={{
+        position: 'absolute',
+        bottom: '10px',
+        zIndex: 1000,
+        backgroundColor: 'white',
+        borderRadius: '5px',
+        width: '225px',
+        padding: '8px',
+      }}
+    >
+      {uniqueCategories.map((category) => {
+        let color = 'grey';
+        let cat = '';
 
-      {!collapsed && (
-        <div>
-          {uniqueCategories.map((category) => {
-            let n = 'grey';
-            let cat = '';
+        elements.forEach((node) => {
+          if (colorFunc && legendToggle && legendToggle(node) === category) {
+            color = colorFunc(node);
+            cat = node.category;
+          }
+        });
 
-            elements.forEach((node) => {
-              if (
-                colorFunc &&
-                legendToggle &&
-                legendToggle(node) === category
-              ) {
-                n = colorFunc(node);
-                cat = node.category;
-              }
-            });
+        return (
+          <div
+            key={category}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '4px',
+            }}
+          >
+            <Checkbox
+              checked={toggles[category]}
+              onChange={() => onToggle(category)}
+              color="primary"
+              size="small"
+              style={{ padding: 0 }}
+            />
+            <Typography
+              variant="body2"
+              style={{
+                color: color,
+                marginLeft: '4px',
+                cursor: 'pointer',
+                fontSize: '14px',
+              }}
+              onClick={() => onToggle(category)}
+            >
+              {category} {legendToggle ? '(' : null}
+              {legendToggle ? cat : null}
+              {legendToggle ? ')' : null}
+            </Typography>
+          </div>
+        );
+      })}
 
-            return (
-              <div key={category}>
-                <input
-                  type="checkbox"
-                  checked={toggles[category]}
-                  onChange={() => onToggle(category)}
-                />
-                <span
-                  style={{
-                    color: n,
-                    marginLeft: '8px',
-                  }}
-                  onClick={() => onToggle(category)}
-                >
-                  {category} {legendToggle ? cat : null}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-      {!collapsed && edgeType && edgeTypes !== null ? (
+      {edgeType && edgeTypes !== null ? (
         <div>
           {edgeTypes.map((category) => {
             if (category === undefined) {
-              return;
+              return null;
             }
-            let n = 'grey';
+            let color = 'grey';
+
             edges.forEach((edge) => {
               if (
                 colorFunc &&
                 legendToggle &&
                 legendToggle(edge) === category
               ) {
-                n = colorFunc(edge);
+                color = colorFunc(edge);
               }
             });
 
             return (
-              <div key={category}>
-                <input
-                  type="checkbox"
+              <div
+                key={category}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: '4px',
+                }}
+              >
+                <Checkbox
                   checked={toggles[category]}
                   onChange={() => onToggle(category)}
+                  color="primary"
+                  size="small"
+                  style={{ padding: 0 }}
                 />
-                <span
+                <Typography
+                  variant="body2"
                   style={{
-                    color: n,
-                    marginLeft: '8px',
+                    color: color,
+                    marginLeft: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
                   }}
                   onClick={() => onToggle(category)}
                 >
                   {category}
-                </span>
+                </Typography>
               </div>
             );
           })}
