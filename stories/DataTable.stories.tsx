@@ -58,6 +58,32 @@ const COLUMNS: DataTableColumn<Row>[] = [
   {
     header: 'Index',
     value: (row) => row.index,
+  },
+  {
+    header: 'Text',
+    value: (row) => row.text,
+  },
+  {
+    header: 'Color',
+    value: (row) => row.color,
+    render: (row: Row) => (
+      <div
+        style={{ width: '100%', height: '100%', backgroundColor: row.color }}
+      >
+        &nbsp;
+      </div>
+    ),
+  },
+  {
+    header: 'Description',
+    value: (row) => row.description,
+  },
+];
+
+const COLUMNS2: DataTableColumn<Row>[] = [
+  {
+    header: 'Index',
+    value: (row) => row.index,
     tooltip: 'This is the index column',
   },
   {
@@ -149,6 +175,7 @@ export const ConstrainSize = Template.bind({});
 export const DensePadding = Template.bind({});
 export const RowHighlight1 = Template.bind({});
 export const RowHighlight2 = Template.bind({});
+export const ColumnHeaderTooltip = Template.bind({});
 // Revisit this when there's a need/more time
 // export const ManagedSearchState = Template.bind({})
 
@@ -295,6 +322,15 @@ RowHighlight2.args = {
       description: 'this is row 5',
     },
   ],
+};
+
+ColumnHeaderTooltip.args = {
+  rows: ROWS,
+  columns: COLUMNS2,
+  itemsPerPage: 4,
+  tableTitle: 'Table Title',
+  searchable: true,
+  hideHeader: false,
 };
 
 export const ManagedSearchState = (props?: Partial<DataTableProps<Row>>) => {
