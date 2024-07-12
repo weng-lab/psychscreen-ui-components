@@ -403,10 +403,10 @@ const DataTable: React.FC<DataTableProps<any>> = (
                         <Tooltip
                           title={column.tooltip}
                           color="primary"
-                          sx={{ ml: 1 }}
+                          sx={{ ml: 0.5 }}
                           placement="right-start"
                         >
-                          <InfoOutlinedIcon style={{ fontSize: 'small' }} />
+                          <InfoOutlinedIcon fontSize='small'/>
                         </Tooltip>
                       ) : null}
                     </TableSortLabel>
