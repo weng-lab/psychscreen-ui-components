@@ -24,6 +24,7 @@ import TablePagination from '@mui/material/TablePagination';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import InfoIcon from '@mui/icons-material/Info';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import Button from '@mui/material/Button';
@@ -405,7 +406,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
                           sx={{ ml: 1 }}
                           placement="right-start"
                         >
-                          <InfoIcon />
+                          <InfoOutlinedIcon style={{ fontSize: 'small' }} />
                         </Tooltip>
                       ) : null}
                     </TableSortLabel>
