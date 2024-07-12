@@ -52,12 +52,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     transition: 'width 0.3s',
     zIndex: 1000,
     border: '1px solid grey',
+    overflowY: 'auto',
+    maxHeight: '100vh',
   };
 
   const buttonStyle: CSSProperties = {
-    // left: collapsed ? '-12px' : '-10px',
     width: collapsed ? '0px' : '10px',
-
     height: '40px',
     display: 'inline-block',
     alignItems: 'left',
