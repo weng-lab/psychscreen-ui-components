@@ -2,31 +2,29 @@
     "data": {
         "edge": [
             {
-                "perturbed": "node_1",
-                "target": "node_2",
+                "from": "node_1",
+                "to": "node_2",
                 "effectSize": 0.1134
             },
             {
-                "perturbed": "node_3",
-                "target": "node_2",
+                "from": "node_3",
+                "to": "node_2",
                 "effectSize": 0.5
             }
         ],
         "node": [
             {
-                "cCRE": "node_1",
-                "category": "PLS",
-                "simple": "Promoter"
+                "id": "node_1",
+                "category": "R"
+
             },
             {
-                "cCRE": "node_2",
-                "category": "CA-CTCF",
-                "simple": "Chromatin Accessible + CTCF"
+                "id": "node_2",
+                "category": "B"
             },
             {
-                "cCRE": "node_3",
-                "category": "CA-TF",
-                "simple": "Transcription Factor"
+                "id": "node_3",
+                "category": "P"
             }
         ]
     }

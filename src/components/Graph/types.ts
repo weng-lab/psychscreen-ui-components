@@ -1,21 +1,36 @@
 export interface Edge {
-    perturbed: string;
-    target: string;
+    from: string;
+    to: string;
     effectSize: number;
-    expressionImpact?: string;
+    category?: string;
   }
   
   export interface Node {
-    cCRE: string;
-    category: string;
+    id: string;
+   category: string;
+   color?: string;
+   info?:{
+    [key: string]: any
+   };
   }
   
   export interface GraphProps {
     data: {
-      edge: Edge[], node: Node[], centered: {cCRE: string}
+      edge: Edge[], node: Node[], centered: {id: string}
     },
-    title?: string,
     id: number | string,
+    title?: string,
     width?: string,
     height?: string,
+    scale?: (n: number) => number,
+    getLabel?: (node: Node) => string,
+    getColor?: (node: Node | Edge) => string,
+    legendToggle?: (node: Node | Edge) => string,
+  }
+
+
+  export type ToolTipData =  {
+    id?: string;
+    type: string;
+    centered?: string;
   }

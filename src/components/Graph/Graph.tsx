@@ -3,26 +3,12 @@ import cytoscape, { Core, EdgeSingular, NodeSingular } from 'cytoscape';
 import coseBilkent from 'cytoscape-cose-bilkent';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { useScreenshot } from 'use-react-screenshot';
-import { cCREConstants, cCREClass, buttonStyle } from './constants';
-import { GraphProps, Node, Edge } from './types';
-import Legend from './Legend';
-import ScaleLegend from './ScaleLegend';
-import GraphButton from './GraphButton';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import { GraphProps, Node, Edge, ToolTipData } from './types';
+
+import ControlPanel from './ControlPanel';
+import { Typography } from '@mui/material';
 
 cytoscape.use(coseBilkent);
-
-interface ToolTipData {
-  cCRE?: string;
-  type: string;
-  centered?: string;
-}
-
-function shortHand(str: string): string {
-  const simple = str as cCREClass;
-  return cCREConstants[simple]?.label || 'n/a';
-}
 
 const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
   const a = document.createElement('a');
@@ -31,28 +17,7 @@ const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
   a.click();
 };
 
-function convertToSimple(str: string): string {
-  switch (str) {
-    case 'PLS':
-      return 'Promoter';
-    case 'dELS':
-      return 'Distal Enhancer';
-    case 'pELS':
-      return 'Proximal Enhancer';
-    case 'CA-CTCF':
-      return 'Chromatin Accessible + CTCF';
-    case 'CA-H3K4me3':
-      return 'Chromatin Accessible + H3K4me3';
-    case 'CA-TF':
-      return 'Chromatin Accessible + Transcription Factor';
-    case 'Low-DNase':
-      return 'Low DNase';
-    case 'CA-only':
-      return 'Chromatin Accessible';
-    default:
-      return '';
-  }
-}
+const defaultScale = (n: number) => 10 * Math.log(n * 4 + 1);
 
 const Graph: React.FC<GraphProps> = ({
   data,
@@ -60,34 +25,52 @@ const Graph: React.FC<GraphProps> = ({
   id,
   width = '100%',
   height = '100%',
+  scale = defaultScale,
+  getLabel,
+  getColor,
+  legendToggle,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
   // state hooks
-  const [showControls, setShowControls] = useState(true);
+  const [showControls] = useState(true);
   const [elements, setElements] = useState<Node[]>([]);
   const [scales, setScales] = useState<number[]>([]);
-  const [expressionType, setExpressions] = useState<string[]>([]);
+  const [edgeTypes, setEdgeTypes] = useState<string[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [showLabels, setShowLabels] = useState(true);
-  const [toggles, setToggles] = useState<{ [key: string]: boolean }>({
-    Promoter: true,
-    'Distal Enhancer': true,
-    'Proximal Enhancer': true,
-    'Transcription Factor': true,
-    'Chromatin Accessible + Transcription Factor': true,
-    'Chromatin Accessible + H3K4me3': true,
-    'Chromatin Accessible + CTCF': true,
-    'Lower-Expression': true,
-    'Higher-Expression': true,
-    'Low DNase': true,
-  });
-
+  const [toggles, setToggles] = useState<{ [key: string]: boolean }>({});
   const [degree, setDegree] = useState<number>(3);
 
-  const toggleControls = () => {
-    setShowControls(!showControls);
-  };
+  // unique categories for legend toggles
+  const uniqueCategories = new Set<string>();
+
+  if (legendToggle !== undefined) {
+    data.node.forEach((node) => {
+      uniqueCategories.add(legendToggle(node));
+    });
+
+    data.edge.forEach((edge) => {
+      if (edge.category) {
+        uniqueCategories.add(legendToggle(edge));
+      }
+    });
+  } else {
+    data.node.forEach((node) => {
+      uniqueCategories.add(node.category);
+    });
+
+    data.edge.forEach((edge) => {
+      if (edge.category) {
+        uniqueCategories.add(edge.category);
+      }
+    });
+  }
+
+  const initialToggles: { [key: string]: boolean } = {};
+  uniqueCategories.forEach((category) => {
+    initialToggles[category] = true;
+  });
 
   // DOWNLOAD SCREENSHOT
   const ref = useRef<HTMLDivElement>(null);
@@ -139,7 +122,7 @@ const Graph: React.FC<GraphProps> = ({
   if (data.centered) {
     // function to filter nodes and edges based on degree - do some check here for if centered even exists in data
     const filterNodesAndEdges = (degree: number) => {
-      const centeredNode = data.centered.cCRE;
+      const centeredNode = data.centered.id;
       let nodesToInclude = new Set<string>([centeredNode]);
       let edgesToInclude: Edge[] = [];
       let visited = new Set<string>([centeredNode]);
@@ -158,16 +141,16 @@ const Graph: React.FC<GraphProps> = ({
         // find edges involving the current node
         data.edge.forEach((edge) => {
           const neighbors = [
-            { target: edge.target, perturbed: edge.perturbed },
-            { target: edge.perturbed, perturbed: edge.target },
+            { to: edge.to, from: edge.from },
+            { to: edge.from, from: edge.to },
           ];
 
-          neighbors.forEach(({ target, perturbed }) => {
-            if (perturbed === node && !visited.has(target)) {
-              visited.add(target);
-              nodesToInclude.add(target);
+          neighbors.forEach(({ to, from }) => {
+            if (from === node && !visited.has(to)) {
+              visited.add(to);
+              nodesToInclude.add(to);
               edgesToInclude.push(edge);
-              queue.push({ node: target, depth: depth + 1 });
+              queue.push({ node: to, depth: depth + 1 });
             }
           });
         });
@@ -175,7 +158,7 @@ const Graph: React.FC<GraphProps> = ({
 
       // filter nodes to include only those found within the specified degrees of separation
       const filteredNodes = data.node.filter((node) =>
-        nodesToInclude.has(node.cCRE)
+        nodesToInclude.has(node.id)
       );
       return { nodes: filteredNodes, edges: edgesToInclude };
     };
@@ -183,49 +166,49 @@ const Graph: React.FC<GraphProps> = ({
     useEffect(() => {
       const filteredData = filterNodesAndEdges(degree);
       setElements(filteredData.nodes);
-      setEdges(filteredData.edges);
+      setEdges(data.edge);
       setScales(filteredData.edges.map((e) => e.effectSize));
-      setExpressions(
+      setEdgeTypes(
         data.edge.map((e) => {
-          if (e.expressionImpact === 'higher-expression')
-            return 'Higher-Expression';
-          if (e.expressionImpact === 'lower-expression')
-            return 'Lower-Expression';
-          return 'Edge';
+          if (legendToggle) return legendToggle(e);
+          if (e.category !== undefined) return e.category;
+          return '';
         })
       );
+      setToggles(initialToggles);
     }, [data, degree]);
   } else {
     useEffect(() => {
       setElements(data.node);
       setEdges(data.edge);
       setScales(data.edge.map((e: Edge) => e.effectSize));
-      setExpressions(
-        data.edge.map((e: Edge) => {
-          if (e.expressionImpact === 'higher-expression')
-            return 'Higher-Expression';
-          if (e.expressionImpact === 'lower-expression')
-            return 'Lower-Expression';
-          return 'Edge';
+      setEdgeTypes(
+        data.edge.map((e) => {
+          if (legendToggle) return legendToggle(e);
+          if (e.category !== undefined) return e.category;
+          return '';
         })
       );
+      setToggles(initialToggles);
     }, [data]);
   }
-  const simple: string[] = elements
-    .map((e) => e.category)
-    .map((elem) => convertToSimple(elem));
-  const createID = (index: number): string => elements[index].cCRE;
-
+  const simple: string[] = elements.map((e) => {
+    if (legendToggle) return legendToggle(e);
+    else {
+      return e.category;
+    }
+  });
+  const createID = (index: number): string => elements[index].id;
   useEffect(() => {
     if (
       elements.length === 0 ||
       scales.length === 0 ||
-      expressionType.length === 0 ||
+      edgeTypes.length === 0 ||
       edges.length === 0
     )
       return;
 
-    const allcCREs: string[] = elements.map((e) => e.cCRE);
+    const allcCREs: string[] = elements.map((e) => e.id);
 
     let connect: number[][] = [];
     for (let i = 0; i < elements.length; i++) {
@@ -235,19 +218,13 @@ const Graph: React.FC<GraphProps> = ({
     // connect holds all the connections between nodes
     // connect[0] holds the target node INDICES for the FIRST node
     edges.forEach((e) => {
-      connect[allcCREs.indexOf(e.perturbed)].push(allcCREs.indexOf(e.target));
+      const fromIndex = allcCREs.indexOf(e.from);
+      const toIndex = allcCREs.indexOf(e.to);
+
+      if (fromIndex !== -1 && toIndex !== -1) {
+        connect[fromIndex].push(toIndex);
+      }
     });
-
-    const edgeColor = (idx: number): string => {
-      if (expressionType[idx] === 'Lower-Expression') return 'black';
-      if (expressionType[idx] === 'Higher-Expression') return 'blue';
-      return 'grey';
-    };
-    function chooseColor(index: number): string {
-      const s = simple[index] as cCREClass;
-      return cCREConstants[s]?.color || 'grey';
-    }
-
     const cy = cytoscape({
       container: document.getElementById(k),
       style: [
@@ -255,7 +232,7 @@ const Graph: React.FC<GraphProps> = ({
           selector: 'node',
           style: {
             label: '',
-            'font-size': 15,
+            'font-size': 12,
           },
         },
         {
@@ -290,19 +267,44 @@ const Graph: React.FC<GraphProps> = ({
     // ADD NODES
     for (var i = 0; i < elements.length; i++) {
       if (toggles[simple[i]] !== false) {
-        cy.add({
-          data: { id: createID(i) }, // create name
-          position: {
-            // random position
-            x: Math.random() * (1250 - 100) + 100,
-            y: Math.random() * (600 - 100) + 100,
-          },
-          style: {
-            // find color based on CRE
-            'background-color': chooseColor(i),
-            label: showLabels ? shortHand(simple[i]) : '',
-          },
-        });
+        if (data.centered && elements[i].id === data.centered.id) {
+          cy.add({
+            data: { id: createID(i) }, // create name
+            position: {
+              // random position
+              x: Math.random() * (1250 - 100) + 100,
+              y: Math.random() * (600 - 100) + 100,
+            },
+            style: {
+              // find color based on CRE
+              'background-color': getColor ? getColor(elements[i]) : 'grey',
+              label: showLabels ? elements[i].id : '',
+              fontSize: '12px',
+              borderWidth: '2px',
+              borderColor: 'black',
+              fontFamily: 'Roboto',
+            },
+          });
+        } else {
+          cy.add({
+            data: { id: createID(i) }, // create name
+            position: {
+              // random position
+              x: Math.random() * (1250 - 100) + 100,
+              y: Math.random() * (600 - 100) + 100,
+            },
+            style: {
+              // find color based on CRE
+              'background-color': getColor ? getColor(elements[i]) : 'grey',
+              label: showLabels
+                ? getLabel
+                  ? getLabel(elements[i])
+                  : elements[i].id
+                : '',
+              fontSize: '12px',
+            },
+          });
+        }
       }
     }
 
@@ -311,12 +313,11 @@ const Graph: React.FC<GraphProps> = ({
     for (var j = 0; j < elements.length; j++) {
       // add # of edges per node based on the target connections
       if (toggles[simple[j]] !== false) {
-        // toggle
         let len = connect[j].length;
         for (let s = 0; s < len; s++) {
           if (
             toggles[simple[connect[j][s]]] !== false && // toggle
-            toggles[expressionType[j]] !== false
+            toggles[edgeTypes[j]] !== false
           ) {
             cy.add({
               data: {
@@ -325,14 +326,11 @@ const Graph: React.FC<GraphProps> = ({
                 target: createID(connect[j][s]),
               },
               style: {
-                'line-color': edgeColor(j),
+                'line-color': getColor ? getColor(edges[j]) : 'grey',
                 'target-arrow-shape':
-                  expressionType[j] === 'Higher-Expression' ||
-                  expressionType[j] === 'Lower-Expression'
-                    ? 'triangle'
-                    : null,
-                'target-arrow-color': edgeColor(j),
-                width: 10 * Math.log(scales[j] * 4 + 1),
+                  edgeTypes[j] !== 'Edge' ? 'triangle' : null,
+                'target-arrow-color': getColor ? getColor(edges[j]) : 'grey',
+                width: scale(scales[j]),
               },
             });
             edgeCount++;
@@ -340,15 +338,14 @@ const Graph: React.FC<GraphProps> = ({
         }
       }
     }
-
     let idx = 0;
     cy.nodes().forEach((node: NodeSingular) => {
-      let cre = allcCREs[idx].toString();
+      let ID = allcCREs[idx].toString();
       let s = simple[idx].toString();
-      if (data.centered && cre === data.centered.cCRE) {
+      if (data.centered && ID === data.centered.id) {
         node.on('mousemove', (event) =>
           handleMouseMove(event, {
-            cCRE: cre,
+            id: ID,
             type: s,
             centered: 'Centered Node',
           })
@@ -356,7 +353,7 @@ const Graph: React.FC<GraphProps> = ({
       } else {
         node.on('mousemove', (event) =>
           handleMouseMove(event, {
-            cCRE: cre,
+            id: ID,
             type: s,
           })
         );
@@ -365,10 +362,8 @@ const Graph: React.FC<GraphProps> = ({
       node.on('mouseout', hideTooltip);
     });
 
-    console.log(data.edge.every((e) => e.expressionImpact));
-
     cy.edges().forEach((edge: EdgeSingular) => {
-      if (data.edge.every((e) => e.expressionImpact)) {
+      if (data.edge.every((e) => e.category)) {
         edge.on('mousemove', (event) =>
           handleMouseMove(event, {
             type:
@@ -391,26 +386,15 @@ const Graph: React.FC<GraphProps> = ({
     return () => {
       cy.destroy();
     };
-  }, [
-    elements,
-    scales,
-    expressionType,
-    edges,
-    toggles,
-    showTooltip,
-    hideTooltip,
-  ]);
+  }, [elements, scales, edgeTypes, edges, toggles, showTooltip, hideTooltip]);
 
   useEffect(() => {
-    const simple: string[] = elements
-      .map((e) => e.category)
-      .map((elem) => convertToSimple(elem));
-
     if (!cyRef.current) return;
     let ind = 0;
+
     cyRef.current.nodes().forEach((node) => {
       node.style({
-        label: showLabels ? shortHand(simple[ind]) : '',
+        label: showLabels ? createID(ind) : '',
       });
       ind++;
     });
@@ -453,47 +437,6 @@ const Graph: React.FC<GraphProps> = ({
     }));
   };
 
-  const downloadStyle = {
-    ...buttonStyle,
-    top: '0px',
-    right: '5px',
-  };
-
-  const randomizeStyle = {
-    ...buttonStyle,
-    top: '45px',
-    right: '5px',
-  };
-
-  const organizeStyle = {
-    ...buttonStyle,
-    top: '90px',
-    right: '5px',
-  };
-
-  const toggleControlsStyle = {
-    ...buttonStyle,
-    top: '0px',
-    padding: '3px',
-    backgroundColor: 'white',
-    color: '#0095ff',
-  };
-
-  const labelStyle = {
-    ...buttonStyle,
-    top: '135px',
-    right: '5px',
-  };
-
-  const r = {
-    collapsed: {
-      right: '175px',
-    },
-    uncollapsed: {
-      right: '2px',
-    },
-  };
-
   return (
     <div
       style={{
@@ -505,25 +448,44 @@ const Graph: React.FC<GraphProps> = ({
         fontFamily: 'helvetica',
       }}
     >
-      <header
+      <Typography
+        variant="h1"
         style={{
-          opacity: 0.5,
-          fontSize: '1em',
-          margin: 0,
+          marginLeft: '3px',
+          fontSize: '18px',
+          fontWeight: 'bold',
         }}
       >
-        <h1 style={{ fontSize: '17px' }}>{title}</h1>
-      </header>
+        {title}
+      </Typography>
+
       {data.centered ? (
-        <div style={{ top: '55px', left: '15px' }}>
-          <label htmlFor="degree">Degrees of Separation: </label>
+        <div
+          style={{
+            top: '55px',
+            left: '15px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Typography
+            variant="h1"
+            style={{
+              marginLeft: '3px',
+              marginTop: '5px',
+              fontSize: '15px',
+            }}
+          >
+            Degrees of Separation:
+          </Typography>
           <input
             id="degree"
             type="number"
             value={degree}
             min={1}
-            max={3}
+            max={5}
             onChange={(e) => setDegree(parseInt(e.target.value))}
+            style={{ marginLeft: '5px', marginTop: '5px' }}
           />
         </div>
       ) : null}
@@ -535,51 +497,24 @@ const Graph: React.FC<GraphProps> = ({
             boxShadow: '0 0 10px rgba(0,0,0,0.5)',
           }}
         >
-          <GraphButton
-            text="Download Screenshot"
-            styles={downloadStyle}
-            func={downloadScreenshot}
-          ></GraphButton>
-
-          <GraphButton
-            text="Randomize"
-            styles={randomizeStyle}
-            func={randomize}
-          ></GraphButton>
-          <GraphButton
-            text="Organize"
-            styles={organizeStyle}
-            func={organize}
-          ></GraphButton>
-          <GraphButton
-            text="Toggle Labels"
-            styles={labelStyle}
-            func={() => setShowLabels(!showLabels)}
-          ></GraphButton>
-
-          <Legend
+          <ControlPanel
             toggles={toggles}
             onToggle={handleToggle}
             simpleCategories={simple}
-            edgeType={data.edge.every((e) => e.expressionImpact)}
+            edgeType={data.edge.every((e) => e.category)}
+            elements={elements}
+            edges={edges}
+            scales={scales}
+            scaleWidth={scale}
+            downloadScreenshot={downloadScreenshot}
+            randomize={randomize}
+            organize={organize}
+            toggleLabels={() => setShowLabels(!showLabels)}
+            colorFunc={getColor}
+            legendToggle={legendToggle}
           />
-          <ScaleLegend scales={scales} />
         </div>
       )}
-
-      <button
-        onClick={toggleControls}
-        style={{
-          ...toggleControlsStyle,
-          ...(showControls ? r.collapsed : r.uncollapsed),
-        }}
-      >
-        {showControls ? (
-          <KeyboardDoubleArrowRightIcon />
-        ) : (
-          <KeyboardDoubleArrowLeftIcon />
-        )}
-      </button>
 
       <div
         ref={ref}
@@ -591,7 +526,7 @@ const Graph: React.FC<GraphProps> = ({
           ref={containerRef}
           id={k}
           style={{
-            width: '100%',
+            width: '95%',
             height: '90vh',
             zIndex: 999,
           }}
@@ -610,9 +545,9 @@ const Graph: React.FC<GraphProps> = ({
           top={tooltipTop}
           left={tooltipLeft}
         >
-          {tooltipData.cCRE ? (
+          {tooltipData.id ? (
             <div style={{ fontFamily: 'helvetica' }}>
-              cCRE: {tooltipData.cCRE} <br />
+              ID: {tooltipData.id} <br />
               Type: {tooltipData.type}
               {tooltipData.centered ? <div> Centered Node </div> : null}
             </div>
