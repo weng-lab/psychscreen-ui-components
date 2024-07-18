@@ -68,6 +68,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     zIndex: 1000,
     overflowX: 'hidden',
     marginRight: '5px',
+    marginTop: '5px',
     overflowY: 'auto',
     maxHeight: '100vh',
   };
