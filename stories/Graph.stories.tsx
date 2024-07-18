@@ -108,7 +108,7 @@ function convertToSimple(node: Node | Edge): string {
         return node.category;
     }
   }
-  return '';
+  return 'Edge';
 }
 
 function convertToSimple2(node: Node | Edge): string {
@@ -121,7 +121,7 @@ function convertToSimple2(node: Node | Edge): string {
       return 'purple nodes';
     default:
       if (node.category) return node.category;
-      return '';
+      return 'Edge';
   }
 }
 const meta: Meta = {
@@ -148,6 +148,18 @@ PilotDataWithCentered.args = {
   id: 'PilotWithCentered',
   getColor: setColor,
   legendToggle: convertToSimple,
+  legendNodeLabel: 'cCRE Type',
+  order: [
+    'PLS',
+    'pELS',
+    'dELS',
+    'CA-H3K4me3',
+    'CA-CTCF',
+    'CA-TF',
+    'CA',
+    'TF',
+    'Low DNase',
+  ],
 };
 
 export const FiftyPercent = Template.bind({});
@@ -159,6 +171,7 @@ FiftyPercent.args = {
   height: '50%',
   getColor: setColor,
   legendToggle: convertToSimple,
+  legendNodeLabel: 'cCRE Type',
 };
 
 export const PilotDataWithoutCentered = Template.bind({});
@@ -168,6 +181,7 @@ PilotDataWithoutCentered.args = {
   id: 'PilotNoCentered',
   getColor: setColor,
   legendToggle: convertToSimple,
+  legendNodeLabel: 'cCRE Type',
 };
 
 export const DifferentLabel = Template.bind({});
@@ -178,6 +192,8 @@ DifferentLabel.args = {
   getLabel: (node: Node) => node.category,
   getColor: setColor,
   legendToggle: convertToSimple,
+  legendNodeLabel: 'Different Node Label',
+  legendEdgeLabel: 'Different Edge Label',
 };
 
 export const DifferentColor = Template.bind({});
@@ -196,4 +212,25 @@ NoLegendToggle.args = {
   id: 'noLegendToggle',
   scale: (n: number) => 10 * n,
   getColor: setColor3,
+};
+
+export const DifferentOrder = Template.bind({});
+DifferentOrder.args = {
+  data: data.data,
+  title: 'Different Order',
+  id: 'diffOrder',
+  getColor: setColor,
+  legendToggle: convertToSimple,
+  legendNodeLabel: 'cCRE Type',
+  order: [
+    'Low DNase',
+    'PLS',
+    'dELS',
+    'TF',
+    'pELS',
+    'CA-CTCF',
+    'CA',
+    'CA-H3K4me3',
+    'CA-TF',
+  ],
 };

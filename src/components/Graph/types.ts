@@ -26,7 +26,11 @@ export interface Edge {
     getLabel?: (node: Node) => string,
     getColor?: (node: Node | Edge) => string,
     legendToggle?: (node: Node | Edge) => string,
+    legendNodeLabel?: string, 
+    legendEdgeLabel?: string,
+    order?: string[],
   }
+
 
 
   export type ToolTipData =  {

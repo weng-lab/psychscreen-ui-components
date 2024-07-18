@@ -23,7 +23,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
       .replace('Math.', '') || scaleFunctionStr;
 
   const divStyle: CSSProperties = {
-    top: '25vh',
+    top: '20vh',
     zIndex: 1000,
     backgroundColor: 'white',
     padding: '10px',

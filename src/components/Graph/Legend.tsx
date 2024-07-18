@@ -12,6 +12,10 @@ interface LegendProps {
   elements: Node[];
   edges: Edge[];
   legendToggle?: (node: Node | Edge) => string;
+  legendNodeLabel?: string;
+  legendEdgeLabel?: string;
+  order?: string[];
+  uniqueCat?: string[];
 }
 
 const Legend: React.FC<LegendProps> = ({
@@ -23,6 +27,9 @@ const Legend: React.FC<LegendProps> = ({
   elements,
   edges,
   legendToggle,
+  legendNodeLabel,
+  legendEdgeLabel,
+  uniqueCat,
 }) => {
   const edgeTypes = Array.from(
     new Set(
@@ -50,53 +57,116 @@ const Legend: React.FC<LegendProps> = ({
         padding: '5px',
       }}
     >
-      {uniqueCategories.map((category) => {
-        let color = 'grey';
-        let cat = '';
+      <Typography style={{ fontSize: '18px', margin: '3px' }}>
+        {legendNodeLabel ? legendNodeLabel : 'Node Type'}
+      </Typography>
+      {uniqueCat
+        ? uniqueCat.map((category) => {
+            let color = 'grey';
+            let c = '';
 
-        elements.forEach((node) => {
-          if (colorFunc && legendToggle && legendToggle(node) === category) {
-            color = colorFunc(node);
-            cat = node.category;
-          }
-        });
+            elements.forEach((node) => {
+              uniqueCategories.forEach((cat) => {
+                if (
+                  colorFunc &&
+                  legendToggle &&
+                  legendToggle(node) === cat &&
+                  node.category === category
+                ) {
+                  color = colorFunc(node);
+                  c = cat;
+                  return;
+                }
+              });
+            });
 
-        return (
-          <div
-            key={category}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '4px',
-            }}
-          >
-            <Checkbox
-              checked={toggles[category]}
-              onChange={() => onToggle(category)}
-              color="primary"
-              size="small"
-              style={{ padding: 0 }}
-            />
-            <Typography
-              variant="body2"
-              style={{
-                color: color,
-                marginLeft: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-              onClick={() => onToggle(category)}
-            >
-              {category} {legendToggle ? '(' : null}
-              {legendToggle ? cat : null}
-              {legendToggle ? ')' : null}
-            </Typography>
-          </div>
-        );
-      })}
+            return (
+              <div
+                key={category}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: '4px',
+                }}
+              >
+                <Checkbox
+                  checked={toggles[category]}
+                  onChange={() => onToggle(category)}
+                  color="primary"
+                  size="small"
+                  style={{ padding: 0 }}
+                />
+                <Typography
+                  variant="body2"
+                  style={{
+                    color: color,
+                    marginLeft: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                  onClick={() => onToggle(category)}
+                >
+                  {c} {legendToggle ? '(' : null}
+                  {legendToggle ? category : null}
+                  {legendToggle ? ')' : null}
+                </Typography>
+              </div>
+            );
+          })
+        : uniqueCategories.map((category) => {
+            let color = 'grey';
+            let cat = '';
+
+            elements.forEach((node) => {
+              if (
+                colorFunc &&
+                legendToggle &&
+                legendToggle(node) === category
+              ) {
+                color = colorFunc(node);
+                cat = node.category;
+              }
+            });
+
+            return (
+              <div
+                key={category}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: '4px',
+                }}
+              >
+                <Checkbox
+                  checked={toggles[category]}
+                  onChange={() => onToggle(category)}
+                  color="primary"
+                  size="small"
+                  style={{ padding: 0 }}
+                />
+                <Typography
+                  variant="body2"
+                  style={{
+                    color: color,
+                    marginLeft: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                  onClick={() => onToggle(category)}
+                >
+                  {category} {legendToggle ? '(' : null}
+                  {legendToggle ? cat : null}
+                  {legendToggle ? ')' : null}
+                </Typography>
+              </div>
+            );
+          })}
 
       {edgeType && edgeTypes !== null ? (
         <div>
+          <Typography style={{ fontSize: '18px', margin: '3px' }}>
+            {legendEdgeLabel ? legendEdgeLabel : 'Edge Type'}
+          </Typography>
           {edgeTypes.map((category) => {
             if (category === undefined) {
               return null;
@@ -119,7 +189,6 @@ const Legend: React.FC<LegendProps> = ({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  marginBottom: '4px',
                 }}
               >
                 <Checkbox

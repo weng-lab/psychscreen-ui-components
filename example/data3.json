@@ -5,404 +5,462 @@
                 "from": "EH38E3291096",
                 "to": "EH38E1939823",
                 "effectSize": 0.1134,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 1
             },
             {
                 "from": "EH38E1939823",
                 "to": "EH38E1939823",
                 "effectSize": 0.1933,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 2
             },
             {
                 "from": "EH38E3291121",
                 "to": "EH38E1939823",
                 "effectSize": 0.0545,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 3
 
             },
             {
                 "from": "EH38E3291122",
                 "to": "EH38E1939823",
                 "effectSize": 0.0665,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 4
 
             },
             {
                 "from": "EH38E3291358",
                 "to": "EH38E1939823",
                 "effectSize": 0.0674,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 5
 
             },
             {
                 "from": "EH38E3291271",
                 "to": "EH38E3291279",
                 "effectSize": 0.0381,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 6
 
             },
             {
                 "from": "EH38E3291279",
                 "to": "EH38E3291279",
                 "effectSize": 0.1667,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 7
 
             },
             {
                 "from": "EH38E3291358",
                 "to": "EH38E3291279",
                 "effectSize": 0.0478,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 8
 
             },
             {
                 "from": "EH38E3291174",
                 "to": "EH38E3291410",
                 "effectSize": 0.0504,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 9
 
             },
             {
                 "from": "EH38E4193273",
                 "to": "EH38E3291410",
                 "effectSize": 0.0507,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 10
 
             },
             {
                 "from": "EH38E3291358",
                 "to": "EH38E3291410",
                 "effectSize": 0.0895,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 11
 
             },
             {
                 "from": "EH38E3291392",
                 "to": "EH38E3291410",
                 "effectSize": 0.0352,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 12
 
             },
             {
                 "from": "EH38E3291410",
                 "to": "EH38E3291410",
                 "effectSize": 0.2538,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 13
 
             },
             {
                 "from": "EH38E3291174",
                 "to": "EH38E4193228",
                 "effectSize": 0.0211,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 14
 
             },
             {
                 "from": "EH38E3291218",
                 "to": "EH38E4193228",
                 "effectSize": 0.0477,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 15
 
             },
             {
                 "from": "EH38E3291222",
                 "to": "EH38E4193228",
                 "effectSize": 0.0627,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 16
 
             },
             {
                 "from": "EH38E3291226",
                 "to": "EH38E4193228",
                 "effectSize": 0.0448,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 17
 
             },
             {
                 "from": "EH38E4193211",
                 "to": "EH38E4193228",
                 "effectSize": 0.0454,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 18
 
             },
             {
                 "from": "EH38E3291232",
                 "to": "EH38E4193228",
                 "effectSize": 0.0311,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 19
 
             },
             {
                 "from": "EH38E3291249",
                 "to": "EH38E4193228",
                 "effectSize": 0.0593,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 20
 
             },
             {
                 "from": "EH38E3291263",
                 "to": "EH38E4193228",
                 "effectSize": 0.1136,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 21
 
             },
             {
                 "from": "EH38E3291271",
                 "to": "EH38E4193228",
                 "effectSize": 0.4097,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 22
 
             },
             {
                 "from": "EH38E3291279",
                 "to": "EH38E4193228",
                 "effectSize": 0.1077,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 23
 
             },
             {
                 "from": "EH38E4193243",
                 "to": "EH38E4193228",
                 "effectSize": 0.026,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 24
 
             },
             {
                 "from": "EH38E3291318",
                 "to": "EH38E4193228",
                 "effectSize": 0.0297,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 25
 
             },
             {
                 "from": "EH38E4193273",
                 "to": "EH38E4193228",
                 "effectSize": 0.0405,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 26
 
             },
             {
                 "from": "EH38E3291358",
                 "to": "EH38E4193228",
                 "effectSize": 0.0918,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 27
 
             },
             {
                 "from": "EH38E3291779",
                 "to": "EH38E4193228",
                 "effectSize": 0.0263,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 28
 
             },
             {
                 "from": "EH38E4193467",
                 "to": "EH38E4193228",
                 "effectSize": 0.0374,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 29
 
             },
             {
                 "from": "EH38E1960374",
                 "to": "EH38E1960374",
                 "effectSize": 0.1853,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 30
 
             },
             {
                 "from": "EH38E3312736",
                 "to": "EH38E1960374",
                 "effectSize": 0.0698,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 31
 
             },
             {
                 "from": "EH38E1960377",
                 "to": "EH38E1960374",
                 "effectSize": 0.1479,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 32
 
             },
             {
                 "from": "EH38E4201343",
                 "to": "EH38E1960374",
                 "effectSize": 0.1042,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 33
 
             },
             {
                 "from": "EH38E1960374",
                 "to": "EH38E3312774",
                 "effectSize": 0.143,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 34
 
             },
             {
                 "from": "EH38E3312736",
                 "to": "EH38E3312774",
                 "effectSize": 0.0864,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 35
 
             },
             {
                 "from": "EH38E1960377",
                 "to": "EH38E3312774",
                 "effectSize": 0.1641,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 36
 
             },
             {
                 "from": "EH38E4201343",
                 "to": "EH38E3312774",
                 "effectSize": 0.0652,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 37
 
             },
             {
                 "from": "EH38E3312746",
                 "to": "EH38E3312774",
                 "effectSize": 0.0835,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 38
 
             },
             {
                 "from": "EH38E3312765",
                 "to": "EH38E3312774",
                 "effectSize": 0.0386,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 39
 
             },
             {
                 "from": "EH38E3312774",
                 "to": "EH38E3312774",
                 "effectSize": 0.3507,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 40
 
             },
             {
                 "from": "EH38E3312787",
                 "to": "EH38E3312774",
                 "effectSize": 0.0959,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 41
 
             },
             {
                 "from": "EH38E1940335",
                 "to": "EH38E3291664",
                 "effectSize": 0.0701,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 42
 
             },
             {
                 "from": "EH38E3291664",
                 "to": "EH38E3291664",
                 "effectSize": 0.3563,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 43
 
             },
             {
                 "from": "EH38E3291668",
                 "to": "EH38E3291664",
                 "effectSize": 0.1181,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 44
 
             },
             {
                 "from": "EH38E3291318",
                 "to": "EH38E3291358",
                 "effectSize": 0.0369,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 45
 
             },
             {
                 "from": "EH38E3291346",
                 "to": "EH38E3291358",
                 "effectSize": 0.108,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 46
 
             },
             {
                 "from": "EH38E4193273",
                 "to": "EH38E3291358",
                 "effectSize": 0.2005,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 47
 
             },
             {
                 "from": "EH38E3291358",
                 "to": "EH38E3291358",
                 "effectSize": 0.441,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 48
 
             },
             {
                 "from": "EH38E3291364",
                 "to": "EH38E3291358",
                 "effectSize": 0.0862,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 49
 
             },
             {
                 "from": "EH38E3291374",
                 "to": "EH38E3291358",
                 "effectSize": 0.0278,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 50
 
             },
             {
                 "from": "EH38E3291664",
                 "to": "EH38E3291358",
                 "effectSize": 0.0291,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 51
 
             },
             {
                 "from": "EH38E1939855",
                 "to": "EH38E3291249",
                 "effectSize": 0.0684,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 52
 
             },
             {
                 "from": "EH38E4193211",
                 "to": "EH38E3291249",
                 "effectSize": 0.0354,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 53
 
             },
             {
                 "from": "EH38E3291232",
                 "to": "EH38E3291249",
                 "effectSize": 0.0767,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 54
 
             },
             {
                 "from": "EH38E3291244",
                 "to": "EH38E3291249",
                 "effectSize": 0.0883,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 55
 
             },
             {
                 "from": "EH38E3291249",
                 "to": "EH38E3291249",
                 "effectSize": 0.1514,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 56
 
             },
             {
                 "from": "EH38E3291358",
                 "to": "EH38E3291249",
                 "effectSize": 0.0378,
-                "category": "lower-expression"
+                "category": "lower-expression",
+                "id": 57
 
             },
             {
                 "from": "EH38E3291664",
                 "to": "EH38E3291249",
                 "effectSize": 0.0276,
-                "category": "higher-expression"
+                "category": "higher-expression",
+                "id": 58
 
             }
         ],
