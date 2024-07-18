@@ -3,6 +3,7 @@ export interface Edge {
     to: string;
     effectSize: number;
     category?: string;
+    id: number;
   }
   
   export interface Node {
