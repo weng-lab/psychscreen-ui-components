@@ -75,7 +75,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   const buttonStyle: CSSProperties = {
     width: collapsed ? '0px' : '10px',
-
     height: '40px',
     display: 'inline-block',
     alignItems: 'left',
