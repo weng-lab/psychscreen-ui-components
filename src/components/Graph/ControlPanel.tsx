@@ -66,7 +66,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     backgroundColor: 'white',
     transition: 'width 0.3s',
     zIndex: 1000,
-
+    overflowX: 'hidden',
     marginRight: '5px',
     overflowY: 'auto',
     maxHeight: '100vh',
@@ -74,6 +74,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   const buttonStyle: CSSProperties = {
     width: collapsed ? '0px' : '10px',
+
     height: '40px',
     display: 'inline-block',
     alignItems: 'left',
