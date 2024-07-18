@@ -29,6 +29,9 @@ const Graph: React.FC<GraphProps> = ({
   getLabel,
   getColor,
   legendToggle,
+  legendNodeLabel,
+  legendEdgeLabel,
+  order,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -40,7 +43,6 @@ const Graph: React.FC<GraphProps> = ({
   const [edges, setEdges] = useState<Edge[]>([]);
   const [showLabels, setShowLabels] = useState(true);
   const [toggles, setToggles] = useState<{ [key: string]: boolean }>({});
-  const [degree, setDegree] = useState<number>(3);
 
   // unique categories for legend toggles
   const uniqueCategories = new Set<string>();
@@ -67,10 +69,30 @@ const Graph: React.FC<GraphProps> = ({
     });
   }
 
-  const initialToggles: { [key: string]: boolean } = {};
-  uniqueCategories.forEach((category) => {
-    initialToggles[category] = true;
+  let a = new Set<string>();
+  data.node.forEach((node) => a.add(node.category));
+  data.edge.forEach((edge) => {
+    if (edge.category && legendToggle) {
+      a.add(legendToggle(edge));
+    } else if (edge.category) {
+      a.add(edge.category);
+    }
   });
+  let u = Array.from(new Set(a));
+  if (order) {
+    u = u.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  }
+
+  const initialToggles: { [key: string]: boolean } = {};
+  if (order) {
+    u.forEach((category) => {
+      initialToggles[category] = true;
+    });
+  } else {
+    uniqueCategories.forEach((category) => {
+      initialToggles[category] = true;
+    });
+  }
 
   // DOWNLOAD SCREENSHOT
   const ref = useRef<HTMLDivElement>(null);
@@ -119,85 +141,35 @@ const Graph: React.FC<GraphProps> = ({
   // each graph needs a unique id
   let k = 'cy-' + id;
 
-  if (data.centered) {
-    // function to filter nodes and edges based on degree - do some check here for if centered even exists in data
-    const filterNodesAndEdges = (degree: number) => {
-      const centeredNode = data.centered.id;
-      let nodesToInclude = new Set<string>([centeredNode]);
-      let edgesToInclude: Edge[] = [];
-      let visited = new Set<string>([centeredNode]);
+  useEffect(() => {
+    setElements(data.node);
+    setEdges(data.edge);
+    setScales(data.edge.map((e: Edge) => e.effectSize));
+    setEdgeTypes(
+      data.edge.map((e) => {
+        if (legendToggle) return legendToggle(e);
+        if (e.category !== undefined) return e.category;
+        return 'Edge';
+      })
+    );
+    setToggles(initialToggles);
+  }, [data]);
 
-      // queue to manage BFS traversal
-      let queue: { node: string; depth: number }[] = [
-        { node: centeredNode, depth: 0 },
-      ];
+  let elem = elements.map((e) => e.category);
 
-      while (queue.length > 0) {
-        const { node, depth } = queue.shift()!;
+  let unique = Array.from(new Set(elem));
 
-        // if the curr depth = to the degree, skip further expansion
-        if (depth >= degree) continue;
-
-        // find edges involving the current node
-        data.edge.forEach((edge) => {
-          const neighbors = [
-            { to: edge.to, from: edge.from },
-            { to: edge.from, from: edge.to },
-          ];
-
-          neighbors.forEach(({ to, from }) => {
-            if (from === node && !visited.has(to)) {
-              visited.add(to);
-              nodesToInclude.add(to);
-              edgesToInclude.push(edge);
-              queue.push({ node: to, depth: depth + 1 });
-            }
-          });
-        });
-      }
-
-      // filter nodes to include only those found within the specified degrees of separation
-      const filteredNodes = data.node.filter((node) =>
-        nodesToInclude.has(node.id)
-      );
-      return { nodes: filteredNodes, edges: edgesToInclude };
-    };
-
-    useEffect(() => {
-      const filteredData = filterNodesAndEdges(degree);
-      setElements(filteredData.nodes);
-      setEdges(data.edge);
-      setScales(filteredData.edges.map((e) => e.effectSize));
-      setEdgeTypes(
-        data.edge.map((e) => {
-          if (legendToggle) return legendToggle(e);
-          if (e.category !== undefined) return e.category;
-          return '';
-        })
-      );
-      setToggles(initialToggles);
-    }, [data, degree]);
-  } else {
-    useEffect(() => {
-      setElements(data.node);
-      setEdges(data.edge);
-      setScales(data.edge.map((e: Edge) => e.effectSize));
-      setEdgeTypes(
-        data.edge.map((e) => {
-          if (legendToggle) return legendToggle(e);
-          if (e.category !== undefined) return e.category;
-          return '';
-        })
-      );
-      setToggles(initialToggles);
-    }, [data]);
+  if (order) {
+    unique = unique.sort((a, b) => order.indexOf(a) - order.indexOf(b));
   }
+
   const simple: string[] = elements.map((e) => {
     if (legendToggle) return legendToggle(e);
     else {
       return e.category;
     }
   });
+
   const createID = (index: number): string => elements[index].id;
   useEffect(() => {
     if (
@@ -264,6 +236,13 @@ const Graph: React.FC<GraphProps> = ({
       } as any).run();
     });
 
+    const starSVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px">
+  <path d="M0 0h24v24H0z" fill="none"/>
+  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+</svg>
+`;
+    const starSVGURL = `data:image/svg+xml;utf8,${encodeURIComponent(starSVG)}`;
     // ADD NODES
     for (var i = 0; i < elements.length; i++) {
       if (toggles[simple[i]] !== false) {
@@ -283,6 +262,9 @@ const Graph: React.FC<GraphProps> = ({
               borderWidth: '2px',
               borderColor: 'black',
               fontFamily: 'Roboto',
+              backgroundFit: 'contain',
+              backgroundClip: 'none',
+              backgroundImage: `url(${starSVGURL})`,
             },
           });
         } else {
@@ -302,12 +284,14 @@ const Graph: React.FC<GraphProps> = ({
                   : elements[i].id
                 : '',
               fontSize: '12px',
+              fontFamily: 'Roboto',
             },
           });
         }
       }
     }
 
+    const c = edgeTypes.every((e) => e !== 'Edge');
     // ADD EDGES
     let edgeCount = 0;
     for (var j = 0; j < elements.length; j++) {
@@ -327,8 +311,7 @@ const Graph: React.FC<GraphProps> = ({
               },
               style: {
                 'line-color': getColor ? getColor(edges[j]) : 'grey',
-                'target-arrow-shape':
-                  edgeTypes[j] !== 'Edge' ? 'triangle' : null,
+                'target-arrow-shape': c ? 'triangle' : null,
                 'target-arrow-color': getColor ? getColor(edges[j]) : 'grey',
                 width: scale(scales[j]),
               },
@@ -459,37 +442,6 @@ const Graph: React.FC<GraphProps> = ({
         {title}
       </Typography>
 
-      {data.centered ? (
-        <div
-          style={{
-            top: '55px',
-            left: '15px',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Typography
-            variant="h1"
-            style={{
-              marginLeft: '3px',
-              marginTop: '5px',
-              fontSize: '15px',
-            }}
-          >
-            Degrees of Separation:
-          </Typography>
-          <input
-            id="degree"
-            type="number"
-            value={degree}
-            min={1}
-            max={5}
-            onChange={(e) => setDegree(parseInt(e.target.value))}
-            style={{ marginLeft: '5px', marginTop: '5px' }}
-          />
-        </div>
-      ) : null}
-
       {showControls && (
         <div
           style={{
@@ -510,8 +462,12 @@ const Graph: React.FC<GraphProps> = ({
             randomize={randomize}
             organize={organize}
             toggleLabels={() => setShowLabels(!showLabels)}
+            labelsOn={showLabels}
             colorFunc={getColor}
             legendToggle={legendToggle}
+            legendNodeLabel={legendNodeLabel}
+            legendEdgeLabel={legendEdgeLabel}
+            uniqueCat={order ? unique : undefined}
           />
         </div>
       )}
