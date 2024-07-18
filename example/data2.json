@@ -4,12 +4,14 @@
             {
                 "from": "node_1",
                 "to": "node_2",
-                "effectSize": 0.1134
+                "effectSize": 0.1134,
+                "id": 1
             },
             {
                 "from": "node_3",
                 "to": "node_2",
-                "effectSize": 0.5
+                "effectSize": 0.5,
+                "id": 2
             }
         ],
         "node": [
