@@ -66,7 +66,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     backgroundColor: 'white',
     transition: 'width 0.3s',
     zIndex: 1000,
-    border: '1px solid grey',
+
     marginRight: '5px',
     overflowY: 'auto',
     maxHeight: '100vh',
@@ -83,7 +83,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   };
 
   return (
-    <Paper style={panelStyle} elevation={2}>
+    <Paper style={panelStyle} elevation={3}>
       <Button
         onClick={() => setCollapsed(!collapsed)}
         fullWidth
