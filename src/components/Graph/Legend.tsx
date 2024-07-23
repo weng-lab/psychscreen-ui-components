@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import { Node, Edge } from './types';
 import { Typography } from '@mui/material';
@@ -29,6 +29,7 @@ const Legend: React.FC<LegendProps> = ({
   legendToggle,
   legendNodeLabel,
   legendEdgeLabel,
+  order,
   uniqueCat,
 }) => {
   const edgeTypes = Array.from(
@@ -44,8 +45,11 @@ const Legend: React.FC<LegendProps> = ({
     )
   );
 
-  const uniqueCategories = Array.from(new Set(simpleCategories));
-
+  const uniqueCategories = order
+    ? order
+    : Array.from(new Set(simpleCategories));
+  console.log(uniqueCategories);
+  console.log(toggles);
   return (
     <div
       style={{
