@@ -69,30 +69,33 @@ const Graph: React.FC<GraphProps> = ({
     });
   }
 
-  let a = new Set<string>();
-  data.node.forEach((node) => a.add(node.category));
-  data.edge.forEach((edge) => {
-    if (edge.category && legendToggle) {
-      a.add(legendToggle(edge));
-    } else if (edge.category) {
-      a.add(edge.category);
+  let allCategories = new Set<string>();
+  data.node.forEach((node) => {
+    if (legendToggle && !order) {
+      allCategories.add(legendToggle(node));
+    } else {
+      allCategories.add(node.category);
     }
   });
-  let u = Array.from(new Set(a));
+  data.edge.forEach((edge) => {
+    if (edge.category && legendToggle) {
+      allCategories.add(legendToggle(edge));
+    } else if (edge.category) {
+      allCategories.add(edge.category);
+    }
+  });
+  let orderedCategories = Array.from(allCategories);
+  console.log(orderedCategories);
   if (order) {
-    u = u.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    orderedCategories = orderedCategories.sort(
+      (a, b) => order.indexOf(a) - order.indexOf(b)
+    );
   }
 
   const initialToggles: { [key: string]: boolean } = {};
-  if (order) {
-    u.forEach((category) => {
-      initialToggles[category] = true;
-    });
-  } else {
-    uniqueCategories.forEach((category) => {
-      initialToggles[category] = true;
-    });
-  }
+  orderedCategories.forEach((category) => {
+    initialToggles[category] = true;
+  });
 
   // DOWNLOAD SCREENSHOT
   const ref = useRef<HTMLDivElement>(null);
@@ -164,6 +167,12 @@ const Graph: React.FC<GraphProps> = ({
   }
 
   const simple: string[] = elements.map((e) => {
+    if (legendToggle && !order) return legendToggle(e);
+    else {
+      return e.category;
+    }
+  });
+  const simpleCat: string[] = elements.map((e) => {
     if (legendToggle) return legendToggle(e);
     else {
       return e.category;
@@ -452,7 +461,7 @@ const Graph: React.FC<GraphProps> = ({
           <ControlPanel
             toggles={toggles}
             onToggle={handleToggle}
-            simpleCategories={simple}
+            simpleCategories={simpleCat}
             edgeType={data.edge.every((e) => e.category)}
             elements={elements}
             edges={edges}
