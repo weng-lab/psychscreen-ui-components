@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import { Node, Edge } from './types';
 import { Typography } from '@mui/material';
