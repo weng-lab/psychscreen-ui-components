@@ -140,6 +140,7 @@ SampleGraph.args = {
   scale: (n: number) => 10 * n,
   getColor: setColor3,
   legendToggle: convertToSimple2,
+  order: ['P', 'R', 'B'],
 };
 export const PilotDataWithCentered = Template.bind({});
 PilotDataWithCentered.args = {
