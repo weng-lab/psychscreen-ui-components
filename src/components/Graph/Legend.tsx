@@ -29,6 +29,7 @@ const Legend: React.FC<LegendProps> = ({
   legendToggle,
   legendNodeLabel,
   legendEdgeLabel,
+  order,
   uniqueCat,
 }) => {
   const edgeTypes = Array.from(
@@ -44,8 +45,11 @@ const Legend: React.FC<LegendProps> = ({
     )
   );
 
-  const uniqueCategories = Array.from(new Set(simpleCategories));
+  const uniqueCategories = order
+    ? order
+    : Array.from(new Set(simpleCategories)); // simple names
 
+  // loop on uniqueCat if there is order, else loop on uniqueCategories
   return (
     <div
       style={{
@@ -63,7 +67,7 @@ const Legend: React.FC<LegendProps> = ({
       {uniqueCat
         ? uniqueCat.map((category) => {
             let color = 'grey';
-            let c = '';
+            let simpleDisplay = '';
 
             elements.forEach((node) => {
               uniqueCategories.forEach((cat) => {
@@ -74,12 +78,11 @@ const Legend: React.FC<LegendProps> = ({
                   node.category === category
                 ) {
                   color = colorFunc(node);
-                  c = cat;
+                  simpleDisplay = cat; // simple display category name if legend toggle
                   return;
                 }
               });
             });
-
             return (
               <div
                 key={category}
@@ -106,7 +109,7 @@ const Legend: React.FC<LegendProps> = ({
                   }}
                   onClick={() => onToggle(category)}
                 >
-                  {c} {legendToggle ? '(' : null}
+                  {simpleDisplay} {legendToggle ? '(' : null}
                   {legendToggle ? category : null}
                   {legendToggle ? ')' : null}
                 </Typography>
@@ -115,7 +118,7 @@ const Legend: React.FC<LegendProps> = ({
           })
         : uniqueCategories.map((category) => {
             let color = 'grey';
-            let cat = '';
+            let nodeCat = '';
 
             elements.forEach((node) => {
               if (
@@ -124,7 +127,7 @@ const Legend: React.FC<LegendProps> = ({
                 legendToggle(node) === category
               ) {
                 color = colorFunc(node);
-                cat = node.category;
+                nodeCat = node.category; // category of node
               }
             });
 
@@ -155,7 +158,7 @@ const Legend: React.FC<LegendProps> = ({
                   onClick={() => onToggle(category)}
                 >
                   {category} {legendToggle ? '(' : null}
-                  {legendToggle ? cat : null}
+                  {legendToggle ? nodeCat : null}
                   {legendToggle ? ')' : null}
                 </Typography>
               </div>

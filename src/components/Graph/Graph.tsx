@@ -44,7 +44,7 @@ const Graph: React.FC<GraphProps> = ({
   const [showLabels, setShowLabels] = useState(true);
   const [toggles, setToggles] = useState<{ [key: string]: boolean }>({});
 
-  // unique categories for legend toggles
+  // unique categories for legend toggles or the node / edge categories
   const uniqueCategories = new Set<string>();
 
   if (legendToggle !== undefined) {
@@ -69,30 +69,34 @@ const Graph: React.FC<GraphProps> = ({
     });
   }
 
-  let a = new Set<string>();
-  data.node.forEach((node) => a.add(node.category));
-  data.edge.forEach((edge) => {
-    if (edge.category && legendToggle) {
-      a.add(legendToggle(edge));
-    } else if (edge.category) {
-      a.add(edge.category);
+  let allCategories = new Set<string>(); // holds all unique categories of nodes based on legendToggle and order
+  data.node.forEach((node) => {
+    if (legendToggle && !order) {
+      allCategories.add(legendToggle(node)); // simple legend name
+    } else {
+      allCategories.add(node.category); // node category
     }
   });
-  let u = Array.from(new Set(a));
+  data.edge.forEach((edge) => {
+    if (edge.category && legendToggle) {
+      allCategories.add(legendToggle(edge));
+    } else if (edge.category) {
+      allCategories.add(edge.category);
+    }
+  });
+
+  let orderedCategories = Array.from(allCategories);
+
   if (order) {
-    u = u.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    orderedCategories = orderedCategories.sort(
+      (a, b) => order.indexOf(a) - order.indexOf(b)
+    );
   }
 
   const initialToggles: { [key: string]: boolean } = {};
-  if (order) {
-    u.forEach((category) => {
-      initialToggles[category] = true;
-    });
-  } else {
-    uniqueCategories.forEach((category) => {
-      initialToggles[category] = true;
-    });
-  }
+  orderedCategories.forEach((category) => {
+    initialToggles[category] = true;
+  });
 
   // DOWNLOAD SCREENSHOT
   const ref = useRef<HTMLDivElement>(null);
@@ -156,14 +160,21 @@ const Graph: React.FC<GraphProps> = ({
   }, [data]);
 
   let elem = elements.map((e) => e.category);
-
-  let unique = Array.from(new Set(elem));
+  let unique = Array.from(new Set(elem)); // holds unique node categories only
 
   if (order) {
     unique = unique.sort((a, b) => order.indexOf(a) - order.indexOf(b));
   }
 
   const simple: string[] = elements.map((e) => {
+    // used for toggles
+    if (legendToggle && !order) return legendToggle(e);
+    else {
+      return e.category;
+    }
+  });
+  const simpleCat: string[] = elements.map((e) => {
+    // used for legend calculations
     if (legendToggle) return legendToggle(e);
     else {
       return e.category;
@@ -188,7 +199,7 @@ const Graph: React.FC<GraphProps> = ({
     }
 
     // connect holds all the connections between nodes
-    // connect[0] holds the target node INDICES for the FIRST node
+    // connect[0] holds the TARGET node INDICES for the FIRST node
     edges.forEach((e) => {
       const fromIndex = allcCREs.indexOf(e.from);
       const toIndex = allcCREs.indexOf(e.to);
@@ -247,6 +258,7 @@ const Graph: React.FC<GraphProps> = ({
     for (var i = 0; i < elements.length; i++) {
       if (toggles[simple[i]] !== false) {
         if (data.centered && elements[i].id === data.centered.id) {
+          // if centered node
           cy.add({
             data: { id: createID(i) }, // create name
             position: {
@@ -291,7 +303,7 @@ const Graph: React.FC<GraphProps> = ({
       }
     }
 
-    const c = edgeTypes.every((e) => e !== 'Edge');
+    const isDirectional = edgeTypes.every((e) => e !== 'Edge');
     // ADD EDGES
     let edgeCount = 0;
     for (var j = 0; j < elements.length; j++) {
@@ -311,7 +323,7 @@ const Graph: React.FC<GraphProps> = ({
               },
               style: {
                 'line-color': getColor ? getColor(edges[j]) : 'grey',
-                'target-arrow-shape': c ? 'triangle' : null,
+                'target-arrow-shape': isDirectional ? 'triangle' : null,
                 'target-arrow-color': getColor ? getColor(edges[j]) : 'grey',
                 width: scale(scales[j]),
               },
@@ -371,6 +383,7 @@ const Graph: React.FC<GraphProps> = ({
     };
   }, [elements, scales, edgeTypes, edges, toggles, showTooltip, hideTooltip]);
 
+  // toggle labels
   useEffect(() => {
     if (!cyRef.current) return;
     let ind = 0;
@@ -412,7 +425,7 @@ const Graph: React.FC<GraphProps> = ({
     }
   };
 
-  // TOGGLE
+  // TOGGLE CATEGORIES
   const handleToggle = (category: string) => {
     setToggles((prevToggles) => ({
       ...prevToggles,
@@ -452,7 +465,7 @@ const Graph: React.FC<GraphProps> = ({
           <ControlPanel
             toggles={toggles}
             onToggle={handleToggle}
-            simpleCategories={simple}
+            simpleCategories={simpleCat}
             edgeType={data.edge.every((e) => e.category)}
             elements={elements}
             edges={edges}
