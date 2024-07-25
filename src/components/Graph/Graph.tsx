@@ -44,7 +44,7 @@ const Graph: React.FC<GraphProps> = ({
   const [showLabels, setShowLabels] = useState(true);
   const [toggles, setToggles] = useState<{ [key: string]: boolean }>({});
 
-  // unique categories for legend toggles
+  // unique categories for legend toggles or the node / edge categories
   const uniqueCategories = new Set<string>();
 
   if (legendToggle !== undefined) {
@@ -85,7 +85,7 @@ const Graph: React.FC<GraphProps> = ({
     }
   });
   let orderedCategories = Array.from(allCategories);
-  console.log(orderedCategories);
+
   if (order) {
     orderedCategories = orderedCategories.sort(
       (a, b) => order.indexOf(a) - order.indexOf(b)

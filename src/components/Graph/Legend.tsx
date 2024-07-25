@@ -47,9 +47,9 @@ const Legend: React.FC<LegendProps> = ({
 
   const uniqueCategories = order
     ? order
-    : Array.from(new Set(simpleCategories));
-  console.log(uniqueCategories);
-  console.log(toggles);
+    : Array.from(new Set(simpleCategories)); // simple names
+
+  // loop on uniqueCat if there is order, else loop on uniqueCategories
   return (
     <div
       style={{
@@ -78,12 +78,11 @@ const Legend: React.FC<LegendProps> = ({
                   node.category === category
                 ) {
                   color = colorFunc(node);
-                  c = cat;
+                  c = cat; // simple category name if legend toggle
                   return;
                 }
               });
             });
-
             return (
               <div
                 key={category}
@@ -128,7 +127,7 @@ const Legend: React.FC<LegendProps> = ({
                 legendToggle(node) === category
               ) {
                 color = colorFunc(node);
-                cat = node.category;
+                cat = node.category; // category of node
               }
             });
 
