@@ -130,9 +130,10 @@ const Graph: React.FC<GraphProps> = ({
       return;
     }
 
+    const containerRect = containerRef.current.getBoundingClientRect();
     const coords = {
-      x: event.renderedPosition.x,
-      y: event.renderedPosition.y,
+      x: event.renderedPosition.x + containerRect.left,
+      y: event.renderedPosition.y + containerRect.top,
     };
 
     showTooltip({
@@ -505,9 +506,10 @@ const Graph: React.FC<GraphProps> = ({
         <TooltipInPortal
           style={{
             ...defaultStyles,
+            position: 'absolute',
+            zIndex: 1000,
             backgroundColor: 'black',
             color: 'white',
-            zIndex: 1000,
             fontSize: '12px',
           }}
           key={Math.random()}
