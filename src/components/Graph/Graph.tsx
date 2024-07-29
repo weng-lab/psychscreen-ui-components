@@ -6,7 +6,7 @@ import { useScreenshot } from 'use-react-screenshot';
 import { GraphProps, Node, Edge, ToolTipData } from './types';
 
 import ControlPanel from './ControlPanel';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 cytoscape.use(coseBilkent);
 
@@ -130,9 +130,10 @@ const Graph: React.FC<GraphProps> = ({
       return;
     }
 
+    const containerRect = containerRef.current.getBoundingClientRect();
     const coords = {
-      x: event.renderedPosition.x,
-      y: event.renderedPosition.y,
+      x: event.renderedPosition.x + containerRect.left,
+      y: event.renderedPosition.y + containerRect.top,
     };
 
     showTooltip({
@@ -502,30 +503,33 @@ const Graph: React.FC<GraphProps> = ({
         ></div>
       </div>
       {tooltipOpen && tooltipData && (
-        <TooltipInPortal
-          style={{
-            ...defaultStyles,
-            backgroundColor: 'black',
-            color: 'white',
-            zIndex: 1000,
-            fontSize: '12px',
-          }}
-          key={Math.random()}
-          top={tooltipTop}
-          left={tooltipLeft}
-        >
-          {tooltipData.id ? (
-            <div style={{ fontFamily: 'helvetica' }}>
-              ID: {tooltipData.id} <br />
-              Type: {tooltipData.type}
-              {tooltipData.centered ? <div> Centered Node </div> : null}
-            </div>
-          ) : (
-            <div style={{ fontFamily: 'helvetica' }}>
-              Type: {tooltipData.type}
-            </div>
-          )}
-        </TooltipInPortal>
+        <Box style={{ zIndex: 1000 }}>
+          <TooltipInPortal
+            style={{
+              ...defaultStyles,
+              position: 'absolute',
+              zIndex: 1000,
+              backgroundColor: 'black',
+              color: 'white',
+              fontSize: '12px',
+            }}
+            key={Math.random()}
+            top={tooltipTop}
+            left={tooltipLeft}
+          >
+            {tooltipData.id ? (
+              <div style={{ fontFamily: 'helvetica' }}>
+                ID: {tooltipData.id} <br />
+                Type: {tooltipData.type}
+                {tooltipData.centered ? <div> Centered Node </div> : null}
+              </div>
+            ) : (
+              <div style={{ fontFamily: 'helvetica' }}>
+                Type: {tooltipData.type}
+              </div>
+            )}
+          </TooltipInPortal>
+        </Box>
       )}
     </div>
   );

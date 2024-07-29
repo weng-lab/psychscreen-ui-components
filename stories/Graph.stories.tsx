@@ -124,6 +124,7 @@ function convertToSimple2(node: Node | Edge): string {
       return 'Edge';
   }
 }
+
 const meta: Meta = {
   title: 'Graph',
   component: Graph,
@@ -142,6 +143,7 @@ SampleGraph.args = {
   legendToggle: convertToSimple2,
   order: ['P', 'R', 'B'],
 };
+
 export const PilotDataWithCentered = Template.bind({});
 PilotDataWithCentered.args = {
   data: data.data,

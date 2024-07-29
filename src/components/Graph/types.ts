@@ -33,9 +33,9 @@ export interface Edge {
   }
 
 
-
   export type ToolTipData =  {
     id?: string;
     type: string;
     centered?: string;
   }
+
