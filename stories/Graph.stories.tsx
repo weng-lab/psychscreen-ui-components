@@ -26,9 +26,9 @@ function setColor(node: Node | Edge): string {
       case 'Low-DNase':
         return '#e1e1e1';
       case 'lower-expression':
-        return 'black';
+        return 'rgb(0,0,0)';
       case 'higher-expression':
-        return 'blue';
+        return 'rgb(0,0,225)';
       default:
         return 'grey';
     }
@@ -161,64 +161,6 @@ PilotDataWithCentered.args = {
     'TF',
     'Low DNase',
   ],
-};
-
-export const X = () => {
-  return (
-    <>
-      <h1>Graph</h1>
-      <h1>Graph</h1>
-      <h1>Graph</h1>
-      <div style={{ margin: '20px', display: 'flex', alignItems: 'center' }}>
-        <h1>Graph</h1>
-        <div
-          style={{
-            marginRight: '50px',
-            backgroundColor: 'purple',
-            padding: '10px',
-          }}
-        >
-          <h2>Left</h2>
-          <p>graph</p>
-        </div>
-        <div>
-          <Graph
-            data={data.data}
-            title="cCRE Impact With Pilot Data With Centered cCRE"
-            id="h"
-            getColor={setColor}
-            legendToggle={convertToSimple}
-            legendNodeLabel="cCRE Type"
-            order={[
-              'PLS',
-              'pELS',
-              'dELS',
-              'CA-H3K4me3',
-              'CA-CTCF',
-              'CA-TF',
-              'CA-only',
-              'TF',
-              'Low DNase',
-            ]}
-          />
-        </div>
-
-        <div
-          style={{
-            marginLeft: '50px',
-            backgroundColor: 'purple',
-            padding: '10px',
-          }}
-        >
-          <h2>Right</h2>
-          <p>graph</p>
-        </div>
-      </div>
-      <h1>Graph</h1>
-      <h1>Graph</h1>
-      <h1>Graph</h1>
-    </>
-  );
 };
 
 export const FiftyPercent = Template.bind({});

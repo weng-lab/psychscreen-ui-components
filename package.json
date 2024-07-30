@@ -2,7 +2,7 @@
   "name": "@weng-lab/psychscreen-ui-components",
   "description": "Typescript and Material UI based components used for psychSCREEN",
   "author": "SCREEN Team @ UMass Chan Medical School",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -84,7 +84,9 @@
     "@visx/tooltip": "^3.3.0",
     "cytoscape": "^3.29.2",
     "cytoscape-cose-bilkent": "^4.1.0",
+    "cytoscape-popper": "^4.0.0",
     "html2canvas": "^1.4.1",
+    "tippy.js": "^6.3.7",
     "use-react-screenshot": "^4.0.0"
   }
 }

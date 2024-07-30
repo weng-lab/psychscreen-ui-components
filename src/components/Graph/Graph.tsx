@@ -1,14 +1,39 @@
 import React, { useRef, useEffect, useState } from 'react';
 import cytoscape, { Core, EdgeSingular, NodeSingular } from 'cytoscape';
 import coseBilkent from 'cytoscape-cose-bilkent';
+import cytoscapePopper from 'cytoscape-popper';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { useScreenshot } from 'use-react-screenshot';
 import { GraphProps, Node, Edge, ToolTipData } from './types';
+import tippy, { Instance, Props } from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
 import ControlPanel from './ControlPanel';
 import { Typography } from '@mui/material';
 
 cytoscape.use(coseBilkent);
+cytoscape.use(cytoscapePopper(popperFactory));
+
+function popperFactory(
+  ref: any,
+  content: string | HTMLElement,
+  opts?: Partial<Props>
+): Instance<Props> {
+  const dummyDomElem = document.createElement('div');
+  document.body.appendChild(dummyDomElem);
+  return tippy(dummyDomElem, {
+    getReferenceClientRect: ref.getBoundingClientRect,
+    trigger: 'manual',
+    content: content,
+    arrow: true,
+    placement: 'bottom',
+    hideOnClick: false,
+    sticky: 'reference',
+    interactive: true,
+    appendTo: document.body,
+    ...opts,
+  });
+}
 
 const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
   const a = document.createElement('a');
@@ -123,25 +148,6 @@ const Graph: React.FC<GraphProps> = ({
     detectBounds: true,
     scroll: true,
   });
-
-  const handleMouseMove = (event: cytoscape.EventObject, datum: any) => {
-    if (!containerRef.current) {
-      console.error('Container ref is not set');
-      return;
-    }
-
-    // const containerRect = containerRef.current.getBoundingClientRect();
-    const coords = {
-      x: event.originalEvent.clientX,
-      y: event.originalEvent.clientY,
-    };
-
-    showTooltip({
-      tooltipLeft: coords.x,
-      tooltipTop: coords.y,
-      tooltipData: datum,
-    });
-  };
 
   // each graph needs a unique id
   let k = 'cy-' + id;
@@ -305,6 +311,7 @@ const Graph: React.FC<GraphProps> = ({
     }
 
     const isDirectional = edgeTypes.every((e) => e !== 'Edge');
+
     // ADD EDGES
     let edgeCount = 0;
     for (var j = 0; j < elements.length; j++) {
@@ -316,11 +323,13 @@ const Graph: React.FC<GraphProps> = ({
             toggles[simple[connect[j][s]]] !== false && // toggle
             toggles[edgeTypes[j]] !== false
           ) {
+            let c = data.edge.every((e) => e.category);
             cy.add({
               data: {
                 id: 'edge ' + edgeCount,
                 source: createID(j),
                 target: createID(connect[j][s]),
+                category: c ? edges[j].category : 'Edge',
               },
               style: {
                 'line-color': getColor ? getColor(edges[j]) : 'grey',
@@ -334,49 +343,63 @@ const Graph: React.FC<GraphProps> = ({
         }
       }
     }
-    let idx = 0;
-    cy.nodes().forEach((node: NodeSingular) => {
-      let ID = allcCREs[idx].toString();
-      let s = simple[idx].toString();
-      if (data.centered && ID === data.centered.id) {
-        node.on('mouseover', (event) =>
-          handleMouseMove(event, {
-            id: ID,
-            type: s,
-            centered: 'Centered Node',
-          })
-        );
+
+    // TOOLTIP NODES
+    cy.nodes().forEach((node: NodeSingular, idx: number) => {
+      const ref = node.popperRef();
+      const content = document.createElement('div');
+      if (data.centered && allcCREs[idx].toString() === data.centered.id) {
+        content.innerHTML = `ID: ${allcCREs[idx]}<br>Type: ${
+          legendToggle ? legendToggle(elements[idx]) : elements[idx].category
+        }<br>Centered Node`;
       } else {
-        node.on('mouseover', (event) =>
-          handleMouseMove(event, {
-            id: ID,
-            type: s,
-          })
-        );
+        content.innerHTML = `ID: ${allcCREs[idx]}<br>Type: ${
+          legendToggle ? legendToggle(elements[idx]) : elements[idx].category
+        }`;
       }
-      idx++;
-      node.on('mouseout', hideTooltip);
+
+      content.style.fontSize = '12px';
+      content.style.fontFamily = 'Roboto';
+      const tip = popperFactory(ref, content, {});
+      node.on('mouseover', () => tip.show());
+      node.on('mouseout', () => tip.hide());
     });
 
+    // TOOLTIP EDGES
     cy.edges().forEach((edge: EdgeSingular) => {
+      const ref = edge.popperRef();
+      const content = document.createElement('div');
+
       if (data.edge.every((e) => e.category)) {
-        edge.on('mouseover', (event) =>
-          handleMouseMove(event, {
-            type:
-              edge.style('line-color').toString() === 'rgb(0,0,0)'
-                ? 'Lower-Expression'
-                : 'Higher-Expression',
-          })
-        );
+        let c = '';
+        edges.forEach((e) => {
+          if (
+            legendToggle &&
+            e.category &&
+            edge.data('category') &&
+            edge.data('category') === e.category
+          ) {
+            c = legendToggle(e);
+            return;
+          }
+        });
+
+        if (c.length === 0) {
+          content.innerHTML = `Edge`;
+        } else {
+          content.innerHTML = `Edge Type: ${c}`;
+        }
       } else {
-        edge.on('mouseover', (event) =>
-          handleMouseMove(event, {
-            type: 'Edge',
-          })
-        );
+        content.innerHTML = `Edge`;
       }
-      edge.on('mouseout', hideTooltip);
+
+      content.style.fontSize = '12px';
+      content.style.fontFamily = 'Roboto';
+      const tip = popperFactory(ref, content, {});
+      edge.on('mouseover', () => tip.show());
+      edge.on('mouseout', () => tip.hide());
     });
+
     organize();
 
     return () => {
