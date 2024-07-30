@@ -135,8 +135,6 @@ const Graph: React.FC<GraphProps> = ({
       x: event.originalEvent.clientX,
       y: event.originalEvent.clientY,
     };
-    console.log(coords);
-    console.log(event);
 
     showTooltip({
       tooltipLeft: coords.x,
