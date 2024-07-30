@@ -130,11 +130,13 @@ const Graph: React.FC<GraphProps> = ({
       return;
     }
 
-    const containerRect = containerRef.current.getBoundingClientRect();
+    // const containerRect = containerRef.current.getBoundingClientRect();
     const coords = {
-      x: event.renderedPosition.x + containerRect.left,
-      y: event.renderedPosition.y + containerRect.top,
+      x: event.originalEvent.clientX,
+      y: event.originalEvent.clientY,
     };
+    console.log(coords);
+    console.log(event);
 
     showTooltip({
       tooltipLeft: coords.x,
@@ -339,7 +341,7 @@ const Graph: React.FC<GraphProps> = ({
       let ID = allcCREs[idx].toString();
       let s = simple[idx].toString();
       if (data.centered && ID === data.centered.id) {
-        node.on('mousemove', (event) =>
+        node.on('mouseover', (event) =>
           handleMouseMove(event, {
             id: ID,
             type: s,
@@ -347,7 +349,7 @@ const Graph: React.FC<GraphProps> = ({
           })
         );
       } else {
-        node.on('mousemove', (event) =>
+        node.on('mouseover', (event) =>
           handleMouseMove(event, {
             id: ID,
             type: s,
@@ -360,7 +362,7 @@ const Graph: React.FC<GraphProps> = ({
 
     cy.edges().forEach((edge: EdgeSingular) => {
       if (data.edge.every((e) => e.category)) {
-        edge.on('mousemove', (event) =>
+        edge.on('mouseover', (event) =>
           handleMouseMove(event, {
             type:
               edge.style('line-color').toString() === 'rgb(0,0,0)'
@@ -369,7 +371,7 @@ const Graph: React.FC<GraphProps> = ({
           })
         );
       } else {
-        edge.on('mousemove', (event) =>
+        edge.on('mouseover', (event) =>
           handleMouseMove(event, {
             type: 'Edge',
           })
