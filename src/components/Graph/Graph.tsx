@@ -57,7 +57,7 @@ const Graph: React.FC<GraphProps> = ({
   legendNodeLabel,
   legendEdgeLabel,
   order,
-  fontFamily = 'Roboto',
+  fontFamily = 'Arial',
 }) => {
   const cyRef = useRef<Core | null>(null);
 

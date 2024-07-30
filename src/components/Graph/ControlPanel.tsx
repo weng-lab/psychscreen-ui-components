@@ -109,7 +109,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               justifyContent: 'center',
               alignItems: 'center',
               display: 'inline-block',
-              fontFamily: 'Roboto',
             }}
           >
             Controls
