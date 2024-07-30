@@ -161,6 +161,7 @@ PilotDataWithCentered.args = {
     'TF',
     'Low DNase',
   ],
+  fontFamily: 'Times New Roman',
 };
 
 export const FiftyPercent = Template.bind({});

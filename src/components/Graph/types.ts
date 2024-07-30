@@ -30,6 +30,7 @@ export interface Edge {
     legendNodeLabel?: string, 
     legendEdgeLabel?: string,
     order?: string[],
+    fontFamily?: string,
   }
 
 

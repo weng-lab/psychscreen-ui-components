@@ -57,6 +57,7 @@ const Graph: React.FC<GraphProps> = ({
   legendNodeLabel,
   legendEdgeLabel,
   order,
+  fontFamily = 'Roboto',
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -280,7 +281,7 @@ const Graph: React.FC<GraphProps> = ({
               fontSize: '12px',
               borderWidth: '2px',
               borderColor: 'black',
-              fontFamily: 'Roboto',
+              fontFamily: fontFamily,
               backgroundFit: 'contain',
               backgroundClip: 'none',
               backgroundImage: `url(${starSVGURL})`,
@@ -303,7 +304,7 @@ const Graph: React.FC<GraphProps> = ({
                   : elements[i].id
                 : '',
               fontSize: '12px',
-              fontFamily: 'Roboto',
+              fontFamily: fontFamily,
             },
           });
         }
@@ -359,7 +360,7 @@ const Graph: React.FC<GraphProps> = ({
       }
 
       content.style.fontSize = '12px';
-      content.style.fontFamily = 'Roboto';
+      content.style.fontFamily = fontFamily;
       const tip = popperFactory(ref, content, {});
       node.on('mouseover', () => tip.show());
       node.on('mouseout', () => tip.hide());
@@ -394,7 +395,7 @@ const Graph: React.FC<GraphProps> = ({
       }
 
       content.style.fontSize = '12px';
-      content.style.fontFamily = 'Roboto';
+      content.style.fontFamily = fontFamily;
       const tip = popperFactory(ref, content, {});
       edge.on('mouseover', () => tip.show());
       edge.on('mouseout', () => tip.hide());
@@ -474,6 +475,7 @@ const Graph: React.FC<GraphProps> = ({
           marginLeft: '3px',
           fontSize: '18px',
           fontWeight: 'bold',
+          fontFamily: fontFamily,
         }}
       >
         {title}
