@@ -61,7 +61,9 @@ const Legend: React.FC<LegendProps> = ({
         padding: '5px',
       }}
     >
-      <Typography style={{ fontSize: '18px', margin: '3px' }}>
+      <Typography
+        style={{ fontSize: '18px', margin: '3px', fontFamily: 'Arial' }}
+      >
         {legendNodeLabel ? legendNodeLabel : 'Node Type'}
       </Typography>
       {uniqueCat
@@ -106,6 +108,7 @@ const Legend: React.FC<LegendProps> = ({
                     marginLeft: '4px',
                     cursor: 'pointer',
                     fontSize: '14px',
+                    fontFamily: 'Arial',
                   }}
                   onClick={() => onToggle(category)}
                 >
@@ -154,6 +157,7 @@ const Legend: React.FC<LegendProps> = ({
                     marginLeft: '4px',
                     cursor: 'pointer',
                     fontSize: '14px',
+                    fontFamily: 'Arial',
                   }}
                   onClick={() => onToggle(category)}
                 >
@@ -167,7 +171,9 @@ const Legend: React.FC<LegendProps> = ({
 
       {edgeType && edgeTypes !== null ? (
         <div>
-          <Typography style={{ fontSize: '18px', margin: '3px' }}>
+          <Typography
+            style={{ fontSize: '18px', margin: '3px', fontFamily: 'Arial' }}
+          >
             {legendEdgeLabel ? legendEdgeLabel : 'Edge Type'}
           </Typography>
           {edgeTypes.map((category) => {
@@ -208,6 +214,7 @@ const Legend: React.FC<LegendProps> = ({
                     marginLeft: '4px',
                     cursor: 'pointer',
                     fontSize: '14px',
+                    fontFamily: 'Arial',
                   }}
                   onClick={() => onToggle(category)}
                 >

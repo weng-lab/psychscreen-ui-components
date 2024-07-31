@@ -49,6 +49,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
           style={{
             margin: '3px 0',
             fontSize: '16px',
+            fontFamily: 'Arial',
           }}
         >
           Edge Weight Scale:
@@ -59,6 +60,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
           style={{
             margin: '3px 0',
             fontSize: '14px',
+            fontFamily: 'Arial',
           }}
         >
           {scaleFormula}
@@ -86,6 +88,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
               style={{
                 marginLeft: '10px',
                 fontSize: '14px',
+                fontFamily: 'Arial',
               }}
             >
               {min.toFixed(2)}
@@ -105,6 +108,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
               style={{
                 marginLeft: '10px',
                 fontSize: '14px',
+                fontFamily: 'Arial',
               }}
             >
               {mid1.toFixed(2)}
@@ -124,6 +128,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
               style={{
                 marginLeft: '10px',
                 fontSize: '14px',
+                fontFamily: 'Arial',
               }}
             >
               {mid2.toFixed(2)}
@@ -143,6 +148,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
               style={{
                 marginLeft: '10px',
                 fontSize: '14px',
+                fontFamily: 'Arial',
               }}
             >
               {max.toFixed(2)}
