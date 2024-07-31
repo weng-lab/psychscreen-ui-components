@@ -31,6 +31,7 @@ export interface Edge {
     legendEdgeLabel?: string,
     order?: string[],
     fontFamily?: string,
+    onNodeClick?: (n: { accession: string; start: number; end: number; chromosome: string }) => any,
   }
 
 

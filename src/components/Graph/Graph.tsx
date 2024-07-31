@@ -58,6 +58,7 @@ const Graph: React.FC<GraphProps> = ({
   legendEdgeLabel,
   order,
   fontFamily = 'Arial',
+  onNodeClick,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -363,6 +364,15 @@ const Graph: React.FC<GraphProps> = ({
       content.style.fontFamily = fontFamily;
       const tip = popperFactory(ref, content, {});
       node.on('mouseover', () => tip.show());
+      if (onNodeClick) {
+        const c = {
+          accession: node.style('label'),
+          start: 0,
+          end: 0,
+          chromosome: '',
+        };
+        node.on('click', onNodeClick(c));
+      }
       node.on('mouseout', () => tip.hide());
     });
 

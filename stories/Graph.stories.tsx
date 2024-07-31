@@ -141,6 +141,12 @@ SampleGraph.args = {
   getColor: setColor3,
   legendToggle: convertToSimple2,
   order: ['P', 'R', 'B'],
+  onNodeClick: (n: {
+    accession: string;
+    start: number;
+    end: number;
+    chromosome: string;
+  }) => console.log('Accession: ' + n.accession),
 };
 export const PilotDataWithCentered = Template.bind({});
 PilotDataWithCentered.args = {
