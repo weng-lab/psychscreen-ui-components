@@ -363,7 +363,12 @@ const Graph: React.FC<GraphProps> = ({
       content.style.fontSize = '12px';
       content.style.fontFamily = fontFamily;
       const tip = popperFactory(ref, content, {});
-      node.on('mouseover', () => tip.show());
+
+      node.on('mouseover', () => {
+        tip.show();
+        document.body.style.cursor = 'pointer';
+      });
+
       if (onNodeClick) {
         const c = {
           accession: node.style('label'),
@@ -371,9 +376,13 @@ const Graph: React.FC<GraphProps> = ({
           end: 0,
           chromosome: '',
         };
-        node.on('click', onNodeClick(c));
+        node.on('click', () => onNodeClick(c));
       }
-      node.on('mouseout', () => tip.hide());
+
+      node.on('mouseout', () => {
+        tip.hide();
+        document.body.style.cursor = 'default';
+      });
     });
 
     // TOOLTIP EDGES
