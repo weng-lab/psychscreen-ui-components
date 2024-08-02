@@ -376,7 +376,11 @@ const Graph: React.FC<GraphProps> = ({
           end: 0,
           chromosome: '',
         };
-        node.on('click', () => onNodeClick(c));
+        node.on('click', () => {
+          onNodeClick(c);
+          tip.hide();
+          document.body.style.cursor = 'default';
+        });
       }
 
       node.on('mouseout', () => {
