@@ -2,9 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import cytoscape, { Core, EdgeSingular, NodeSingular } from 'cytoscape';
 import coseBilkent from 'cytoscape-cose-bilkent';
 import cytoscapePopper from 'cytoscape-popper';
-import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { useScreenshot } from 'use-react-screenshot';
-import { GraphProps, Node, Edge, ToolTipData } from './types';
+import { GraphProps, Node, Edge } from './types';
 import tippy, { Instance, Props } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 
@@ -59,7 +58,8 @@ const Graph: React.FC<GraphProps> = ({
   order,
   fontFamily = 'Arial',
   onNodeClick,
-  directional,
+  onEdgeClick,
+  directional = false,
   scaleLabel,
 }) => {
   const cyRef = useRef<Core | null>(null);
@@ -138,20 +138,6 @@ const Graph: React.FC<GraphProps> = ({
   };
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const {
-    tooltipData,
-    tooltipLeft,
-    tooltipTop,
-    tooltipOpen,
-    showTooltip,
-    hideTooltip,
-  } = useTooltip<ToolTipData>();
-
-  const { TooltipInPortal } = useTooltipInPortal({
-    detectBounds: true,
-    scroll: true,
-  });
 
   // each graph needs a unique id
   let k = 'cy-' + id;
@@ -339,11 +325,7 @@ const Graph: React.FC<GraphProps> = ({
               },
               style: {
                 'line-color': getColor ? getColor(edges[edgeCount]) : 'grey',
-                'target-arrow-shape': directional
-                  ? 'triangle'
-                  : c
-                  ? 'triangle'
-                  : null,
+                'target-arrow-shape': directional ? 'triangle' : null,
                 'target-arrow-color': getColor
                   ? getColor(edges[edgeCount])
                   : 'grey',
@@ -379,19 +361,20 @@ const Graph: React.FC<GraphProps> = ({
         document.body.style.cursor = 'pointer';
       });
 
-      if (onNodeClick) {
-        const c = {
-          accession: node.style('label'),
-          start: 0,
-          end: 0,
-          chromosome: '',
-        };
-        node.on('click', () => {
+      node.on('click', () => {
+        if (onNodeClick) {
+          const c = {
+            accession: node.style('label'),
+            start: 0,
+            end: 0,
+            chromosome: '',
+          };
           onNodeClick(c);
-          tip.hide();
-          document.body.style.cursor = 'default';
-        });
-      }
+        }
+
+        tip.hide();
+        document.body.style.cursor = 'default';
+      });
 
       node.on('mouseout', () => {
         tip.hide();
@@ -437,6 +420,15 @@ const Graph: React.FC<GraphProps> = ({
       content.style.fontSize = '12px';
       content.style.fontFamily = fontFamily;
       const tip = popperFactory(ref, content, {});
+      edge.on('click', () => {
+        if (onEdgeClick) {
+          onEdgeClick();
+        }
+
+        tip.hide();
+        document.body.style.cursor = 'default';
+      });
+
       edge.on('mouseover', () => tip.show());
       edge.on('mouseout', () => tip.hide());
     });
@@ -446,7 +438,7 @@ const Graph: React.FC<GraphProps> = ({
     return () => {
       cy.destroy();
     };
-  }, [elements, scales, edgeTypes, edges, toggles, showTooltip, hideTooltip]);
+  }, [elements, scales, edgeTypes, edges, toggles]);
 
   // toggle labels
   useEffect(() => {
@@ -521,37 +513,6 @@ const Graph: React.FC<GraphProps> = ({
         {title}
       </Typography>
 
-      {showControls && (
-        <div
-          style={{
-            backgroundColor: 'white',
-            boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-          }}
-        >
-          <ControlPanel
-            toggles={toggles}
-            onToggle={handleToggle}
-            simpleCategories={simpleCat}
-            edgeType={data.edge.every((e) => e.category)}
-            elements={elements}
-            edges={edges}
-            scales={scales}
-            scaleWidth={scale}
-            downloadScreenshot={downloadScreenshot}
-            randomize={randomize}
-            organize={organize}
-            toggleLabels={() => setShowLabels(!showLabels)}
-            labelsOn={showLabels}
-            colorFunc={getColor}
-            legendToggle={legendToggle}
-            legendNodeLabel={legendNodeLabel}
-            legendEdgeLabel={legendEdgeLabel}
-            uniqueCat={order ? unique : undefined}
-            scaleLabel={scaleLabel}
-          />
-        </div>
-      )}
-
       <div
         ref={ref}
         style={{
@@ -567,34 +528,38 @@ const Graph: React.FC<GraphProps> = ({
             zIndex: 999,
           }}
         ></div>
+
+        {showControls && (
+          <div
+            style={{
+              backgroundColor: 'white',
+              boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+            }}
+          >
+            <ControlPanel
+              toggles={toggles}
+              onToggle={handleToggle}
+              simpleCategories={simpleCat}
+              edgeType={data.edge.every((e) => e.category)}
+              elements={elements}
+              edges={edges}
+              scales={scales}
+              scaleWidth={scale}
+              downloadScreenshot={downloadScreenshot}
+              randomize={randomize}
+              organize={organize}
+              toggleLabels={() => setShowLabels(!showLabels)}
+              labelsOn={showLabels}
+              colorFunc={getColor}
+              legendToggle={legendToggle}
+              legendNodeLabel={legendNodeLabel}
+              legendEdgeLabel={legendEdgeLabel}
+              uniqueCat={order ? unique : undefined}
+              scaleLabel={scaleLabel}
+            />
+          </div>
+        )}
       </div>
-      {tooltipOpen && tooltipData && (
-        <TooltipInPortal
-          style={{
-            ...defaultStyles,
-            position: 'absolute',
-            zIndex: 1000,
-            backgroundColor: 'black',
-            color: 'white',
-            fontSize: '12px',
-          }}
-          key={Math.random()}
-          top={tooltipTop}
-          left={tooltipLeft}
-        >
-          {tooltipData.id ? (
-            <div style={{ fontFamily: 'helvetica' }}>
-              ID: {tooltipData.id} <br />
-              Type: {tooltipData.type}
-              {tooltipData.centered ? <div> Centered Node </div> : null}
-            </div>
-          ) : (
-            <div style={{ fontFamily: 'helvetica' }}>
-              Type: {tooltipData.type}
-            </div>
-          )}
-        </TooltipInPortal>
-      )}
     </div>
   );
 };

@@ -141,7 +141,7 @@ const Template: Story<GraphProps> = (args) => <Graph {...args} />;
 export const SampleGraph = Template.bind({});
 SampleGraph.args = {
   data: data2.data,
-  title: 'Sample Graph With No Centered cCRE',
+  title: 'Sample Graph (non-cCRE)',
   id: 'Sample',
   scale: (n: number) => 10 * n,
   getColor: setColor3,

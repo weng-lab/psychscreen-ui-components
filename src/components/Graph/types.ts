@@ -31,45 +31,8 @@ export interface Edge {
     legendEdgeLabel?: string,
     order?: string[],
     fontFamily?: string,
-    onNodeClick?: (n: { accession: string; start: number; end: number; chromosome: string }) => any,
+    onNodeClick?: (n: any) => any,
+    onEdgeClick?: () => any,
     directional?: boolean,
     scaleLabel?: string,
   }
-
-
-
-  export type ToolTipData =  {
-    id?: string;
-    type: string;
-    centered?: string;
-  }
-
-
-  export interface GraphPropsWithData {
-    accession: string;
-    celltype: string;
-    degreeOfSeparation: number;
-    id: number,
-  }
-
-  export type NewEdge = {
-    source: string;
-    destination: string;
-    distance: number;
-    path: string;
-    weights: string;
-  };
-
-  export type NewNode = {
-    accession: string;
-    ccre_group: string;
-  };
-  
-  export type OldFormat = {
-    data: {
-      edge: Edge[];
-      node: Node[];
-      centered: {id: string};
-    };
-  };
-

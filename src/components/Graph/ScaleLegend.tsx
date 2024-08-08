@@ -1,5 +1,7 @@
 import React, { CSSProperties } from 'react';
 import Typography from '@mui/material/Typography';
+import InfoIcon from '@mui/icons-material/Info';
+import Tooltip from '@mui/material/Tooltip';
 
 interface ScaleProps {
   scales: number[];
@@ -57,17 +59,14 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width, scaleLabel }) => {
           }}
         >
           Edge Weight Scale:
-        </Typography>
-        <Typography
-          variant="body2"
-          component="h4"
-          style={{
-            margin: '3px 0',
-            fontSize: '13px',
-            fontFamily: 'Arial',
-          }}
-        >
-          {scaleFormula}
+          <Tooltip
+            title={scaleFormula}
+            color="primary"
+            sx={{ ml: 0.5 }}
+            placement="bottom"
+          >
+            <InfoIcon fontSize="small" style={{ marginBottom: '-4.5px' }} />
+          </Tooltip>
         </Typography>
 
         <div
