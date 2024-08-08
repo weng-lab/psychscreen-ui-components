@@ -34,6 +34,7 @@ interface ControlPanelProps {
   legendNodeLabel?: string;
   legendEdgeLabel?: string;
   uniqueCat?: string[];
+  scaleLabel?: string;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -55,6 +56,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   legendNodeLabel,
   legendEdgeLabel,
   uniqueCat,
+  scaleLabel,
 }) => {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -128,7 +130,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               uniqueCat={uniqueCat}
             />
 
-            <ScaleLegend scales={scales} width={scaleWidth} />
+            <ScaleLegend
+              scales={scales}
+              width={scaleWidth}
+              scaleLabel={scaleLabel}
+            />
 
             <Stack direction="row" spacing={2} style={{ marginBottom: '5px' }}>
               <Button

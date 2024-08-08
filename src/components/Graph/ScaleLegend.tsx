@@ -4,9 +4,10 @@ import Typography from '@mui/material/Typography';
 interface ScaleProps {
   scales: number[];
   width: (n: number) => number;
+  scaleLabel?: string;
 }
 
-const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
+const ScaleLegend: React.FC<ScaleProps> = ({ scales, width, scaleLabel }) => {
   if (scales.length === 0) return null;
 
   const sorted = [...scales].sort((a, b) => a - b);
@@ -16,11 +17,14 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
   const mid2 = sorted[Math.floor((sorted.length * 3) / 4)];
 
   const scaleFunctionStr = width.toString();
-  const scaleFormula =
+  let scaleFormula =
     scaleFunctionStr
       .match(/=>\s*(.*)/)?.[1]
       ?.trim()
       .replace('Math.', '') || scaleFunctionStr;
+  if (scaleLabel) {
+    scaleFormula = scaleLabel;
+  }
 
   const divStyle: CSSProperties = {
     top: '20vh',
@@ -59,7 +63,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
           component="h4"
           style={{
             margin: '3px 0',
-            fontSize: '14px',
+            fontSize: '13px',
             fontFamily: 'Arial',
           }}
         >

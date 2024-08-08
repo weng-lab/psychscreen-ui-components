@@ -59,6 +59,8 @@ const Graph: React.FC<GraphProps> = ({
   order,
   fontFamily = 'Arial',
   onNodeClick,
+  directional,
+  scaleLabel,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -263,6 +265,7 @@ const Graph: React.FC<GraphProps> = ({
 </svg>
 `;
     const starSVGURL = `data:image/svg+xml;utf8,${encodeURIComponent(starSVG)}`;
+
     // ADD NODES
     for (var i = 0; i < elements.length; i++) {
       if (toggles[simple[i]] !== false) {
@@ -312,18 +315,19 @@ const Graph: React.FC<GraphProps> = ({
       }
     }
 
-    const isDirectional = edgeTypes.every((e) => e !== 'Edge');
-
     // ADD EDGES
     let edgeCount = 0;
+
     for (var j = 0; j < elements.length; j++) {
       // add # of edges per node based on the target connections
       if (toggles[simple[j]] !== false) {
         let len = connect[j].length;
         for (let s = 0; s < len; s++) {
+          const edgeCategory = edges[edgeCount]?.category;
+
           if (
-            toggles[simple[connect[j][s]]] !== false && // toggle
-            toggles[edgeTypes[j]] !== false
+            toggles[simple[connect[j][s]]] !== false &&
+            (edgeCategory ? toggles[edgeTypes[edgeCount]] !== false : true)
           ) {
             let c = data.edge.every((e) => e.category);
             cy.add({
@@ -331,17 +335,23 @@ const Graph: React.FC<GraphProps> = ({
                 id: 'edge ' + edgeCount,
                 source: createID(j),
                 target: createID(connect[j][s]),
-                category: c ? edges[j].category : 'Edge',
+                category: c ? edges[edgeCount].category : 'Edge',
               },
               style: {
-                'line-color': getColor ? getColor(edges[j]) : 'grey',
-                'target-arrow-shape': isDirectional ? 'triangle' : null,
-                'target-arrow-color': getColor ? getColor(edges[j]) : 'grey',
-                width: scale(scales[j]),
+                'line-color': getColor ? getColor(edges[edgeCount]) : 'grey',
+                'target-arrow-shape': directional
+                  ? 'triangle'
+                  : c
+                  ? 'triangle'
+                  : null,
+                'target-arrow-color': getColor
+                  ? getColor(edges[edgeCount])
+                  : 'grey',
+                width: scale(scales[edgeCount]),
               },
             });
-            edgeCount++;
           }
+          edgeCount++;
         }
       }
     }
@@ -404,6 +414,13 @@ const Graph: React.FC<GraphProps> = ({
             edge.data('category') === e.category
           ) {
             c = legendToggle(e);
+            return;
+          } else if (
+            e.category &&
+            edge.data('category') &&
+            edge.data('category') === e.category
+          ) {
+            c = e.category;
             return;
           }
         });
@@ -530,6 +547,7 @@ const Graph: React.FC<GraphProps> = ({
             legendNodeLabel={legendNodeLabel}
             legendEdgeLabel={legendEdgeLabel}
             uniqueCat={order ? unique : undefined}
+            scaleLabel={scaleLabel}
           />
         </div>
       )}

@@ -48,6 +48,7 @@ const Legend: React.FC<LegendProps> = ({
   const uniqueCategories = order
     ? order
     : Array.from(new Set(simpleCategories)); // simple names
+  console.log(toggles);
 
   // loop on uniqueCat if there is order, else loop on uniqueCategories
   return (
@@ -187,6 +188,12 @@ const Legend: React.FC<LegendProps> = ({
                 colorFunc &&
                 legendToggle &&
                 legendToggle(edge) === category
+              ) {
+                color = colorFunc(edge);
+              } else if (
+                colorFunc &&
+                edge.category &&
+                edge.category === category
               ) {
                 color = colorFunc(edge);
               }

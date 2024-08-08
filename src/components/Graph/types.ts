@@ -32,6 +32,8 @@ export interface Edge {
     order?: string[],
     fontFamily?: string,
     onNodeClick?: (n: { accession: string; start: number; end: number; chromosome: string }) => any,
+    directional?: boolean,
+    scaleLabel?: string,
   }
 
 
@@ -41,3 +43,33 @@ export interface Edge {
     type: string;
     centered?: string;
   }
+
+
+  export interface GraphPropsWithData {
+    accession: string;
+    celltype: string;
+    degreeOfSeparation: number;
+    id: number,
+  }
+
+  export type NewEdge = {
+    source: string;
+    destination: string;
+    distance: number;
+    path: string;
+    weights: string;
+  };
+
+  export type NewNode = {
+    accession: string;
+    ccre_group: string;
+  };
+  
+  export type OldFormat = {
+    data: {
+      edge: Edge[];
+      node: Node[];
+      centered: {id: string};
+    };
+  };
+

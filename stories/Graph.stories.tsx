@@ -73,6 +73,10 @@ function setColor3(node: Node | Edge): string {
         return 'purple';
       case 'B':
         return 'blue';
+      case 'hello':
+        return 'pink';
+      case 'hi':
+        return 'green';
       default:
         return 'grey';
     }
@@ -112,17 +116,19 @@ function convertToSimple(node: Node | Edge): string {
 }
 
 function convertToSimple2(node: Node | Edge): string {
-  switch (node.category) {
-    case 'R':
-      return 'red nodes';
-    case 'B':
-      return 'blue nodes';
-    case 'P':
-      return 'purple nodes';
-    default:
-      if (node.category) return node.category;
-      return 'Edge';
+  if (node.category !== undefined) {
+    switch (node.category) {
+      case 'R':
+        return 'red nodes';
+      case 'B':
+        return 'blue nodes';
+      case 'P':
+        return 'purple nodes';
+      default:
+        return node.category;
+    }
   }
+  return 'Edge';
 }
 const meta: Meta = {
   title: 'Graph',
@@ -168,6 +174,7 @@ PilotDataWithCentered.args = {
     'Low DNase',
   ],
   fontFamily: 'Times New Roman',
+  directional: true,
 };
 
 export const FiftyPercent = Template.bind({});
@@ -180,6 +187,7 @@ FiftyPercent.args = {
   getColor: setColor,
   legendToggle: convertToSimple,
   legendNodeLabel: 'cCRE Type',
+  directional: true,
 };
 
 export const PilotDataWithoutCentered = Template.bind({});
@@ -190,6 +198,7 @@ PilotDataWithoutCentered.args = {
   getColor: setColor,
   legendToggle: convertToSimple,
   legendNodeLabel: 'cCRE Type',
+  directional: true,
 };
 
 export const DifferentLabel = Template.bind({});
@@ -202,6 +211,7 @@ DifferentLabel.args = {
   legendToggle: convertToSimple,
   legendNodeLabel: 'Different Node Label',
   legendEdgeLabel: 'Different Edge Label',
+  directional: true,
 };
 
 export const DifferentColor = Template.bind({});
@@ -241,4 +251,5 @@ DifferentOrder.args = {
     'CA-H3K4me3',
     'CA-TF',
   ],
+  directional: true,
 };
