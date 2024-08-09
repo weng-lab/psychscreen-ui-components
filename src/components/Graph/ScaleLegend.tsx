@@ -65,7 +65,10 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width, scaleLabel }) => {
             sx={{ ml: 0.5 }}
             placement="bottom"
           >
-            <InfoIcon fontSize="small" style={{ marginBottom: '-4.5px' }} />
+            <InfoIcon
+              fontSize="small"
+              style={{ marginBottom: '-4.5px', marginTop: '-7px' }}
+            />
           </Tooltip>
         </Typography>
 
