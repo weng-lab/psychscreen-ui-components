@@ -6,33 +6,39 @@ import { Typography } from '@mui/material';
 interface LegendProps {
   toggles: { [key: string]: boolean };
   onToggle: (category: string) => void;
-  simpleCategories: string[];
-  edgeType: boolean;
+  /* all simple names for each node category or just the node categories 
+  if legendToggle does not exist for simpler legend names 
+  this will be looped over if an ordering does not exist */
+  simpleOrNodeCategories: string[];
+  // boolean for if all edges have a category type, unless we will not show the Edge Type block
+  allEdgesHaveCategory: boolean;
   colorFunc?: (node: Node | Edge) => string;
   elements: Node[];
   edges: Edge[];
+  // optional naming convention for the legend toggles based on node or edge
   legendToggle?: (node: Node | Edge) => string;
   legendNodeLabel?: string;
   legendEdgeLabel?: string;
-  order?: string[];
-  uniqueCat?: string[];
+  /* unique node categories, in correct order if ordering exists, else it is undefined such that
+  it will loop on the unique simple or node categories array (based on simpleOrNodeCategories)
+  */
+  uniqueNodeCategoriesWithOrder?: string[];
 }
 
 const Legend: React.FC<LegendProps> = ({
   toggles,
   onToggle,
-  simpleCategories,
-  edgeType,
+  simpleOrNodeCategories,
+  allEdgesHaveCategory,
   colorFunc,
   elements,
   edges,
   legendToggle,
   legendNodeLabel,
   legendEdgeLabel,
-  order,
-  uniqueCat,
+  uniqueNodeCategoriesWithOrder,
 }) => {
-  const edgeTypes = Array.from(
+  const edgeCategories = Array.from(
     new Set(
       edges.map((e) => {
         if (legendToggle) return legendToggle(e);
@@ -45,11 +51,18 @@ const Legend: React.FC<LegendProps> = ({
     )
   );
 
+<<<<<<< Updated upstream
   const uniqueCategories = order
     ? order
     : Array.from(new Set(simpleCategories)); // simple names
+=======
+  const uniqueSimpleOrNodeCategories = Array.from(
+    new Set(simpleOrNodeCategories)
+  ); // simple names
+>>>>>>> Stashed changes
 
-  // loop on uniqueCat if there is order, else loop on uniqueCategories
+  /* loop on uniqueNodeCategoriesWithOrder if there is order
+   else loop on simpleOrNodeCategories */
   return (
     <div
       style={{
@@ -64,13 +77,17 @@ const Legend: React.FC<LegendProps> = ({
       <Typography style={{ fontSize: '18px', margin: '3px' }}>
         {legendNodeLabel ? legendNodeLabel : 'Node Type'}
       </Typography>
-      {uniqueCat
-        ? uniqueCat.map((category) => {
+      {/* LOOP ON UNIQUE NODE CATEGORIES WITH ORDER IF THERE IS A ORDERING CONVENTION,
+       ELSE LOOP OVER UNIQUE SIMPLE NODE NAMES IF THEY EXIST, IF NOT LOOP OVER ALL UNIQUE NODE CATEGORIES */}
+      {uniqueNodeCategoriesWithOrder
+        ? uniqueNodeCategoriesWithOrder.map((category) => {
             let color = 'grey';
-            let simpleDisplay = '';
+            let simpleNameForNodeCategory = '';
 
+            // find matching node category to each element in unique simple or node categories
+            // if found, use that node in color function and use that simple category name in the legend's display
             elements.forEach((node) => {
-              uniqueCategories.forEach((cat) => {
+              uniqueSimpleOrNodeCategories.forEach((cat) => {
                 if (
                   colorFunc &&
                   legendToggle &&
@@ -78,7 +95,9 @@ const Legend: React.FC<LegendProps> = ({
                   node.category === category
                 ) {
                   color = colorFunc(node);
-                  simpleDisplay = cat; // simple display category name if legend toggle
+                  // simple name for node category if legend toggle exists for simple name
+                  // else it will be null and only the given node category will show
+                  simpleNameForNodeCategory = cat;
                   return;
                 }
               });
@@ -109,17 +128,22 @@ const Legend: React.FC<LegendProps> = ({
                   }}
                   onClick={() => onToggle(category)}
                 >
-                  {simpleDisplay} {legendToggle ? '(' : null}
+                  {simpleNameForNodeCategory} {legendToggle ? '(' : null}
                   {legendToggle ? category : null}
                   {legendToggle ? ')' : null}
                 </Typography>
               </div>
             );
           })
-        : uniqueCategories.map((category) => {
+        : uniqueSimpleOrNodeCategories.map((category) => {
+            {
+              /* LOOP THROUGH SIMPLE NAMES FOR NODES OR NODE CATEGORIES IF THERE IS NO ORDERING*/
+            }
             let color = 'grey';
             let nodeCat = '';
 
+            // find matching node category or simple name to each element
+            // if found, use that node in color function and get the node's category
             elements.forEach((node) => {
               if (
                 colorFunc &&
@@ -164,13 +188,15 @@ const Legend: React.FC<LegendProps> = ({
               </div>
             );
           })}
-
-      {edgeType && edgeTypes !== null ? (
+      {/* IF EVERY EDGE HAS A CATEGORY AND ARRAY OF THE DIFFERENT EDGE TYPES IS NOT NULL 
+LOOP THROUGH EACH EDGE CATEGORY AND FIND CORRECT COLOR, CHECK FOR BOTH SIMPLE NAME AND REGULAR CATEGORY
+*/}
+      {allEdgesHaveCategory && edgeCategories !== null ? (
         <div>
           <Typography style={{ fontSize: '18px', margin: '3px' }}>
             {legendEdgeLabel ? legendEdgeLabel : 'Edge Type'}
           </Typography>
-          {edgeTypes.map((category) => {
+          {edgeCategories.map((category) => {
             if (category === undefined) {
               return null;
             }

@@ -16,10 +16,15 @@ import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
 
 interface ControlPanelProps {
+  // all key value pairs to toggle on and off nodes / edges
   toggles: { [key: string]: boolean };
+  // Function to toggle on and off
   onToggle: (category: string) => void;
-  simpleCategories: string[];
-  edgeType: boolean;
+  // simple names for each node or each node's categories if no legendToggle
+  simpleOrNodeCategories: string[];
+  // boolean for if each edge HAS a category
+  allEdgesHaveCategory: boolean;
+  // coloring for nodes and edges
   colorFunc?: (node: Node | Edge) => string;
   elements: Node[];
   edges: Edge[];
@@ -29,18 +34,28 @@ interface ControlPanelProps {
   randomize: () => void;
   organize: () => void;
   toggleLabels: () => void;
+  // for the show labels state variable
   labelsOn: boolean;
+  //** optional naming convention for the legend toggles based on node or edge */
   legendToggle?: (node: Node | Edge) => string;
+  // optional node type and edge type titles
   legendNodeLabel?: string;
   legendEdgeLabel?: string;
+<<<<<<< Updated upstream
   uniqueCat?: string[];
+=======
+  // unique node categories, in order if ordering exists, else it is undefined for legend calculations
+  uniqueNodeCategoriesWithOrder?: string[];
+  // label for scale formula in tooltip
+  scaleLabel?: string;
+>>>>>>> Stashed changes
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
   toggles,
   onToggle,
-  simpleCategories,
-  edgeType,
+  simpleOrNodeCategories,
+  allEdgesHaveCategory,
   colorFunc,
   elements,
   edges,
@@ -54,7 +69,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   legendToggle,
   legendNodeLabel,
   legendEdgeLabel,
+<<<<<<< Updated upstream
   uniqueCat,
+=======
+  uniqueNodeCategoriesWithOrder,
+  scaleLabel,
+>>>>>>> Stashed changes
 }) => {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -117,15 +137,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             <Legend
               toggles={toggles}
               onToggle={onToggle}
-              simpleCategories={simpleCategories}
-              edgeType={edgeType}
+              simpleOrNodeCategories={simpleOrNodeCategories}
+              allEdgesHaveCategory={allEdgesHaveCategory}
               colorFunc={colorFunc}
               elements={elements}
               edges={edges}
               legendToggle={legendToggle}
               legendNodeLabel={legendNodeLabel}
               legendEdgeLabel={legendEdgeLabel}
-              uniqueCat={uniqueCat}
+              uniqueNodeCategoriesWithOrder={uniqueNodeCategoriesWithOrder}
             />
 
             <ScaleLegend scales={scales} width={scaleWidth} />
