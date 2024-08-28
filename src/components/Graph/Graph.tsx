@@ -64,6 +64,7 @@ const Graph: React.FC<GraphProps> = ({
   order,
   fontFamily = 'Arial',
   scaleLabel,
+  directional = false,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -335,7 +336,6 @@ const Graph: React.FC<GraphProps> = ({
       }
     }
 
-    const isDirectional = edgeTypes.every((e) => e !== 'Edge');
     // ADD EDGES
     let edgeCount = 0; // keeps track of actual edge element we are on
     // loop over each NODE ELEMENT
@@ -366,14 +366,16 @@ const Graph: React.FC<GraphProps> = ({
                 category: c ? edges[edgeCount].category : 'Edge',
               },
               style: {
-                'line-color': getColor ? getColor(edges[j]) : 'grey',
-                'target-arrow-shape': isDirectional ? 'triangle' : null,
-                'target-arrow-color': getColor ? getColor(edges[j]) : 'grey',
-                width: scale(scales[j]),
+                'line-color': getColor ? getColor(edges[edgeCount]) : 'grey',
+                'target-arrow-shape': directional ? 'triangle' : null,
+                'target-arrow-color': getColor
+                  ? getColor(edges[edgeCount])
+                  : 'grey',
+                width: scale(scales[edgeCount]),
               },
             });
-            edgeCount++;
           }
+          edgeCount++;
         }
       }
     }
@@ -551,38 +553,6 @@ const Graph: React.FC<GraphProps> = ({
       >
         {title}
       </Typography>
-
-      {showControls && (
-        <div
-          style={{
-            backgroundColor: 'white',
-            boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-          }}
-        >
-          <ControlPanel
-            toggles={toggles}
-            onToggle={handleToggle}
-            simpleOrNodeCategories={simpleOrNodeCategories}
-            allEdgesHaveCategory={data.edge.every((e) => e.category)}
-            elements={elements}
-            edges={edges}
-            scales={scales}
-            scaleWidth={scale}
-            downloadScreenshot={downloadScreenshot}
-            randomize={randomize}
-            organize={organize}
-            toggleLabels={() => setShowLabels(!showLabels)}
-            labelsOn={showLabels}
-            colorFunc={getColor}
-            legendToggle={legendToggle}
-            legendNodeLabel={legendNodeLabel}
-            legendEdgeLabel={legendEdgeLabel}
-            uniqueNodeCategoriesWithOrder={
-              order ? uniqueNodeCategories : undefined
-            }
-          />
-        </div>
-      )}
 
       <div
         ref={ref}

@@ -203,6 +203,12 @@ LOOP THROUGH EACH EDGE CATEGORY AND FIND CORRECT COLOR, CHECK FOR BOTH SIMPLE NA
                 legendToggle(edge) === category
               ) {
                 color = colorFunc(edge);
+              } else if (
+                colorFunc &&
+                edge.category &&
+                edge.category === category
+              ) {
+                color = colorFunc(edge);
               }
             });
 
