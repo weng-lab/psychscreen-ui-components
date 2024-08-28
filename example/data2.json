@@ -5,12 +5,14 @@
                 "from": "node_1",
                 "to": "node_2",
                 "effectSize": 0.1134,
+                "category": "hello",
                 "id": 1
             },
             {
                 "from": "node_3",
                 "to": "node_2",
                 "effectSize": 0.5,
+                "category": "hi",
                 "id": 2
             }
         ],

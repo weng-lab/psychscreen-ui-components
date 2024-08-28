@@ -1,12 +1,15 @@
 import React, { CSSProperties } from 'react';
 import Typography from '@mui/material/Typography';
+import InfoIcon from '@mui/icons-material/Info';
+import Tooltip from '@mui/material/Tooltip';
 
 interface ScaleProps {
   scales: number[];
   width: (n: number) => number;
+  scaleLabel?: string;
 }
 
-const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
+const ScaleLegend: React.FC<ScaleProps> = ({ scales, width, scaleLabel }) => {
   if (scales.length === 0) return null;
 
   const sorted = [...scales].sort((a, b) => a - b);
@@ -16,11 +19,14 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
   const mid2 = sorted[Math.floor((sorted.length * 3) / 4)];
 
   const scaleFunctionStr = width.toString();
-  const scaleFormula =
+  let scaleFormula =
     scaleFunctionStr
       .match(/=>\s*(.*)/)?.[1]
       ?.trim()
       .replace('Math.', '') || scaleFunctionStr;
+  if (scaleLabel) {
+    scaleFormula = scaleLabel;
+  }
 
   const divStyle: CSSProperties = {
     top: '20vh',
@@ -49,21 +55,21 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
           style={{
             margin: '3px 0',
             fontSize: '16px',
-            fontWeight: 'bold',
+            fontFamily: 'Arial',
           }}
         >
           Edge Weight Scale:
-        </Typography>
-        <Typography
-          variant="body2"
-          component="h4"
-          style={{
-            margin: '3px 0',
-            fontSize: '14px',
-            fontWeight: 'bold',
-          }}
-        >
-          {scaleFormula}
+          <Tooltip
+            title={scaleFormula}
+            color="primary"
+            sx={{ ml: 0.5 }}
+            placement="bottom"
+          >
+            <InfoIcon
+              fontSize="small"
+              style={{ marginBottom: '-4.5px', marginTop: '-7px' }}
+            />
+          </Tooltip>
         </Typography>
 
         <div
@@ -88,6 +94,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
               style={{
                 marginLeft: '10px',
                 fontSize: '14px',
+                fontFamily: 'Arial',
               }}
             >
               {min.toFixed(2)}
@@ -107,6 +114,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
               style={{
                 marginLeft: '10px',
                 fontSize: '14px',
+                fontFamily: 'Arial',
               }}
             >
               {mid1.toFixed(2)}
@@ -126,6 +134,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
               style={{
                 marginLeft: '10px',
                 fontSize: '14px',
+                fontFamily: 'Arial',
               }}
             >
               {mid2.toFixed(2)}
@@ -145,6 +154,7 @@ const ScaleLegend: React.FC<ScaleProps> = ({ scales, width }) => {
               style={{
                 marginLeft: '10px',
                 fontSize: '14px',
+                fontFamily: 'Arial',
               }}
             >
               {max.toFixed(2)}
