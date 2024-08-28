@@ -41,14 +41,10 @@ interface ControlPanelProps {
   // optional node type and edge type titles
   legendNodeLabel?: string;
   legendEdgeLabel?: string;
-<<<<<<< Updated upstream
-  uniqueCat?: string[];
-=======
   // unique node categories, in order if ordering exists, else it is undefined for legend calculations
   uniqueNodeCategoriesWithOrder?: string[];
   // label for scale formula in tooltip
   scaleLabel?: string;
->>>>>>> Stashed changes
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -69,12 +65,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   legendToggle,
   legendNodeLabel,
   legendEdgeLabel,
-<<<<<<< Updated upstream
-  uniqueCat,
-=======
   uniqueNodeCategoriesWithOrder,
   scaleLabel,
->>>>>>> Stashed changes
 }) => {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -148,7 +140,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               uniqueNodeCategoriesWithOrder={uniqueNodeCategoriesWithOrder}
             />
 
-            <ScaleLegend scales={scales} width={scaleWidth} />
+            <ScaleLegend
+              scales={scales}
+              width={scaleWidth}
+              scaleLabel={scaleLabel}
+            />
 
             <Stack direction="row" spacing={2} style={{ marginBottom: '5px' }}>
               <Button

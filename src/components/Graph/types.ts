@@ -30,9 +30,6 @@ export interface Edge {
     legendToggle?: (node: Node | Edge) => string, 
     legendNodeLabel?: string, 
     legendEdgeLabel?: string,
-<<<<<<< Updated upstream
-    order?: string[],
-=======
     // optional ordering of nodes in legend, only can be done by the node category
     order?: string[], 
     // optional fontFamily prop for font for entire graph
@@ -41,7 +38,6 @@ export interface Edge {
     onEdgeClick?: (n: any) => any,
     directional?: boolean,
     scaleLabel?: string,
->>>>>>> Stashed changes
   }
 
 

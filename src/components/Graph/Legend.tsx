@@ -51,15 +51,9 @@ const Legend: React.FC<LegendProps> = ({
     )
   );
 
-<<<<<<< Updated upstream
-  const uniqueCategories = order
-    ? order
-    : Array.from(new Set(simpleCategories)); // simple names
-=======
   const uniqueSimpleOrNodeCategories = Array.from(
     new Set(simpleOrNodeCategories)
   ); // simple names
->>>>>>> Stashed changes
 
   /* loop on uniqueNodeCategoriesWithOrder if there is order
    else loop on simpleOrNodeCategories */

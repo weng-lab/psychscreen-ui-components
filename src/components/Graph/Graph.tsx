@@ -1,12 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
 import cytoscape, { Core, EdgeSingular, NodeSingular } from 'cytoscape';
 import coseBilkent from 'cytoscape-cose-bilkent';
-import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
+import cytoscapePopper from 'cytoscape-popper';
+
 import { useScreenshot } from 'use-react-screenshot';
-import { GraphProps, Node, Edge, ToolTipData } from './types';
+import { GraphProps, Node, Edge } from './types';
+import tippy, { Instance, Props } from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
 import ControlPanel from './ControlPanel';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 // CYTOSCAPE LIBRARIES
 
@@ -14,6 +17,28 @@ import { Box, Typography } from '@mui/material';
 /**https://github.com/cytoscape/cytoscape.js-popper */
 
 cytoscape.use(coseBilkent);
+cytoscape.use(cytoscapePopper(popperFactory));
+
+function popperFactory(
+  ref: any,
+  content: string | HTMLElement,
+  opts?: Partial<Props>
+): Instance<Props> {
+  const dummyDomElem = document.createElement('div');
+  document.body.appendChild(dummyDomElem);
+  return tippy(dummyDomElem, {
+    getReferenceClientRect: ref.getBoundingClientRect,
+    trigger: 'manual',
+    content: content,
+    arrow: true,
+    placement: 'bottom',
+    hideOnClick: false,
+    sticky: 'reference',
+    interactive: true,
+    appendTo: document.body,
+    ...opts,
+  });
+}
 
 const download = (image: string, { name = 'img', extension = 'jpg' } = {}) => {
   const a = document.createElement('a');
@@ -34,7 +59,11 @@ const Graph: React.FC<GraphProps> = ({
   legendToggle,
   legendNodeLabel,
   legendEdgeLabel,
+  onNodeClick,
+  onEdgeClick,
   order,
+  fontFamily = 'Arial',
+  scaleLabel,
 }) => {
   const cyRef = useRef<Core | null>(null);
 
@@ -139,39 +168,6 @@ const Graph: React.FC<GraphProps> = ({
   };
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const {
-    tooltipData,
-    tooltipLeft,
-    tooltipTop,
-    tooltipOpen,
-    showTooltip,
-    hideTooltip,
-  } = useTooltip<ToolTipData>();
-
-  const { TooltipInPortal } = useTooltipInPortal({
-    detectBounds: true,
-    scroll: true,
-  });
-
-  const handleMouseMove = (event: cytoscape.EventObject, datum: any) => {
-    if (!containerRef.current) {
-      console.error('Container ref is not set');
-      return;
-    }
-
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const coords = {
-      x: event.renderedPosition.x + containerRect.left,
-      y: event.renderedPosition.y + containerRect.top,
-    };
-
-    showTooltip({
-      tooltipLeft: coords.x,
-      tooltipTop: coords.y,
-      tooltipData: datum,
-    });
-  };
 
   // each graph needs a unique id
   let k = 'cy-' + id;
@@ -341,12 +337,8 @@ const Graph: React.FC<GraphProps> = ({
 
     const isDirectional = edgeTypes.every((e) => e !== 'Edge');
     // ADD EDGES
-<<<<<<< Updated upstream
-    let edgeCount = 0;
-=======
     let edgeCount = 0; // keeps track of actual edge element we are on
     // loop over each NODE ELEMENT
->>>>>>> Stashed changes
     for (var j = 0; j < elements.length; j++) {
       // add # of edges FOR EACH NODE based on the target connections
       // if that element's simple (or node category) name is true, we show it
@@ -354,28 +346,24 @@ const Graph: React.FC<GraphProps> = ({
       if (toggles[simple[j]] !== false) {
         let len = connect[j].length; // connect[j] is the array of target indices from node j-1
         for (let s = 0; s < len; s++) {
-<<<<<<< Updated upstream
-=======
           const edgeCategory = edges[edgeCount]?.category;
           // if that element's simple (or node category) TARGET's name is true, we show it, else we do not show the edge
           // also check if the edge has a category and if it is toggled on, else if it has no category continue
->>>>>>> Stashed changes
+
           if (
-            toggles[simple[connect[j][s]]] !== false && // toggle
-            toggles[edgeTypes[j]] !== false
+            toggles[simple[connect[j][s]]] !== false &&
+            (edgeCategory ? toggles[edgeTypes[edgeCount]] !== false : true)
           ) {
+            let c = data.edge.every((e) => e.category);
             cy.add({
               data: {
                 id: 'edge ' + edgeCount,
                 source: createID(j),
                 target: createID(connect[j][s]),
-<<<<<<< Updated upstream
-=======
                 // if every element has a category we will give each edge a category type
                 // else it will have category type "Edge"
                 // this is done for edge tooltip
                 category: c ? edges[edgeCount].category : 'Edge',
->>>>>>> Stashed changes
               },
               style: {
                 'line-color': getColor ? getColor(edges[j]) : 'grey',
@@ -389,30 +377,6 @@ const Graph: React.FC<GraphProps> = ({
         }
       }
     }
-<<<<<<< Updated upstream
-    let idx = 0;
-    cy.nodes().forEach((node: NodeSingular) => {
-      let ID = allcCREs[idx].toString();
-      let s = simple[idx].toString();
-      if (data.centered && ID === data.centered.id) {
-        node.on('mousemove', (event) =>
-          handleMouseMove(event, {
-            id: ID,
-            type: s,
-            centered: 'Centered Node',
-          })
-        );
-      } else {
-        node.on('mousemove', (event) =>
-          handleMouseMove(event, {
-            id: ID,
-            type: s,
-          })
-        );
-      }
-      idx++;
-      node.on('mouseout', hideTooltip);
-=======
 
     // TOOLTIP NODES
     cy.nodes().forEach((node: NodeSingular, idx: number) => {
@@ -457,29 +421,41 @@ const Graph: React.FC<GraphProps> = ({
         tip.hide();
         document.body.style.cursor = 'default';
       });
->>>>>>> Stashed changes
     });
 
     cy.edges().forEach((edge: EdgeSingular) => {
+      const ref = edge.popperRef();
+      const content = document.createElement('div');
+
       if (data.edge.every((e) => e.category)) {
-        edge.on('mousemove', (event) =>
-          handleMouseMove(event, {
-            type:
-              edge.style('line-color').toString() === 'rgb(0,0,0)'
-                ? 'Lower-Expression'
-                : 'Higher-Expression',
-          })
-        );
+        let c = '';
+        edges.forEach((e) => {
+          if (
+            legendToggle &&
+            e.category &&
+            edge.data('category') &&
+            edge.data('category') === e.category
+          ) {
+            c = legendToggle(e);
+            return;
+          } else if (
+            e.category &&
+            edge.data('category') &&
+            edge.data('category') === e.category
+          ) {
+            c = e.category;
+            return;
+          }
+        });
+
+        if (c.length === 0) {
+          content.innerHTML = `Edge`;
+        } else {
+          content.innerHTML = `Edge Type: ${c}`;
+        }
       } else {
-        edge.on('mousemove', (event) =>
-          handleMouseMove(event, {
-            type: 'Edge',
-          })
-        );
+        content.innerHTML = `Edge`;
       }
-<<<<<<< Updated upstream
-      edge.on('mouseout', hideTooltip);
-=======
 
       content.style.fontSize = '12px';
       content.style.fontFamily = fontFamily;
@@ -495,14 +471,14 @@ const Graph: React.FC<GraphProps> = ({
 
       edge.on('mouseover', () => tip.show());
       edge.on('mouseout', () => tip.hide());
->>>>>>> Stashed changes
     });
+
     organize();
 
     return () => {
       cy.destroy();
     };
-  }, [elements, scales, edgeTypes, edges, toggles, showTooltip, hideTooltip]);
+  }, [elements, scales, edgeTypes, edges, toggles]);
 
   // TOGGLE LABELS
   useEffect(() => {
@@ -586,8 +562,8 @@ const Graph: React.FC<GraphProps> = ({
           <ControlPanel
             toggles={toggles}
             onToggle={handleToggle}
-            simpleCategories={simpleCat}
-            edgeType={data.edge.every((e) => e.category)}
+            simpleOrNodeCategories={simpleOrNodeCategories}
+            allEdgesHaveCategory={data.edge.every((e) => e.category)}
             elements={elements}
             edges={edges}
             scales={scales}
@@ -601,7 +577,9 @@ const Graph: React.FC<GraphProps> = ({
             legendToggle={legendToggle}
             legendNodeLabel={legendNodeLabel}
             legendEdgeLabel={legendEdgeLabel}
-            uniqueCat={order ? unique : undefined}
+            uniqueNodeCategoriesWithOrder={
+              order ? uniqueNodeCategories : undefined
+            }
           />
         </div>
       )}
@@ -621,8 +599,6 @@ const Graph: React.FC<GraphProps> = ({
             zIndex: 999,
           }}
         ></div>
-<<<<<<< Updated upstream
-=======
 
         {showControls && (
           <div
@@ -656,37 +632,7 @@ const Graph: React.FC<GraphProps> = ({
             />
           </div>
         )}
->>>>>>> Stashed changes
       </div>
-      {tooltipOpen && tooltipData && (
-        <Box style={{ zIndex: 1000 }}>
-          <TooltipInPortal
-            style={{
-              ...defaultStyles,
-              position: 'absolute',
-              zIndex: 1000,
-              backgroundColor: 'black',
-              color: 'white',
-              fontSize: '12px',
-            }}
-            key={Math.random()}
-            top={tooltipTop}
-            left={tooltipLeft}
-          >
-            {tooltipData.id ? (
-              <div style={{ fontFamily: 'helvetica' }}>
-                ID: {tooltipData.id} <br />
-                Type: {tooltipData.type}
-                {tooltipData.centered ? <div> Centered Node </div> : null}
-              </div>
-            ) : (
-              <div style={{ fontFamily: 'helvetica' }}>
-                Type: {tooltipData.type}
-              </div>
-            )}
-          </TooltipInPortal>
-        </Box>
-      )}
     </div>
   );
 };
