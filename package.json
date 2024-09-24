@@ -25,9 +25,6 @@
     "sb": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
-  "peerDependencies": {
-    "react": ">=16"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "tsdx lint"
@@ -50,15 +47,24 @@
       "limit": "10 KB"
     }
   ],
+  "dependencies": {
+    "@visx/tooltip": "^3.3.0",
+    "cytoscape": "^3.29.2",
+    "cytoscape-cose-bilkent": "^4.1.0",
+    "cytoscape-popper": "^4.0.0",
+    "html2canvas": "^1.4.1",
+    "tippy.js": "^6.3.7",
+    "use-react-screenshot": "^4.0.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@babel/preset-env": "^7.21.4",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.21.4",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.14.3",
-    "@mui/material": "^5.14.3",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.1",
+    "@mui/material": "^6.1.1",
     "@size-limit/preset-small-lib": "^8.2.4",
     "@storybook/addon-essentials": "^7.0.7",
     "@storybook/addon-links": "^7.0.7",
@@ -81,13 +87,13 @@
     "typescript": "^5.0.4",
     "webpack": "^5.80.0"
   },
-  "dependencies": {
-    "@visx/tooltip": "^3.3.0",
-    "cytoscape": "^3.29.2",
-    "cytoscape-cose-bilkent": "^4.1.0",
-    "cytoscape-popper": "^4.0.0",
-    "html2canvas": "^1.4.1",
-    "tippy.js": "^6.3.7",
-    "use-react-screenshot": "^4.0.0"
-  }
+  "peerDependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.1",
+    "@mui/material": "^6.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "packageManager": "yarn@3.5.0+sha512.2dc70be5fce9f66756d25b00a888f3ca66f86b502b76750e72ba54cec89da767b938c54124595e26f868825688e0fe3552c26c76a330673343057acadd5cfcf2"
 }

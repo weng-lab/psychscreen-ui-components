@@ -4,7 +4,7 @@
 
 import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
-import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
+import Grid from '@mui/material/Grid2';
 import Slider from '@mui/material/Slider';
 import { SliderProps as MuiSliderProps } from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
@@ -178,7 +178,7 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
   };
 
   return (
-    <Box sx={{ width: props.width }}>
+    (<Box sx={{ width: props.width }}>
       <Typography>{props.title}</Typography>
       <Slider
         getAriaLabel={() => 'Minimum distance'}
@@ -193,8 +193,8 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
         step={sliderStep}
         sx={{height: 2}}
       />
-      <Grid2 container spacing={1}>
-        <Grid2 xs={5.5}>
+      <Grid container spacing={1}>
+        <Grid size={5.5}>
           <TextField
             value={tempValue[0]}
             size='small'
@@ -209,13 +209,13 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
               'aria-labelledby': 'input-slider',
             }}
           />
-        </Grid2>
-        <Grid2 xs={1} sx={{display: "inline-grid", alignItems: "center"}}>
+        </Grid>
+        <Grid sx={{display: "inline-grid", alignItems: "center"}} size={1}>
           <Typography sx={{justifySelf: "center"}}>
             –
           </Typography>
-        </Grid2>
-        <Grid2 xs={5.5}>
+        </Grid>
+        <Grid size={5.5}>
           <TextField
             value={tempValue[1]}
             size='small'
@@ -229,9 +229,9 @@ const RangeSlider: React.FC<SliderProps> = (props: SliderProps) => {
               'aria-labelledby': 'input-slider',
             }}
           />
-        </Grid2>
-      </Grid2>
-    </Box>
+        </Grid>
+      </Grid>
+    </Box>)
   );
 }
 

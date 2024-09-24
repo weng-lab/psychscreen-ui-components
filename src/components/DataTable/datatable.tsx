@@ -283,7 +283,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
   }, [containerRef, arrowLeftRef, arrowRightRef]);
 
   return (
-    <Paper
+    (<Paper
       elevation={3}
       sx={{ '& .MuiToolbar-root': { pl: 2 }, position: 'relative' }}
     >
@@ -380,7 +380,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
               <TableRow>
                 {state.columns.map((column, i) => (
                   //remove padding from right unless last column
-                  <TableCell
+                  (<TableCell
                     sx={i !== state.columns.length - 1 ? { pr: 0 } : {}}
                     key={`${column.header}${i}`}
                     onClick={() => {
@@ -410,7 +410,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
                         </Tooltip>
                       ) : null}
                     </TableSortLabel>
-                  </TableCell>
+                  </TableCell>)
                 ))}
               </TableRow>
             </TableHead>
@@ -600,7 +600,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
           </Button>
         </Box>
       </Modal>
-    </Paper>
+    </Paper>)
   );
 };
 export default DataTable;
