@@ -1,2 +1,3 @@
 import Typography, { TypographyProps } from './Typography';
-export { Typography, TypographyProps };
+export { Typography  }
+export type { TypographyProps };

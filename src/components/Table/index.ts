@@ -1,2 +1,3 @@
 import CustomizedTable, { CustomizedTableProps } from './Table';
-export { CustomizedTable, CustomizedTableProps };
+export { CustomizedTable };
+export type { CustomizedTableProps }
