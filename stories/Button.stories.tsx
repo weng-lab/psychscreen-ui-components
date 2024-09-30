@@ -1,11 +1,12 @@
 import React from 'react';
-import { Meta, Story } from '@storybook/react';
-import { Button, ButtonProps } from '../src';
+import { Meta, StoryObj } from '@storybook/react';
+import { Button } from '../src';
 import '../src/App.css';
 
-const meta: Meta = {
+const meta = {
   title: 'Button',
   component: Button,
+  tags: ['autodocs'],
   argTypes: {
     children: {
       control: {
@@ -16,12 +17,15 @@ const meta: Meta = {
   parameters: {
     controls: { expanded: true },
   },
-};
+} satisfies Meta<typeof Button>;
 
 export default meta;
+type Story = StoryObj<typeof meta>;
 
-const Template: Story<ButtonProps> = (args) => (
-  <div
+export const Light: Story = {
+  args: { btheme: 'light', bvariant: 'outlined' },
+  render: (args => (
+    <div
     style={{
       backgroundColor: args.btheme === 'dark' ? '#1f1f1f' : '#ffffff',
       padding: '30px',
@@ -32,12 +36,22 @@ const Template: Story<ButtonProps> = (args) => (
       I'm Disabled.
     </Button>
   </div>
-);
+  ))
+}
 
-// By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
-// https://storybook.js.org/docs/react/workflows/unit-testing
-export const Light = Template.bind({});
-export const Dark = Template.bind({});
-
-Light.args = { btheme: 'light', bvariant: 'outlined' };
-Dark.args = { btheme: 'dark', bvariant: 'outlined' };
+export const Dark: Story = {
+  args: { btheme: 'dark', bvariant: 'outlined' },
+  render: (args => (
+    <div
+    style={{
+      backgroundColor: args.btheme === 'dark' ? '#1f1f1f' : '#ffffff',
+      padding: '30px',
+    }}
+  >
+    <Button {...args}>I'm Enabled.</Button>&nbsp;
+    <Button disabled {...args}>
+      I'm Disabled.
+    </Button>
+  </div>
+  ))
+}

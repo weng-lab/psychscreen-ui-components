@@ -1,10 +1,9 @@
 import React from 'react';
-import { Meta, Story } from '@storybook/react';
-import { ThemeProvider } from '@emotion/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { PSYCHSCREEN_LIGHT_THEME, PSYCHSCREEN_DARK_THEME, PSYCHSCREEN_TONAL_PALETTES, PSYCHSCREEN_DEFAULT_FONT_FAMILY, Typography } from '../src';
+import { PSYCHSCREEN_LIGHT_THEME, PSYCHSCREEN_DARK_THEME, PSYCHSCREEN_TONAL_PALETTES, Typography } from '../src';
 import "../src/App.css";
-import { ColorPalette, ColorTone, Palette, ThemeColorTone, ThemePalette } from '../src/constants/theme';
+import { ColorTone, Palette, ThemeColorTone, ThemePalette } from '../src/constants/theme';
 
 const TONES: ColorTone[] = [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100 ];
 const PALETTES: Palette[] = [ "Primary", "Secondary", "Tertiary", "Error", "Neutral", "NeutralVariant" ];
@@ -97,33 +96,26 @@ const Demo: React.FC<{ view: View }> = ({ view }) => view === "palettes" ? (
   </div>
 );
 
-const meta: Meta = {
+const meta = {
   title: 'Themes',
   component: Demo,
-  argTypes: {
-    children: {
-      control: {
-        type: 'text',
-      },
-    },
-  },
+  tags: ['autodocs'],
   parameters: {
     controls: { expanded: true },
   },
-};
+} satisfies Meta<typeof Demo>;
 
 export default meta;
+type Story = StoryObj<typeof meta>;
 
-const Template: Story<{ view: View }> = args => (
-  <Demo view={args.view} />
-);
+export const Palettes: Story = {
+  args: {view: "palettes"}
+}
 
-// By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
-// https://storybook.js.org/docs/react/workflows/unit-testing
-export const Palettes = Template.bind({});
-export const DarkTheme = Template.bind({});
-export const LightTheme = Template.bind({});
+export const DarkTheme: Story = {
+  args: {view: "dark-theme"}
+}
 
-Palettes.args = { view: "palettes" };
-DarkTheme.args = { view: "dark-theme" };
-LightTheme.args = { view: "light-theme" };
+export const LightTheme: Story = {
+  args: {view: "light-theme"}
+}

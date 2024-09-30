@@ -1,37 +1,29 @@
 import React from 'react';
-import { Meta, Story } from '@storybook/react';
-import { Select, SelectProps } from '../src';
+import { Meta, StoryObj } from '@storybook/react';
+import { Select } from '../src';
 import "../src/App.css";
 import { MenuItem } from '@mui/material';
 
-const meta: Meta = {
+const meta = {
   title: 'Select', 
   component: Select,
-  argTypes: {
-    children: {
-      control: {
-        type: 'text',
-      },
-    },
-  },
+  tags: ['autodocs'],
   parameters: {
     controls: { expanded: true },
   },
-};
+} satisfies Meta<typeof Select>;
 
 export default meta;
+type Story = StoryObj<typeof meta>;
 
-const Template: Story<SelectProps> = args => (
-    <Select variant="standard" defaultValue="disease/trait" {...args}>
+export const Default: Story = {
+  args: {},
+  render: (args) => (
+    <Select variant="standard" defaultValue="disease/trait">
       <MenuItem value="disease/trait">Disease/Trait</MenuItem>
       <MenuItem value="gene/bcre">Gene/b-cCRE</MenuItem>
       <MenuItem value="snp/qtl">SNP/QTL</MenuItem>
       <MenuItem value="single-cell">Single Cell</MenuItem>
     </Select>
-);
-
-// By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
-// https://storybook.js.org/docs/react/workflows/unit-testing
-export const Default = Template.bind({});
-
-Default.args = {};
+  )
+}

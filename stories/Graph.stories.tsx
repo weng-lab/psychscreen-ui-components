@@ -1,7 +1,5 @@
-import React from 'react';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import { Graph } from '../src';
-import { GraphProps } from '../src';
 import data2 from '../example/data2.json';
 import data3 from '../example/data3.json';
 import data from '../example/data.json';
@@ -130,126 +128,136 @@ function convertToSimple2(node: Node | Edge): string {
   }
   return 'Edge';
 }
-const meta: Meta = {
+const meta = {
   title: 'Graph',
+  tags: ['autodocs'],
   component: Graph,
-};
+} satisfies Meta<typeof Graph>;
+
 export default meta;
+type Story = StoryObj<typeof meta>
 
-const Template: Story<GraphProps> = (args) => <Graph {...args} />;
+export const SampleGraph: Story = {
+  args: {
+    data: data2.data,
+    title: 'Sample Graph (non-cCRE)',
+    id: 'Sample',
+    scale: (n: number) => 10 * n,
+    getColor: setColor3,
+    legendToggle: convertToSimple2,
+    order: ['P', 'R', 'B'],
+    onNodeClick: (n: {
+      accession: string;
+      start: number;
+      end: number;
+      chromosome: string;
+    }) => console.log('Accession: ' + n.accession),
+  }
+}
 
-export const SampleGraph = Template.bind({});
-SampleGraph.args = {
-  data: data2.data,
-  title: 'Sample Graph (non-cCRE)',
-  id: 'Sample',
-  scale: (n: number) => 10 * n,
-  getColor: setColor3,
-  legendToggle: convertToSimple2,
-  order: ['P', 'R', 'B'],
-  onNodeClick: (n: {
-    accession: string;
-    start: number;
-    end: number;
-    chromosome: string;
-  }) => console.log('Accession: ' + n.accession),
-};
-export const PilotDataWithCentered = Template.bind({});
-PilotDataWithCentered.args = {
-  data: data.data,
-  title: 'cCRE Impact With Pilot Data With Centered cCRE',
-  id: 'PilotWithCentered',
-  getColor: setColor,
-  legendToggle: convertToSimple,
-  legendNodeLabel: 'cCRE Type',
-  order: [
-    'PLS',
-    'pELS',
-    'dELS',
-    'CA-H3K4me3',
-    'CA-CTCF',
-    'CA-TF',
-    'CA',
-    'TF',
-    'Low DNase',
-  ],
-  fontFamily: 'Times New Roman',
-  directional: true,
-};
+export const PilotDataWithCentered: Story = {
+  args: {
+    data: data.data,
+    title: 'cCRE Impact With Pilot Data With Centered cCRE',
+    id: 'PilotWithCentered',
+    getColor: setColor,
+    legendToggle: convertToSimple,
+    legendNodeLabel: 'cCRE Type',
+    order: [
+      'PLS',
+      'pELS',
+      'dELS',
+      'CA-H3K4me3',
+      'CA-CTCF',
+      'CA-TF',
+      'CA',
+      'TF',
+      'Low DNase',
+    ],
+    fontFamily: 'Times New Roman',
+    directional: true,
+  }
+}
 
-export const FiftyPercent = Template.bind({});
-FiftyPercent.args = {
-  data: data.data,
-  title: '50% Width and Height',
-  id: '50Percent',
-  width: '50%',
-  height: '50%',
-  getColor: setColor,
-  legendToggle: convertToSimple,
-  legendNodeLabel: 'cCRE Type',
-  directional: true,
-};
+export const FiftyPercent: Story = {
+  args: {
+    data: data.data,
+    title: '50% Width and Height',
+    id: '50Percent',
+    width: '50%',
+    height: '50%',
+    getColor: setColor,
+    legendToggle: convertToSimple,
+    legendNodeLabel: 'cCRE Type',
+    directional: true,
+  }
+}
 
-export const PilotDataWithoutCentered = Template.bind({});
-PilotDataWithoutCentered.args = {
-  data: data3.data,
-  title: 'cCRE Impact With Pilot Data Without Centered cCRE',
-  id: 'PilotNoCentered',
-  getColor: setColor,
-  legendToggle: convertToSimple,
-  legendNodeLabel: 'cCRE Type',
-  directional: true,
-};
+export const PilotDataWithoutCentered: Story = {
+  args: {
+    data: data3.data,
+    title: 'cCRE Impact With Pilot Data Without Centered cCRE',
+    id: 'PilotNoCentered',
+    getColor: setColor,
+    legendToggle: convertToSimple,
+    legendNodeLabel: 'cCRE Type',
+    directional: true,
+  }
+}
 
-export const DifferentLabel = Template.bind({});
-DifferentLabel.args = {
-  data: data3.data,
-  title: 'Different Label',
-  id: 'diffLabel',
-  getLabel: (node: Node) => node.category,
-  getColor: setColor,
-  legendToggle: convertToSimple,
-  legendNodeLabel: 'Different Node Label',
-  legendEdgeLabel: 'Different Edge Label',
-  directional: true,
-};
+export const DifferentLabel: Story = {
+  args: {
+    data: data3.data,
+    title: 'Different Label',
+    id: 'diffLabel',
+    getLabel: (node: Node) => node.category,
+    getColor: setColor,
+    legendToggle: convertToSimple,
+    legendNodeLabel: 'Different Node Label',
+    legendEdgeLabel: 'Different Edge Label',
+    directional: true,
+  }
+}
 
-export const DifferentColor = Template.bind({});
-DifferentColor.args = {
-  data: data3.data,
-  title: 'Different Color',
-  id: 'diffColor',
-  getColor: setColor2,
-  legendToggle: convertToSimple,
-};
+export const DifferentColor: Story = {
+  args: {
+    data: data3.data,
+    title: 'Different Color',
+    id: 'diffColor',
+    getColor: setColor2,
+    legendToggle: convertToSimple,
+  }
+}
 
-export const NoLegendToggle = Template.bind({});
-NoLegendToggle.args = {
-  data: data2.data,
-  title: 'No Legend Toggle',
-  id: 'noLegendToggle',
-  scale: (n: number) => 10 * n,
-  getColor: setColor3,
-};
+export const NoLegendToggle: Story = {
+  args: {
+    data: data2.data,
+    title: 'No Legend Toggle',
+    id: 'noLegendToggle',
+    scale: (n: number) => 10 * n,
+    getColor: setColor3,
+  }
+}
 
-export const DifferentOrder = Template.bind({});
-DifferentOrder.args = {
-  data: data.data,
-  title: 'Different Order',
-  id: 'diffOrder',
-  getColor: setColor,
-  legendToggle: convertToSimple,
-  legendNodeLabel: 'cCRE Type',
-  order: [
-    'Low DNase',
-    'PLS',
-    'dELS',
-    'TF',
-    'pELS',
-    'CA-CTCF',
-    'CA',
-    'CA-H3K4me3',
-    'CA-TF',
-  ],
-  directional: true,
-};
+export const DifferentOrder: Story = {
+  args: {
+    data: data.data,
+    title: 'Different Order',
+    id: 'diffOrder',
+    getColor: setColor,
+    legendToggle: convertToSimple,
+    legendNodeLabel: 'cCRE Type',
+    order: [
+      'Low DNase',
+      'PLS',
+      'dELS',
+      'TF',
+      'pELS',
+      'CA-CTCF',
+      'CA',
+      'CA-H3K4me3',
+      'CA-TF',
+    ],
+    directional: true,
+  }
+}

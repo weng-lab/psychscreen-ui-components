@@ -1,13 +1,14 @@
 import React from 'react';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import { MenuItem  } from '@mui/material';
 
-import { DropDownMenu, DropDownMenuProps } from '../src';
+import { DropDownMenu } from '../src';
 import "../src/App.css";
 
-const meta: Meta = {
+const meta = {
   title: 'DropDownMenu',
   component: DropDownMenu,
+  tags: ['autodocs'],
   argTypes: {
     children: {
       control: {
@@ -18,21 +19,18 @@ const meta: Meta = {
   parameters: {
     controls: { expanded: true },
   },
-};
+} satisfies Meta<typeof DropDownMenu>;
 
 export default meta;
+type Story = StoryObj<typeof meta>;
 
-const Template: Story<DropDownMenuProps> = args => (
-  <DropDownMenu>
-    <MenuItem>Disease/Trait</MenuItem>
-    <MenuItem>Gene/b-cCRE</MenuItem>
-    <MenuItem>SNP/QTL</MenuItem>
-    <MenuItem>Single-Cell</MenuItem>
-  </DropDownMenu>
-);
-
-// By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
-// https://storybook.js.org/docs/react/workflows/unit-testing
-export const Default = Template.bind({});
-
-Default.args = {};
+export const Default: Story = {
+  render: () => (
+    <DropDownMenu>
+      <MenuItem>Disease/Trait</MenuItem>
+      <MenuItem>Gene/b-cCRE</MenuItem>
+      <MenuItem>SNP/QTL</MenuItem>
+      <MenuItem>Single-Cell</MenuItem>
+    </DropDownMenu>
+  )
+}

@@ -255,7 +255,7 @@ const Graph: React.FC<GraphProps> = ({
     // ADD NODES
     for (var i = 0; i < elements.length; i++) {
       if (toggles[simple[i]] !== false) {
-        if (data.centered && elements[i].id === data.centered.id) {
+        if (data?.centered && elements[i].id === data.centered.id) {
           // if centered node
           cy.add({
             data: { id: createID(i) }, // create name
@@ -342,7 +342,7 @@ const Graph: React.FC<GraphProps> = ({
     cy.nodes().forEach((node: NodeSingular, idx: number) => {
       const ref = node.popperRef();
       const content = document.createElement('div');
-      if (data.centered && allcCREs[idx].toString() === data.centered.id) {
+      if (data?.centered && allcCREs[idx].toString() === data.centered.id) {
         content.innerHTML = `ID: ${allcCREs[idx]}<br>Type: ${
           legendToggle ? legendToggle(elements[idx]) : elements[idx].category
         }<br>Centered Node`;
