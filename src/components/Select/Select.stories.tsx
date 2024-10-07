@@ -1,4 +1,3 @@
-import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Select } from '../..';
 import "../../App.css";
@@ -18,7 +17,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {},
-  render: (args) => (
+  render: () => (
     <Select variant="standard" defaultValue="disease/trait">
       <MenuItem value="disease/trait">Disease/Trait</MenuItem>
       <MenuItem value="gene/bcre">Gene/b-cCRE</MenuItem>

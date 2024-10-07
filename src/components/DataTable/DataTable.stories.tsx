@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { DataTable, DataTableProps, DataTableColumn } from '../..';
+import { DataTable, DataTableColumn } from '../..';
 import {
   Box,
   Button,
@@ -10,7 +10,6 @@ import {
   Menu,
   MenuItem,
   Stack,
-  Tooltip,
   Typography,
 } from '@mui/material';
 
@@ -109,7 +108,7 @@ const COLUMNS2: DataTableColumn<Row>[] = [
   },
 ];
 
-const ROWS = [
+const ROWS: {index: number, text: string, color: string, description: string}[] = [
   {
     index: 0,
     text: 'this_is_row_0',
@@ -225,7 +224,7 @@ export const HoverInfo: Story = {
 export const FunctionalComponentColumn: Story = {
   args: {
     rows: ROWS,
-    columns: COLUMNS,
+    columns: FCCOLUMNS,
     itemsPerPage: 4,
     tableTitle: 'Table Title',
     searchable: true,
@@ -241,7 +240,7 @@ export const OnRowClick: Story = {
     itemsPerPage: 4,
     tableTitle: 'Table Title',
     searchable: true,
-    onRowClick: (row, i) =>
+    onRowClick: (row) =>
       window.alert(
         `You clicked on:\nIndex: ${row.index.toString()}\nText: ${
           row.text
@@ -402,16 +401,16 @@ const headeRenderCOLUMNS = (func: any) => {
   return [
     {
       header: 'Index',
-      value: (row) => row.index,
+      value: (row: {index: number, text: string, color: string, description: string}) => row.index,
       tooltip: 'This is the Index column. It shows the index of the row.',
     },
     {
       header: 'Text',
-      value: (row) => row.text,
+      value: (row: {index: number, text: string, color: string, description: string}) => row.text,
     },
     {
       header: 'Color',
-      value: (row) => row.color,
+      value: (row: {index: number, text: string, color: string, description: string}) => row.color,
       render: (row: Row) => (
         <div
           style={{ width: '100%', height: '100%', backgroundColor: row.color }}
@@ -422,7 +421,7 @@ const headeRenderCOLUMNS = (func: any) => {
     },
     {
       header: 'Description',
-      value: (row) => row.description,
+      value: (row: {index: number, text: string, color: string, description: string}) => row.description,
       unsortable: true,
       tooltip: 'This is the Description column. It describes the row.',
       HeaderRender: () => {

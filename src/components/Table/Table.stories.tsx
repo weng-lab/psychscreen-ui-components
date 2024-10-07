@@ -1,4 +1,3 @@
-import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { CustomizedTable, PSYCHSCREEN_DEFAULT_THEME } from '../..'; 
 import "../../App.css";
