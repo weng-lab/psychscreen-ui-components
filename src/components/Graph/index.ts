@@ -1,3 +1,3 @@
 import Graph from './Graph';
-import { GraphProps } from './types';
-export { Graph, GraphProps };
+export { Graph };
+export type { GraphProps } from './types';

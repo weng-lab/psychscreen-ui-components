@@ -1,2 +1,3 @@
 import DropDownMenu, { DropDownMenuProps } from './DropDownMenu';
-export { DropDownMenu, DropDownMenuProps };
+export { DropDownMenu };
+export type {  DropDownMenuProps };

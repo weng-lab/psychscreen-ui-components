@@ -1,2 +1,3 @@
 import RangeSlider, { SliderProps } from './Slider';
-export { RangeSlider, SliderProps };
+export { RangeSlider };
+export type { SliderProps }

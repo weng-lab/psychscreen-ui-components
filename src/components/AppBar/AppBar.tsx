@@ -69,7 +69,7 @@ const PortalsMenu: React.FC<{ onPortalClicked?: (index: number) => void }> = ({
   </>
 );
 
-const AppBar: React.FC<AppBarProps> = (props) => (
+export const AppBar = (props: AppBarProps) => (
   <Box sx={{ flexGrow: 1 }}>
     <StyledAppBar position="static" {...props}>
       <Toolbar sx={{ gap: 4 }}>
@@ -95,4 +95,3 @@ const AppBar: React.FC<AppBarProps> = (props) => (
     </StyledAppBar>
   </Box>
 );
-export default AppBar;

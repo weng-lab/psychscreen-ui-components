@@ -1,2 +1,3 @@
 import Select, { SelectProps } from './Select';
-export { Select, SelectProps };
+export { Select };
+export type { SelectProps }

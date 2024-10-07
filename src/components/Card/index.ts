@@ -1,2 +1,3 @@
 import HorizontalCard, { HorizontalCardProps } from './Card';
-export { HorizontalCard, HorizontalCardProps };
+export { HorizontalCard };
+export type { HorizontalCardProps }

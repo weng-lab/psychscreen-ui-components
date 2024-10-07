@@ -21,7 +21,7 @@ const PortalsMenu: React.FC<{ onItemClicked?: (index: number) => void }> = ({ on
     </>
 );
 
-const TabletAppBar: React.FC<TabletAppBarProps> = props => (
+export const TabletAppBar = (props: TabletAppBarProps) => (
     <Box sx={{ flexGrow: 1 }}>
         <StyledAppBar position="static" elevation={0}>
             <Toolbar style={{ paddingLeft: "19px" }}>
@@ -38,4 +38,3 @@ const TabletAppBar: React.FC<TabletAppBarProps> = props => (
         </StyledAppBar>
     </Box>
 );
-export default TabletAppBar;

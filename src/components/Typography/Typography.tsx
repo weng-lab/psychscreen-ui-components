@@ -4,7 +4,7 @@
 
 import { styled } from "@mui/material/styles"
 import { Typography as MUITypography, TypographyProps as MUITypographyProps } from '@mui/material';
-import { PSYCHSCREEN_DEFAULT_FONT_FAMILY } from '../../constants/theme';
+import { PSYCHSCREEN_DEFAULT_FONT_FAMILY } from '../Theme/theme';
 
 export type TypographyType = 'body' | 'title' | 'headline' | 'display' | 'label';
 type TypographySize = 'large' | 'medium' | 'small';

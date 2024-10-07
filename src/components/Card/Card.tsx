@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Card from '@mui/material/Card';
 import { CardProps as MUICardProps } from '@mui/material/Card';
 import Stack from "@mui/material/Stack";
@@ -28,10 +27,8 @@ const StyledCard = styled(Card)<MUICardProps>(() => ({
 
 }));
 
-const HorizontalCard: React.FC<HorizontalCardProps> = (props) =>{
-    
+const HorizontalCard = (props: HorizontalCardProps) =>{
     return (
-        
         <Stack spacing={props.cardSpacing || 2}>      
             {props.cardContentText.map(c=>{
                 return (<StyledCard key={c.cardLabel}

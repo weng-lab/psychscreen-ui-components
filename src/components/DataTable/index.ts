@@ -1,3 +1,3 @@
 import DataTable from "./datatable"
 export { DataTable }
-export { DataTableColumn, DataTableProps, SortState } from "./types"
+export type { DataTableColumn, DataTableProps, SortState } from "./types"

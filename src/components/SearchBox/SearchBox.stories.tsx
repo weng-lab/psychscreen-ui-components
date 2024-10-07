@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Meta, Story } from '@storybook/react';
-import { SearchBox, SearchBoxProps } from '../src';
-import "../src/App.css";
-import { SearchBoxWithSelect } from '../src/components/SearchBox';
-import { Grid } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Meta, StoryObj } from '@storybook/react';
+import { SearchBox } from '../..';
+import "../../App.css";
+import { SearchBoxWithSelect } from '.';
+import Grid from '@mui/material/Grid2';
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -23,9 +23,20 @@ function useViewportSize() {
   return windowDimensions;
 }
 
-const meta: Meta = {
+const onSearch = () =>{
+  console.log('on search ')
+}
+
+const SELECT_OPTIONS = [
+  { name: "Disease/Trait", value: "disease", helperText: "e.g. schizophrenia, years of education" },
+  { name: "Gene/b-cCRE", value: "gene", helperText: "e.g. APOE, PPIF1" },
+  { name: "SNP/QTL", value: "SNP", helperText: "e.g. rs2836883, rs7690700" }
+]
+
+const meta = {
   title: 'SearchBox', 
   component: SearchBox,
+  tags: ['autodocs'],
   argTypes: {
     children: {
       control: {
@@ -36,22 +47,27 @@ const meta: Meta = {
   parameters: {
     controls: { expanded: true },
   },
-};
+} satisfies Meta<typeof SearchBox>;
 
 export default meta;
+type Story = StoryObj<typeof meta>;
 
-const SELECT_OPTIONS = [
-  { name: "Disease/Trait", value: "disease", helperText: "e.g. schizophrenia, years of education" },
-  { name: "Gene/b-cCRE", value: "gene", helperText: "e.g. APOE, PPIF1" },
-  { name: "SNP/QTL", value: "SNP", helperText: "e.g. rs2836883, rs7690700" }
-]
+export const Default: Story = {
+  args: {onSearchButtonClick: onSearch},
+}
 
-const Template: Story<SearchBoxProps & { withSelect?: boolean }> = args => {
-  const { width } = useViewportSize();
-  return args.withSelect ? (
-    <>
+/**
+ * This is not good practice, since SearchBoxWithSelect is a separate component
+ * it needs it's own meta defined to properly type args (only one meta can be defined and exported per file).
+ * Without overriding with render(), SearchBox would be rendered
+ */
+export const WithSelect: Story = {
+  args: {},
+  render: (args) => {
+    const { width } = useViewportSize();
+    return (
       <Grid container>
-        <Grid item sm={6}>
+        <Grid size={6}>
           <strong>Non-Reactive</strong><br />
           <SearchBoxWithSelect
             selectOptions={SELECT_OPTIONS}
@@ -60,32 +76,19 @@ const Template: Story<SearchBoxProps & { withSelect?: boolean }> = args => {
             {...args}
           />
         </Grid>
-        <Grid item sm={6}>
+        <Grid size={6}>
           <strong>Reactive (at width &lt;800px; current width is {width / 2})</strong><br />
           <SearchBoxWithSelect
             selectOptions={SELECT_OPTIONS}
             label="What can we help you find?"
             variant="standard"
-            reactiveThreshold={700}
+            reactiveThreshold={800}
             reactiveWidth={305}
             containerWidth={width / 2}
             {...args}
           />
         </Grid>
       </Grid>
-    </>
-  ) : (
-      <SearchBox label="What can we help you find?" variant="standard" {...args} />
-  );
-};
-
-// By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
-// https://storybook.js.org/docs/react/workflows/unit-testing
-export const Default = Template.bind({});
-export const WithSelect = Template.bind({});
-
-const onSearch = () =>{
-  console.log('on search ')
+    )
+  }
 }
-Default.args = { onSearchButtonClick: onSearch};
-WithSelect.args = { withSelect: true };
