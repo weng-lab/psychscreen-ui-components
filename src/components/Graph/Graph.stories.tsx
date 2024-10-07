@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { Graph } from '../src';
-import data2 from '../example/data2.json';
-import data3 from '../example/data3.json';
-import data from '../example/data.json';
-import { Edge, Node } from '../src/components/Graph/types';
-import '../src/App.css';
+import { Graph } from '../..';
+import data2 from '../../../example/data2.json';
+import data3 from '../../../example/data3.json';
+import data from '../../../example/data.json';
+import { Edge, Node } from './types';
+import "../../App.css";
 
 function setColor(node: Node | Edge): string {
   if (node.category !== undefined) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { RangeSlider} from '../src';
-import "../src/App.css";
+import { RangeSlider} from '../..';
+import "../../App.css";
 import { Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 

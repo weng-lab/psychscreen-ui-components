@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { CustomizedTable, PSYCHSCREEN_DEFAULT_THEME } from '../src'; 
-import "../src/App.css";
+import { CustomizedTable, PSYCHSCREEN_DEFAULT_THEME } from '../..'; 
+import "../../App.css";
 import { ThemeProvider } from '@emotion/react';
 
 const tdata = Array.from(Array(1000).keys()).map((a)=> {

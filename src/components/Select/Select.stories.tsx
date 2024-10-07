@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Select } from '../src';
-import "../src/App.css";
+import { Select } from '../..';
+import "../../App.css";
 import { MenuItem } from '@mui/material';
 
 const meta = {

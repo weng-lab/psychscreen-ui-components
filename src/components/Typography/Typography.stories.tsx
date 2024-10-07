@@ -2,9 +2,9 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { ThemeProvider } from '@emotion/react';
 
-import { Typography, PSYCHSCREEN_DEFAULT_THEME } from '../src';
-import "../src/App.css";
-import { TypographyType } from '../src/components/Typography/Typography';
+import { Typography, PSYCHSCREEN_DEFAULT_THEME } from '../..';
+import "../../App.css";
+import { TypographyType } from './Typography';
 
 const Template = ({ type }: {type: TypographyType}) => (
   <ThemeProvider theme={PSYCHSCREEN_DEFAULT_THEME}>

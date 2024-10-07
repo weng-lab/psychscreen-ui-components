@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { HorizontalCard, PSYCHSCREEN_DEFAULT_THEME } from '../src'; 
-import "../src/App.css";
+import { HorizontalCard, PSYCHSCREEN_DEFAULT_THEME } from '../..'; 
+import "../../App.css";
 import { ThemeProvider } from '@emotion/react';
 
 const meta = {

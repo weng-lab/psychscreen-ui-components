@@ -1,7 +1,7 @@
 import { Paper, PaperProps } from '@mui/material';
 import { styled } from "@mui/material/styles"
 
-import { PSYCHSCREEN_TONAL_PALETTES } from '../../constants';
+import { PSYCHSCREEN_TONAL_PALETTES } from '../Theme';
 
 /**
  * PsychSCREEN drop down menu properties.

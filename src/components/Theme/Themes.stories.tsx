@@ -1,9 +1,9 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 
-import { PSYCHSCREEN_LIGHT_THEME, PSYCHSCREEN_DARK_THEME, PSYCHSCREEN_TONAL_PALETTES, Typography } from '../src';
-import "../src/App.css";
-import { ColorTone, Palette, ThemeColorTone, ThemePalette } from '../src/constants/theme';
+import { PSYCHSCREEN_LIGHT_THEME, PSYCHSCREEN_DARK_THEME, PSYCHSCREEN_TONAL_PALETTES, Typography } from '../..';
+import "../../App.css";
+import { ColorTone, Palette, ThemeColorTone, ThemePalette } from './theme';
 
 const TONES: ColorTone[] = [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100 ];
 const PALETTES: Palette[] = [ "Primary", "Secondary", "Tertiary", "Error", "Neutral", "NeutralVariant" ];

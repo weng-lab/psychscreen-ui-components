@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { SearchBox } from '../src';
-import "../src/App.css";
-import { SearchBoxWithSelect } from '../src/components/SearchBox';
+import { SearchBox } from '../..';
+import "../../App.css";
+import { SearchBoxWithSelect } from '.';
 import Grid from '@mui/material/Grid2';
 
 function getWindowDimensions() {

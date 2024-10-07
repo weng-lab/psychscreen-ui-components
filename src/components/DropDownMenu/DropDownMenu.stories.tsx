@@ -2,8 +2,8 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { MenuItem  } from '@mui/material';
 
-import { DropDownMenu } from '../src';
-import "../src/App.css";
+import { DropDownMenu } from '../..';
+import "../../App.css";
 
 const meta = {
   title: 'DropDownMenu',

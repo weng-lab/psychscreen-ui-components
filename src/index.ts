@@ -31,4 +31,4 @@ export type { DropDownMenuProps } from './components/DropDownMenu';
 export { Graph } from './components/Graph';
 export type { GraphProps } from './components/Graph';
 
-export { PSYCHSCREEN_DEFAULT_THEME, PSYCHSCREEN_LIGHT_THEME, PSYCHSCREEN_DARK_THEME, PSYCHSCREEN_DEFAULT_FONT_FAMILY, PSYCHSCREEN_TONAL_PALETTES } from './constants';
+export { PSYCHSCREEN_DEFAULT_THEME, PSYCHSCREEN_LIGHT_THEME, PSYCHSCREEN_DARK_THEME, PSYCHSCREEN_DEFAULT_FONT_FAMILY, PSYCHSCREEN_TONAL_PALETTES } from './components/Theme';

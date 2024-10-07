@@ -4,8 +4,8 @@ import {
   AppBar,
   TabletAppBar,
   PSYCHSCREEN_DEFAULT_THEME,
-} from '../src';
-import '../src/App.css';
+} from '../..';
+import "../../App.css";
 import { ThemeProvider } from '@emotion/react';
 
 const meta = {

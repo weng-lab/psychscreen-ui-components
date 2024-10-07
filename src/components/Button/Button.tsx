@@ -10,7 +10,7 @@ import {
 import {
   PSYCHSCREEN_DEFAULT_FONT_FAMILY,
   PSYCHSCREEN_TONAL_PALETTES,
-} from '../../constants/theme';
+} from '../Theme/theme';
 import { FONT_WEIGHTS, FONT_SIZES } from '../Typography/Typography';
 
 export type ButtonVariant =

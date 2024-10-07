@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { DataTable, DataTableProps, DataTableColumn } from '../src';
+import { DataTable, DataTableProps, DataTableColumn } from '../..';
 import {
   Box,
   Button,
