@@ -9,7 +9,8 @@
   "exports": {
     ".": {
       "import": "./dist/ui.es.js",
-      "export": "./dist/ui.umd.js"
+      "require": "./dist/ui.umd.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
@@ -22,8 +23,6 @@
   "files": [
     "dist"
   ],
-  "main": "dist/index.js",
-  "module": "dist/psychscreen-ui-components.esm.js",
   "dependencies": {
     "cytoscape": "^3.30.2",
     "cytoscape-cose-bilkent": "^4.1.0",
