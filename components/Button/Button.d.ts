@@ -1,5 +1,5 @@
 import { ButtonProps as MUIButtonProps } from '@mui/material';
-export type ButtonVariant = 'filled' | 'outlined' | 'text' | 'elevated' | 'tonal';
+export type ButtonVariant = 'filled' | 'outlined';
 export type ButtonState = '' | '&:active' | '&:focus' | '&:hover' | '&:pressed' | '&:disabled';
 export type ButtonStyling = {
     backgroundColor: string;
