@@ -16,9 +16,10 @@ import { FONT_WEIGHTS, FONT_SIZES } from '../Typography/Typography';
 export type ButtonVariant =
   | 'filled'
   | 'outlined'
-  | 'text'
-  | 'elevated'
-  | 'tonal';
+  //Jonathan 10/8/24 - commenting these out since they cause an error. Other button variants are missing from theme maps below
+  // | 'text'
+  // | 'elevated'
+  // | 'tonal';
 export type ButtonState =
   | ''
   | '&:active'
