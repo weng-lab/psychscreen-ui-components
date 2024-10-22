@@ -1,4 +1,3 @@
-import { default as React } from '../../../node_modules/react';
 import { DataTableProps } from './types';
-declare const DataTable: React.FC<DataTableProps<any>>;
+declare const DataTable: <T>(props: DataTableProps<T>) => import("react/jsx-runtime").JSX.Element;
 export default DataTable;
