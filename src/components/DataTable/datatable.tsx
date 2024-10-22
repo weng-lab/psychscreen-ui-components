@@ -90,7 +90,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 //Styling for "Add Columns" Modal
 const boxStyle = {
-  position: 'absolute' as 'absolute',
+  position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -104,10 +104,12 @@ const boxStyle = {
 const DataTable = <T,>(
   props: DataTableProps<T>
 ) => {
-  // Sets default rows to display at 5 if unspecified
-  const itemsPerPage = props.itemsPerPage || 5;
   const [page, setPage] = useState(props.page || 0);
-  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(() => {
+    if (Array.isArray(props.itemsPerPage)) { return props.itemsPerPage[0] }
+    else if (typeof props.itemsPerPage == "number") { return props.itemsPerPage }
+    else return 5
+  })
 
   const handleChangePage = (page: number) => {
     setPage(page);
@@ -120,8 +122,8 @@ const DataTable = <T,>(
     setPage(0);
   };
 
-  function handleEmptyTable(noColumns: number): React.JSX.Element[] {
-    let cells = [];
+  const handleSpawnEmptyCells = (noColumns: number): React.JSX.Element[] => {
+    const cells = [];
     for (let i = 1; i < noColumns; i++) {
       cells.push(<TableCell key={i}></TableCell>);
     }
@@ -129,7 +131,7 @@ const DataTable = <T,>(
   }
 
   function highlightCheck(row: T): boolean {
-    var found = false;
+    let found = false;
     if (Array.isArray(props.highlighted)) {
       props.highlighted.forEach((highlight) => {
         if (JSON.stringify(row) === JSON.stringify(highlight)) {
@@ -169,7 +171,7 @@ const DataTable = <T,>(
   });
 
   const search = useCallback(
-    (row: any, value: string): boolean => {
+    (row: T, value: string): boolean => {
       /* look for any matching searchable column */
       for (const i in state.columns) {
         /* get column; look for a user-defined search function first */
@@ -207,7 +209,7 @@ const DataTable = <T,>(
   );
 
   const displayRows = useCallback(
-    (sortedRows: any[], filterValue: string): any[] =>
+    (sortedRows: T[], filterValue: string): T[] =>
       filterValue === ''
         ? [...sortedRows]
         : sortedRows.filter((row) => search(row, filterValue)),
@@ -216,21 +218,24 @@ const DataTable = <T,>(
 
   const displayedRows = useMemo(
     () => sort(displayRows(props.rows, state.filter || props.search || '')),
-    [displayRows, sort, state.filter, props.rows, state.sort, props.search]
+    [displayRows, sort, state.filter, props.rows, props.search]
   );
 
   const rowsOnCurrentPage = useMemo(() => {
     const newRowsOnPage = displayedRows.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
     props.onDisplayedRowsChange?.(page, newRowsOnPage)
     return newRowsOnPage
-  }, [displayedRows, page, rowsPerPage])
+  }, [displayedRows, page, rowsPerPage, props.onDisplayedRowsChange])
+
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.rows.length) : 0;
 
   const download = useCallback(() => {
     const data =
       state.columns.map((col) => col.header).join('\t') +
       '\n' +
       displayedRows
-        .map((row: any) =>
+        .map((row: T) =>
           state.columns.map((col) => col.value(row)).join('\t')
         )
         .join('\n') +
@@ -245,7 +250,8 @@ const DataTable = <T,>(
     a.click();
     window.URL.revokeObjectURL(url);
     a.remove();
-  }, [state.columns, displayedRows]);
+  }, [state.columns, displayedRows, props.downloadFileName]);
+
 
   //Refs used in tracking overflow
   const containerRef = useRef<HTMLDivElement>(null);
@@ -279,13 +285,13 @@ const DataTable = <T,>(
         monitorOverflow(containerRef, arrowRightRef, arrowLeftRef)
       );
 
-      new ResizeObserver((entries) => {
-        for (const _ of entries) {
-          monitorOverflow(containerRef, arrowRightRef, arrowLeftRef);
-        }
+      new ResizeObserver(() => {
+        monitorOverflow(containerRef, arrowRightRef, arrowLeftRef);
       }).observe(containerRef.current);
     }
   }, [containerRef, arrowLeftRef, arrowRightRef]);
+
+  console.log(document.getElementById('row0')?.offsetHeight)
 
   return (
     (<Paper
@@ -389,8 +395,9 @@ const DataTable = <T,>(
                     sx={i !== state.columns.length - 1 ? { pr: 0 } : {}}
                     key={`${column.header}${i}`}
                     onClick={() => {
-                      !column.unsortable &&
+                      if (!column.unsortable) {
                         dispatch({ type: 'sortChanged', sortColumn: i });
+                      } 
                       setPage(0);
                     }}
                   >
@@ -425,16 +432,18 @@ const DataTable = <T,>(
               <TableRow>
                 <TableCell>{props.emptyText || 'No data available.'}</TableCell>
                 {/* Render needed number of empty cells to fill row */}
-                {handleEmptyTable(props.columns.length)}
+                {handleSpawnEmptyCells(props.columns.length)}
               </TableRow>
             ) : (
-              rowsOnCurrentPage
+              <>
+                {rowsOnCurrentPage
                 .map((row, i) => (
                   <TableRow
                     // Check that there's a row to select, it's the right one, and either none have been highlighted or it's the correct one
                     selected={props.highlighted ? highlightCheck(row) : false}
                     hover
                     key={'row' + i}
+                    id={"row" + i}
                     onClick={() =>
                       props.onRowClick &&
                       props.onRowClick(row, i + page * rowsPerPage)
@@ -463,7 +472,7 @@ const DataTable = <T,>(
                           }
                         >
                           {column.FunctionalRender ? (
-                            <column.FunctionalRender {...row} />
+                            <column.FunctionalRender row={row} />
                           ) : column.render ? (
                             column.render(row)
                           ) : (
@@ -473,7 +482,17 @@ const DataTable = <T,>(
                       );
                     })}
                   </TableRow>
-                ))
+                ))}
+                {emptyRows > 0 && (
+                  <TableRow
+                  style={{
+                      height: (document.getElementById('row0')?.offsetHeight ?? (props.dense ? 33 : 53)) * emptyRows,
+                    }}
+                  >
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </>
             )}
           </TableBody>
         </Table>
@@ -521,7 +540,7 @@ const DataTable = <T,>(
               `Showing ${displayedRows.length} matching rows of ${props.rows.length} total.`}
           </Typography>
           <TablePagination
-            rowsPerPageOptions={[itemsPerPage, 10, 25, 100]}
+            rowsPerPageOptions={props.itemsPerPage ? Array.isArray(props.itemsPerPage) ? props.itemsPerPage : [props.itemsPerPage] : [5, 10, 25, 100]}
             component="div"
             count={displayedRows.length}
             rowsPerPage={rowsPerPage}
@@ -534,11 +553,11 @@ const DataTable = <T,>(
             sx={
               props.dense
                 ? {
-                    '& .MuiTablePagination-toolbar': { pl: '6px' },
-                    '& .css-h0cf5v-MuiInputBase-root-MuiTablePagination-select':
-                      { mr: '6px', ml: '0px' },
-                    '& .MuiTablePagination-actions': { ml: '4px !important' },
-                  }
+                  '& .MuiTablePagination-toolbar': { pl: '6px' },
+                  '& .css-h0cf5v-MuiInputBase-root-MuiTablePagination-select':
+                    { mr: '6px', ml: '0px' },
+                  '& .MuiTablePagination-actions': { ml: '4px !important' },
+                }
                 : undefined
             }
           />

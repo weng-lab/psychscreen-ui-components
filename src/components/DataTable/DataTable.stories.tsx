@@ -227,11 +227,10 @@ export const FunctionalComponentColumn: Story = {
   args: {
     rows: ROWS,
     columns: FCCOLUMNS,
-    itemsPerPage: 4,
     tableTitle: 'Table Title',
     searchable: true,
     showMoreColumns: true,
-    noOfDefaultColumns: 3,
+    noOfDefaultColumns: 5,
   }
 }
 
@@ -293,6 +292,23 @@ export const HeaderColored: Story = {
     searchable: true,
     headerColor: { backgroundColor: '#1976d2', textColor: '#ffffff' },
   }
+}
+
+export const ItemsPerPage: Story = {
+  args: {
+    rows: ROWS,
+    columns: COLUMNS,
+    tableTitle: "Table Title"
+  },
+  render: (args) => 
+    <Stack spacing={2}>
+      <Typography>Default</Typography>
+      <DataTable {...args} />
+      <Typography>itemsPerPage = 5</Typography>
+      <DataTable {...args} itemsPerPage={5} />
+      <Typography>itemsPerPage = [3,5,10]</Typography>
+      <DataTable {...args} itemsPerPage={[3,5,10]}/>
+    </Stack>
 }
 
 export const ConstrainSize: Story = {
@@ -432,7 +448,7 @@ export const LotsOfCols: Story = {
  }
 }
 
-const headeRenderCOLUMNS = (func: any) => {
+const headeRenderCOLUMNS = (setX: React.Dispatch<React.SetStateAction<boolean | null>>) => {
   return [
     {
       header: 'Index',
@@ -488,7 +504,7 @@ const headeRenderCOLUMNS = (func: any) => {
           switch (value) {
             case 0:
               setDistanceChecked(event.target.checked);
-              func(event.target.checked);
+              setX(event.target.checked);
               break;
             case 1:
               setCTCF_ChIAPETChecked(event.target.checked);
@@ -570,7 +586,7 @@ export const HeaderRender: Story = {
     searchable: true
   },
   render: (args) => {
-    const [x, setX] = React.useState(null);
+    const [x, setX] = React.useState<boolean | null>(null);
     useEffect(() => console.log(x));
     return (
       <DataTable

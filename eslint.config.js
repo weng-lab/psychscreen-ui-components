@@ -25,4 +25,10 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ["**/*.stories.tsx"],
+    rules: {
+      "react-hooks/rules-of-hooks": "off"
+    }
+  }
 )
