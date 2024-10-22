@@ -101,17 +101,16 @@ const boxStyle = {
   p: 4,
 };
 
-// function DataTable<T>(props: DataTableProps<T>): React.ReactElement<DataTableProps<T>> {
-const DataTable: React.FC<DataTableProps<any>> = (
-  props: DataTableProps<any>
+const DataTable = <T,>(
+  props: DataTableProps<T>
 ) => {
   // Sets default rows to display at 5 if unspecified
   const itemsPerPage = props.itemsPerPage || 5;
   const [page, setPage] = useState(props.page || 0);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
 
-  const handleChangePage = (_: any, newPage: number) => {
-    setPage(newPage);
+  const handleChangePage = (page: number) => {
+    setPage(page);
   };
 
   const handleChangeRowsPerPage = (
@@ -129,7 +128,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
     return cells;
   }
 
-  function highlightCheck(row: {}): boolean {
+  function highlightCheck(row: T): boolean {
     var found = false;
     if (Array.isArray(props.highlighted)) {
       props.highlighted.forEach((highlight) => {
@@ -150,7 +149,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
   );
 
   const [state, dispatch] = useReducer<
-    Reducer<DataTableState<any>, DataTableAction<any>>
+    Reducer<DataTableState<T>, DataTableAction<T>>
   >(reducer, {
     sort: {
       column: props.sortColumn || 0,
@@ -189,7 +188,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
   );
 
   const sort = useCallback(
-    (rows: any[]): any[] => {
+    (rows: T[]): T[] => {
       /* look for a user-defined sort function for this column or fall back
           to generic string/number sorting */
       const sortf =
@@ -219,6 +218,12 @@ const DataTable: React.FC<DataTableProps<any>> = (
     () => sort(displayRows(props.rows, state.filter || props.search || '')),
     [displayRows, sort, state.filter, props.rows, state.sort, props.search]
   );
+
+  const rowsOnCurrentPage = useMemo(() => {
+    const newRowsOnPage = displayedRows.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+    props.onDisplayedRowsChange?.(page, newRowsOnPage)
+    return newRowsOnPage
+  }, [displayedRows, page, rowsPerPage])
 
   const download = useCallback(() => {
     const data =
@@ -423,8 +428,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
                 {handleEmptyTable(props.columns.length)}
               </TableRow>
             ) : (
-              displayedRows
-                .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+              rowsOnCurrentPage
                 .map((row, i) => (
                   <TableRow
                     // Check that there's a row to select, it's the right one, and either none have been highlighted or it's the correct one
@@ -522,7 +526,7 @@ const DataTable: React.FC<DataTableProps<any>> = (
             count={displayedRows.length}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={handleChangePage}
+            onPageChange={(_, page) => handleChangePage(page)}
             onRowsPerPageChange={handleChangeRowsPerPage}
             showFirstButton={props.dense ? false : true}
             showLastButton={props.dense ? false : true}

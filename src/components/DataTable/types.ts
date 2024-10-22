@@ -19,13 +19,13 @@ type HEX = `#${string}` | `# ${string}`;
 
 export type DataTableProps<T> = {
   columns: DataTableColumn<T>[]
+  rows: T[]
   itemsPerPage?: number
   hidePageMenu?: boolean
   tableTitle?: string
   selectable?: boolean
   searchable?: boolean
   search?: string
-  rows: T[]
   emptyText?: string
   sortColumn?: number
   sortDescending?: boolean
@@ -55,10 +55,13 @@ export type DataTableProps<T> = {
    * Importantly, currently this only supports highlighting rows with the same order
    * of key/value pairs. Matching but out-of-order row objects will not be highlighted.
    */
-  highlighted?: {} | {}[]
+  highlighted?: T | T[]
 
-  setPage?: (page: number) => void
-  rowLink?: (row: T, index: number) => string
+  /**
+   * Callback triggered on page change, . Only fires when page change triggered internally, not when changed using ```page``` prop externally
+   */
+  onDisplayedRowsChange?: (newPage: number, displayedRows: T[]) => void
+
   onRowClick?: (row: T, i: number) => void
 
   /**
@@ -74,9 +77,9 @@ export type DataTableProps<T> = {
    * @param cellColIndex The index of the cell's column as it's currently displayed
    */
 
-  onCellMouseEnter?: (cellValue: T, cellRowIndex: number, cellColIndex: number) => void
+  onCellMouseEnter?: (cellValue: string | number, cellRowIndex: number, cellColIndex: number) => void
+  
   onCellMouseLeave?: () => void
-
 }
 
 export type DataTableState<T> = {
