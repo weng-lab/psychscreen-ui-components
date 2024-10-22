@@ -58,7 +58,7 @@ export type DataTableProps<T> = {
   highlighted?: T | T[]
 
   /**
-   * Callback triggered on page change, . Only fires when page change triggered internally, not when changed using ```page``` prop externally
+   * Callback triggered whenever the displayed rows are changed. Will trigger on first load of initial rows.
    */
   onDisplayedRowsChange?: (newPage: number, displayedRows: T[]) => void
 
