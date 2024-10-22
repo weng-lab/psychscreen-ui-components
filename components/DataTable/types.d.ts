@@ -2,12 +2,14 @@ import { default as React } from '../../../node_modules/react';
 export type DataTableColumn<T> = {
     tooltip?: string;
     header: string;
-    HeaderRender?: React.FC<any>;
+    HeaderRender?: React.FC;
     value: (row: T) => string | number;
     search?: (row: T) => boolean;
     unsearchable?: boolean;
     render?: (row: T) => string | JSX.Element;
-    FunctionalRender?: React.FC<any>;
+    FunctionalRender?: (props: {
+        row: T;
+    }) => JSX.Element;
     sort?: (a: T, b: T) => number;
     unsortable?: boolean;
 };
@@ -17,7 +19,16 @@ type HEX = `#${string}` | `# ${string}`;
 export type DataTableProps<T> = {
     columns: DataTableColumn<T>[];
     rows: T[];
-    itemsPerPage?: number;
+    /**
+     * Sets the number of items on each page.
+     * If one number specified, the rows per page selection is hidden.
+     * Specify an array to provide user-selectable options
+     *
+     * @default
+     * [5, 10, 25, 100]
+     *
+     */
+    itemsPerPage?: number | number[];
     hidePageMenu?: boolean;
     tableTitle?: string;
     selectable?: boolean;
