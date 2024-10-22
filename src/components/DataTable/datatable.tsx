@@ -472,7 +472,7 @@ const DataTable = <T,>(
                           }
                         >
                           {column.FunctionalRender ? (
-                            <column.FunctionalRender row={row} />
+                            column.FunctionalRender(row)
                           ) : column.render ? (
                             column.render(row)
                           ) : (

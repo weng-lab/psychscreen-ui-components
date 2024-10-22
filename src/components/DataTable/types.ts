@@ -1,14 +1,18 @@
-import React from "react"
-
 export type DataTableColumn<T> = {
   tooltip?: string
   header: string
-  HeaderRender?: React.FC
+  /**
+   * Custom render function for the column header
+   */
+  HeaderRender?: () => JSX.Element;
   value: (row: T) => string | number
   search?: (row: T) => boolean
   unsearchable?: boolean
   render?: (row: T) => string | JSX.Element
-  FunctionalRender?: (props: { row: T }) => JSX.Element;
+  /**
+   * Custom render function for the row
+   */
+  FunctionalRender?: (row: T) => JSX.Element;
   sort?: (a: T, b: T) => number
   unsortable?: boolean
 }
