@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { DataTable, DataTableColumn } from '../..';
+import { DataTable, DataTableColumn, DataTableProps } from '../..';
 import {
   Box,
   Button,
@@ -21,14 +21,12 @@ const meta = {
   title: 'DataTable',
   component: DataTable,
   tags: ['autodocs'],
-  argTypes: {},
+  argTypes: {
+  },
   parameters: {
     controls: { expanded: true },
   },
 } satisfies Meta<typeof DataTable>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
 
 type Row = {
   index: number;
@@ -36,6 +34,10 @@ type Row = {
   color: string;
   description: string;
 };
+
+export default meta;
+type Story = StoryObj<DataTableProps<Row>>;
+
 
 const FCCOLUMNS: DataTableColumn<Row>[] = [
   {
@@ -161,13 +163,13 @@ const ROWS: {index: number, text: string, color: string, description: string}[] 
 
 export const Default: Story = {
   args: {
-  rows: ROWS,
-  columns: COLUMNS,
-  itemsPerPage: 4,
-  tableTitle: 'Table Title',
-  searchable: true,
-  hideHeader: false,
-}
+    rows: ROWS,
+    columns: COLUMNS,
+    itemsPerPage: 4,
+    tableTitle: 'Table Title',
+    searchable: true,
+    hideHeader: false,
+  }
 }
 
 export const EmptyTable: Story = {
@@ -246,6 +248,39 @@ export const OnRowClick: Story = {
           row.text
         }\nColor: ${row.color}\nDescription: ${row.description}`
       ),
+  }
+}
+
+export const OnDisplayedRowsChange: Story = {
+  args: {
+    rows: ROWS,
+    columns: COLUMNS,
+    itemsPerPage: 4,
+    tableTitle: 'Table Title',
+    searchable: true,
+  },
+  render: (args) => {
+    const [page, setPage] = useState<number>()
+    const [rows, setRows] = useState<Row[]>()
+
+    const handleDisplayedRowsChange = (newPage: number, displayedRows: Row[]) => {
+      setPage(newPage)
+      setRows(displayedRows)
+    }
+
+    return (
+      <div>
+        <DataTable
+          {...args}
+          onDisplayedRowsChange={handleDisplayedRowsChange}
+        />
+        <Typography>Page: {page}</Typography>
+        <Typography>Rows: </Typography>
+        {rows?.map(row =>
+          <Typography>{JSON.stringify(row)}</Typography>
+        )}
+      </div>
+    )
   }
 }
 
