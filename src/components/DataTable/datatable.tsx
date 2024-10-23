@@ -104,6 +104,7 @@ const boxStyle = {
 const DataTable = <T extends object>(
   props: DataTableProps<T>
 ) => {
+
   const [page, setPage] = useState(props.page || 0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(() => {
     if (Array.isArray(props.itemsPerPage)) { return props.itemsPerPage[0] }
@@ -408,10 +409,7 @@ const DataTable = <T extends object>(
                       hideSortIcon
                     >
                       {column.HeaderRender ? (
-                        typeof column.HeaderRender === "function" ?
-                          column.HeaderRender()
-                          :
-                          column.HeaderRender
+                          <column.HeaderRender />
                       ) : (
                         column.header
                       )}
@@ -477,9 +475,7 @@ const DataTable = <T extends object>(
                         >
                           {column.FunctionalRender ?
                             <column.FunctionalRender {...row} />
-                              // column.FunctionalRender(row)
                             : column.render ?
-                              // column.render(row)
                               <column.render {...row} />
                               :
                               column.value(row)

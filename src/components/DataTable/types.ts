@@ -4,23 +4,21 @@ export interface DataTableColumn<T> {
   tooltip?: string
   header: string
   /**
-   * Use to render React component in column header
+   * Use to render React.ReactNode in column header. Used instead of ```header``` if specified
    * 
    * @example
    * ```tsx
-   * HeaderRender: () => {
-   *  return <CustomComponent>Header Here</Typography>
+   * HeaderRender: () => <Typography>Header Here</Typography>
    * } 
    * ```
    * 
    */
-  HeaderRender?:  (() => JSX.Element) | React.ReactNode;
+  HeaderRender?: () => React.ReactNode;
   value: (row: T) => string | number
   search?: (row: T) => boolean
   unsearchable?: boolean
-  render?: (row: T) => React.ReactNode
   /**
-   * Use to render React components with props of type ```T``` for a column. Allows you to use hooks unlike ```render``` prop
+   * Use to render React.ReactNode for a column. Can be string | number | whatever else react can render
    * 
    * @example
    * ```tsx
@@ -29,9 +27,14 @@ export interface DataTableColumn<T> {
    *  return (
    *    <CustomComponent>{row.whatever}</Typography>
    *  ) 
-   * } 
-   * ```
+   * }
    * 
+   * ```
+   */
+  render?: (row: T) => React.ReactNode
+  /**
+   * @deprecated use render instead.
+   * @todo remove this prop when new component library is up
    */
   FunctionalRender?: ((row: T) => React.JSX.Element);
   sort?: (a: T, b: T) => number
