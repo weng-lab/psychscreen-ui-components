@@ -442,7 +442,7 @@ export const LotsOfCols: Story = {
  args: {
   rows: ROWS,
   columns: COLUMNS.concat(COLUMNS),
-  itemsPerPage: 10,
+  itemsPerPage: 6,
   tableTitle: "Lots of Columns",
   searchable: true,
  }

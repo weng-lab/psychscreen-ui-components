@@ -489,7 +489,7 @@ const DataTable = <T,>(
                       height: (document.getElementById('row0')?.offsetHeight ?? (props.dense ? 33 : 53)) * emptyRows,
                     }}
                   >
-                    <TableCell colSpan={6} />
+                    <TableCell colSpan={props.columns.length} />
                   </TableRow>
                 )}
               </>
