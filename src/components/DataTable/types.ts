@@ -1,18 +1,39 @@
-export type DataTableColumn<T> = {
+import React from "react";
+
+export interface DataTableColumn<T> {
   tooltip?: string
   header: string
   /**
-   * Custom render function for the column header
+   * Use to render React component in column header
+   * 
+   * @example
+   * ```tsx
+   * HeaderRender: () => {
+   *  return <CustomComponent>Header Here</Typography>
+   * } 
+   * ```
+   * 
    */
-  HeaderRender?: () => JSX.Element;
+  HeaderRender?:  (() => JSX.Element) | React.ReactNode;
   value: (row: T) => string | number
   search?: (row: T) => boolean
   unsearchable?: boolean
-  render?: (row: T) => string | JSX.Element
+  render?: (row: T) => React.ReactNode
   /**
-   * Custom render function for the row
+   * Use to render React components with props of type ```T``` for a column. Allows you to use hooks unlike ```render``` prop
+   * 
+   * @example
+   * ```tsx
+   * (row: T) => {
+   *  //You can use hooks here
+   *  return (
+   *    <CustomComponent>{row.whatever}</Typography>
+   *  ) 
+   * } 
+   * ```
+   * 
    */
-  FunctionalRender?: (row: T) => JSX.Element;
+  FunctionalRender?: ((row: T) => React.JSX.Element);
   sort?: (a: T, b: T) => number
   unsortable?: boolean
 }
@@ -21,7 +42,7 @@ type RGB = `rgb(${number}, ${number}, ${number})` | `rgb(${number},${number},${n
 type RGBA = `rgba(${number}, ${number}, ${number}, ${number})` | `rgba(${number},${number},${number},${number})`;
 type HEX = `#${string}` | `# ${string}`;
 
-export type DataTableProps<T> = {
+export interface DataTableProps<T> {
   columns: DataTableColumn<T>[]
   rows: T[]
   
@@ -35,9 +56,36 @@ export type DataTableProps<T> = {
    * 
    */
   itemsPerPage?: number | number[]
-  
   hidePageMenu?: boolean
-  tableTitle?: string
+  /**
+   * Allows passing all of the things React can render.
+   * 
+   * @example
+   * ```
+   * "Title Here"
+   * ```
+   * or
+   * ```jsx
+   * <Typography onClick={handleClick}>Title Here</Typography>
+   * ```
+   * 
+   * If passing a string will be wrapped as such:
+   * ```jsx 
+   * <Typography
+   *  variant="h5"
+   *  noWrap
+   *  component="div"
+   *  sx={{
+   *    display: { xs: 'none', sm: 'block' },
+   *    fontWeight: 'normal',
+   *    color: `${props.headerColor ? props.headerColor.textColor : 'inherit'}`,
+   *  }}
+   * >
+   *  {props.tableTitle}
+   * </Typography>
+   * ```
+   */
+  tableTitle?: React.ReactNode
   selectable?: boolean
   searchable?: boolean
   search?: string

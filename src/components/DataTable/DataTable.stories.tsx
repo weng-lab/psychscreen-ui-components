@@ -7,15 +7,13 @@ import {
   Checkbox,
   FormControlLabel,
   FormGroup,
+  IconButton,
   Menu,
   MenuItem,
   Stack,
   Typography,
 } from '@mui/material';
-
-/**
- * @todo These stories should really be cleaned up, especially dense and headerRender
- */
+import { Close } from '@mui/icons-material';
 
 const meta = {
   title: 'DataTable',
@@ -38,21 +36,51 @@ type Row = {
 export default meta;
 type Story = StoryObj<DataTableProps<Row>>;
 
+const CountComponent = (props: {info?: Row}) => {
+  const [count, setCount] = useState(0)
+  return <Typography onClick={() => {setCount(count + 1); if (props?.info?.index) console.log(props.info.index)}}>Click to increase count: {count}</Typography>
+}
 
-const FCCOLUMNS: DataTableColumn<Row>[] = [
+const FunctionalRenderCols: DataTableColumn<Row>[] = [
   {
     header: 'Functional Column',
     value: (row) => row.index,
-    FunctionalRender: () => {
-      const [index, setIndex] = useState(0);
+    FunctionalRender: (row) => {
+      const [count, setCount] = useState(0);
+      
       return (
         <>
-          <strong>Index</strong>: {index}
+          <strong>Row {row.index}</strong>: {count}
           <br />
-          <button onClick={() => setIndex(index + 1)}>Increment Index</button>
+          <button onClick={() => setCount(count + 1)}>Increment Count</button>
         </>
       );
-    },
+    }
+  },
+  {
+    header: 'Functional Column',
+    value: (row) => row.index,
+    render: (row) => {
+      const [count, setCount] = useState(0);
+      
+      return (
+        <>
+          <strong>Row {row.index}</strong>: {count}
+          <br />
+          <button onClick={() => setCount(count + 1)}>Increment Count</button>
+        </>
+      );
+    }
+  },
+  {
+    header: 'Functional Column',
+    value: (row) => row.index,
+    FunctionalRender: (row) => <CountComponent info={row} />
+  },
+  {
+    header: 'Functional Column',
+    value: (row) => row.index,
+    render: (row) => <CountComponent info={row} />
   },
 ];
 
@@ -223,14 +251,14 @@ export const HoverInfo: Story = {
   }
 }
 
-export const FunctionalComponentColumn: Story = {
+export const FunctionalRender: Story = {
   args: {
     rows: ROWS,
-    columns: FCCOLUMNS,
+    columns: FunctionalRenderCols,
     tableTitle: 'Table Title',
     searchable: true,
     showMoreColumns: true,
-    noOfDefaultColumns: 5,
+    itemsPerPage: 5,
   }
 }
 
@@ -580,7 +608,6 @@ const headeRenderCOLUMNS = (setX: React.Dispatch<React.SetStateAction<boolean | 
 export const HeaderRender: Story = {
   args: {
     rows: ROWS,
-    columns: [], //this will be overwritten
     itemsPerPage: 5,
     tableTitle: "Header Render Test",
     searchable: true
@@ -593,6 +620,41 @@ export const HeaderRender: Story = {
         {...args}
         columns={headeRenderCOLUMNS(setX)}
       />
+    )
+  }
+}
+
+export const TitleRender: Story = {
+  args: {
+    rows: ROWS,
+    columns: COLUMNS,
+    searchable: true
+  },
+  render: (args) => {
+    return (
+      <Stack spacing={2}>
+        <Typography>Normal String Title</Typography>
+        <DataTable
+          {...args}
+          tableTitle={"Test Title"}
+        />
+        <Typography>Custom Typography Title</Typography>
+        <DataTable
+          {...args}
+          tableTitle={<Typography variant='body2' color='secondary'>Small title</Typography>}
+        />
+        <Typography>Component title with onClick</Typography>
+        <DataTable
+          {...args}
+          tableTitle={<Stack direction={"row"} alignItems={"center"}><Typography>{"Click the button -->"}</Typography><IconButton onClick={() => window.alert("Clicked!")}><Close /></IconButton></Stack> }
+        />
+        <Typography>Function Component title using hooks</Typography>
+        <DataTable
+          {...args}
+          tableTitle={<CountComponent />}
+        />
+      </Stack>
+      
     )
   }
 }
