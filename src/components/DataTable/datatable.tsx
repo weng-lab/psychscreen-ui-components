@@ -101,9 +101,10 @@ const boxStyle = {
   p: 4,
 };
 
-const DataTable = <T,>(
+const DataTable = <T extends object>(
   props: DataTableProps<T>
 ) => {
+
   const [page, setPage] = useState(props.page || 0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(() => {
     if (Array.isArray(props.itemsPerPage)) { return props.itemsPerPage[0] }
@@ -291,8 +292,6 @@ const DataTable = <T,>(
     }
   }, [containerRef, arrowLeftRef, arrowRightRef]);
 
-  console.log(document.getElementById('row0')?.offsetHeight)
-
   return (
     (<Paper
       elevation={3}
@@ -309,31 +308,34 @@ const DataTable = <T,>(
           borderTopRightRadius: 4,
         }}
       >
-        <Typography
-          variant="h5"
-          noWrap
-          component="div"
-          sx={{
-            flexGrow: 1,
-            display: { xs: 'none', sm: 'block' },
-            fontWeight: 'normal',
-            color: `${
-              props.headerColor ? props.headerColor.textColor : 'inherit'
-            }`,
-          }}
-        >
-          {props.tableTitle}
-          {props.titleHoverInfo && (
-            <Tooltip
-              title={props.titleHoverInfo}
-              color="primary"
-              sx={{ ml: 1 }}
-              placement="right-start"
+        <Stack direction="row" alignItems={"center"} flexGrow={1}>
+          {(typeof props.tableTitle === "string" ?
+            <Typography
+              variant="h5"
+              noWrap
+              component="div"
+              sx={{
+                display: { xs: 'none', sm: 'block' },
+                fontWeight: 'normal',
+                color: `${props.headerColor ? props.headerColor.textColor : 'inherit'}`,
+              }}
             >
-              <InfoIcon />
-            </Tooltip>
-          )}
-        </Typography>
+              {props.tableTitle}
+            </Typography>
+            :
+            props.tableTitle)
+          }
+          {props.titleHoverInfo && (
+          <Tooltip
+            title={props.titleHoverInfo}
+            color="primary"
+            sx={{ ml: 1 }}
+            placement="right-start"
+          >
+            <InfoIcon />
+          </Tooltip>
+        )}
+        </Stack>
         {props.showMoreColumns &&
           props.columns.length > (props.noOfDefaultColumns || 5) && (
             <Button
@@ -407,7 +409,7 @@ const DataTable = <T,>(
                       hideSortIcon
                     >
                       {column.HeaderRender ? (
-                        <column.HeaderRender />
+                          <column.HeaderRender />
                       ) : (
                         column.header
                       )}
@@ -471,13 +473,13 @@ const DataTable = <T,>(
                             props.onCellMouseLeave && props.onCellMouseLeave()
                           }
                         >
-                          {column.FunctionalRender ? (
-                            column.FunctionalRender(row)
-                          ) : column.render ? (
-                            column.render(row)
-                          ) : (
-                            column.value(row)
-                          )}
+                          {column.FunctionalRender ?
+                            <column.FunctionalRender {...row} />
+                            : column.render ?
+                              <column.render {...row} />
+                              :
+                              column.value(row)
+                          }
                         </TableCell>
                       );
                     })}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { DataTable, DataTableColumn, DataTableProps } from '../..';
 import {
@@ -7,15 +7,13 @@ import {
   Checkbox,
   FormControlLabel,
   FormGroup,
+  IconButton,
   Menu,
   MenuItem,
   Stack,
   Typography,
 } from '@mui/material';
-
-/**
- * @todo These stories should really be cleaned up, especially dense and headerRender
- */
+import { Close } from '@mui/icons-material';
 
 const meta = {
   title: 'DataTable',
@@ -38,21 +36,51 @@ type Row = {
 export default meta;
 type Story = StoryObj<DataTableProps<Row>>;
 
+const CountComponent = (props: {info?: Row}) => {
+  const [count, setCount] = useState(0)
+  return <Typography onClick={() => {setCount(count + 1); if (props?.info?.index) console.log(props.info.index)}}>Click to increase count: {count}</Typography>
+}
 
-const FCCOLUMNS: DataTableColumn<Row>[] = [
+const FunctionalRenderCols: DataTableColumn<Row>[] = [
   {
     header: 'Functional Column',
     value: (row) => row.index,
-    FunctionalRender: () => {
-      const [index, setIndex] = useState(0);
+    render: (row) => {
+      const [count, setCount] = useState(0);
+      
       return (
         <>
-          <strong>Index</strong>: {index}
+          <strong>Row {row.index}</strong>: {count}
           <br />
-          <button onClick={() => setIndex(index + 1)}>Increment Index</button>
+          <button onClick={() => setCount(count + 1)}>Increment Count</button>
         </>
       );
-    },
+    }
+  },
+  {
+    header: 'Functional Column',
+    value: (row) => row.index,
+    render: (row) => {
+      const [count, setCount] = useState(0);
+      
+      return (
+        <>
+          <strong>Row {row.index}</strong>: {count}
+          <br />
+          <button onClick={() => setCount(count + 1)}>Increment Count</button>
+        </>
+      );
+    }
+  },
+  {
+    header: 'Functional Column',
+    value: (row) => row.index,
+    render: (row) => <CountComponent info={row} />
+  },
+  {
+    header: 'Functional Column',
+    value: (row) => row.index,
+    render: (row) => <CountComponent info={row} />
   },
 ];
 
@@ -86,6 +114,7 @@ const COLUMNS2: DataTableColumn<Row>[] = [
   {
     header: 'Index',
     value: (row) => row.index,
+    HeaderRender: () => <Typography>Index</Typography>,
     tooltip: 'This is the index column',
   },
   {
@@ -223,14 +252,14 @@ export const HoverInfo: Story = {
   }
 }
 
-export const FunctionalComponentColumn: Story = {
+export const FunctionalRender: Story = {
   args: {
     rows: ROWS,
-    columns: FCCOLUMNS,
+    columns: FunctionalRenderCols,
     tableTitle: 'Table Title',
     searchable: true,
     showMoreColumns: true,
-    noOfDefaultColumns: 5,
+    itemsPerPage: 5,
   }
 }
 
@@ -448,7 +477,106 @@ export const LotsOfCols: Story = {
  }
 }
 
-const headeRenderCOLUMNS = (setX: React.Dispatch<React.SetStateAction<boolean | null>>) => {
+const HeaderComponent = (props: {setX: React.Dispatch<React.SetStateAction<boolean | null>>}) => {
+  const [distanceChecked, setDistanceChecked] = useState(true);
+  const [CTCF_ChIAPETChecked, setCTCF_ChIAPETChecked] = useState(false);
+  const [RNAPII_ChIAPETChecked, setRNAPII_ChIAPETChecked] =
+    useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(() => {
+    console.log('initialization performed');
+    return null;
+  });
+
+  const open = Boolean(anchorEl);
+
+  const handleClose = () => {
+    console.log('menu closed, state of checkboxes pushed to main state');
+    setAnchorEl(null);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('New Anchor Set');
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCheckboxChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    value: 0 | 1 | 2
+  ) => {
+    switch (value) {
+      case 0:
+        setDistanceChecked(event.target.checked);
+        props.setX(event.target.checked);
+        break;
+      case 1:
+        setCTCF_ChIAPETChecked(event.target.checked);
+        break;
+      case 2:
+        setRNAPII_ChIAPETChecked(event.target.checked);
+        break;
+    }
+  };
+
+  return (
+    <Box>
+      <Stack
+        direction="row"
+        alignItems="flex-start"
+        component="button"
+        onClick={handleClick}
+      >
+        <Typography variant="body2">Linked Genes</Typography>
+      </Stack>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <FormGroup>
+          <MenuItem>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={distanceChecked}
+                  onChange={(event) => handleCheckboxChange(event, 0)}
+                />
+              }
+              label={`Distance`}
+            />
+          </MenuItem>
+          <MenuItem>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={CTCF_ChIAPETChecked}
+                  onChange={(event) => handleCheckboxChange(event, 1)}
+                />
+              }
+              label={`CTCF-ChIAPET`}
+            />
+          </MenuItem>
+          <MenuItem>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={RNAPII_ChIAPETChecked}
+                  onChange={(event) => handleCheckboxChange(event, 2)}
+                />
+              }
+              label={`RNAPII-ChIAPET`}
+            />
+          </MenuItem>
+        </FormGroup>
+      </Menu>
+    </Box>
+  );
+}
+
+const headeRenderCOLUMNS: (setX: React.Dispatch<React.SetStateAction<boolean | null>>) => DataTableColumn<Row>[] = (setX) => {
   return [
     {
       header: 'Index',
@@ -475,104 +603,7 @@ const headeRenderCOLUMNS = (setX: React.Dispatch<React.SetStateAction<boolean | 
       value: (row: {index: number, text: string, color: string, description: string}) => row.description,
       unsortable: true,
       tooltip: 'This is the Description column. It describes the row.',
-      HeaderRender: () => {
-        const [distanceChecked, setDistanceChecked] = useState(true);
-        const [CTCF_ChIAPETChecked, setCTCF_ChIAPETChecked] = useState(false);
-        const [RNAPII_ChIAPETChecked, setRNAPII_ChIAPETChecked] =
-          useState(false);
-        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(() => {
-          console.log('initialization performed');
-          return null;
-        });
-
-        const open = Boolean(anchorEl);
-
-        const handleClose = () => {
-          console.log('menu closed, state of checkboxes pushed to main state');
-          setAnchorEl(null);
-        };
-
-        const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-          console.log('New Anchor Set');
-          setAnchorEl(event.currentTarget);
-        };
-
-        const handleCheckboxChange = (
-          event: React.ChangeEvent<HTMLInputElement>,
-          value: 0 | 1 | 2
-        ) => {
-          switch (value) {
-            case 0:
-              setDistanceChecked(event.target.checked);
-              setX(event.target.checked);
-              break;
-            case 1:
-              setCTCF_ChIAPETChecked(event.target.checked);
-              break;
-            case 2:
-              setRNAPII_ChIAPETChecked(event.target.checked);
-              break;
-          }
-        };
-
-        return (
-          <Box>
-            <Stack
-              direction="row"
-              alignItems="flex-start"
-              component="button"
-              onClick={handleClick}
-            >
-              <Typography variant="body2">Linked Genes</Typography>
-            </Stack>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-            >
-              <FormGroup>
-                <MenuItem>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={distanceChecked}
-                        onChange={(event) => handleCheckboxChange(event, 0)}
-                      />
-                    }
-                    label={`Distance`}
-                  />
-                </MenuItem>
-                <MenuItem>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={CTCF_ChIAPETChecked}
-                        onChange={(event) => handleCheckboxChange(event, 1)}
-                      />
-                    }
-                    label={`CTCF-ChIAPET`}
-                  />
-                </MenuItem>
-                <MenuItem>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={RNAPII_ChIAPETChecked}
-                        onChange={(event) => handleCheckboxChange(event, 2)}
-                      />
-                    }
-                    label={`RNAPII-ChIAPET`}
-                  />
-                </MenuItem>
-              </FormGroup>
-            </Menu>
-          </Box>
-        );
-      },
+      HeaderRender: () => <HeaderComponent setX={setX} />,
     },
   ];
 };
@@ -580,7 +611,6 @@ const headeRenderCOLUMNS = (setX: React.Dispatch<React.SetStateAction<boolean | 
 export const HeaderRender: Story = {
   args: {
     rows: ROWS,
-    columns: [], //this will be overwritten
     itemsPerPage: 5,
     tableTitle: "Header Render Test",
     searchable: true
@@ -588,11 +618,53 @@ export const HeaderRender: Story = {
   render: (args) => {
     const [x, setX] = React.useState<boolean | null>(null);
     useEffect(() => console.log(x));
+
+    const colFunc = useCallback((setter: React.Dispatch<React.SetStateAction<boolean | null>>) => {
+      return headeRenderCOLUMNS(setter)
+    }, [])
+
+    console.log("rendering")
+
     return (
       <DataTable
         {...args}
-        columns={headeRenderCOLUMNS(setX)}
+        columns={colFunc(setX)}
       />
+    )
+  }
+}
+
+export const TitleRender: Story = {
+  args: {
+    rows: ROWS,
+    columns: COLUMNS,
+    searchable: true
+  },
+  render: (args) => {
+    return (
+      <Stack spacing={2}>
+        <Typography>Normal String Title</Typography>
+        <DataTable
+          {...args}
+          tableTitle={"Test Title"}
+        />
+        <Typography>Custom Typography Title</Typography>
+        <DataTable
+          {...args}
+          tableTitle={<Typography variant='body2' color='secondary'>Small title</Typography>}
+        />
+        <Typography>Component title with onClick</Typography>
+        <DataTable
+          {...args}
+          tableTitle={<Stack direction={"row"} alignItems={"center"}><Typography>{"Click the button -->"}</Typography><IconButton onClick={() => window.alert("Clicked!")}><Close /></IconButton></Stack> }
+        />
+        <Typography>Function Component title using hooks</Typography>
+        <DataTable
+          {...args}
+          tableTitle={<CountComponent />}
+        />
+      </Stack>
+      
     )
   }
 }
