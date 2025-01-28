@@ -101,7 +101,7 @@ export interface DataTableProps<T> {
   defaultColumnsToShow?: (string | JSX.Element)[]
   page?: number
   hideHeader?: boolean
-  titleHoverInfo?: string,
+  titleHoverInfo?: React.ReactNode,
   headerColor?: { backgroundColor: RGB | RGBA | HEX, textColor: RGB | RGBA | HEX | 'inherit' };
 
   /**
