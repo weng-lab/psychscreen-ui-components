@@ -1,7 +1,7 @@
 import React from "react";
 
 export interface DataTableColumn<T> {
-  tooltip?: string
+  tooltip?: React.ReactNode
   header: string
   /**
    * Use to render React.ReactNode in column header. Used instead of ```header``` if specified
@@ -48,7 +48,7 @@ type HEX = `#${string}` | `# ${string}`;
 export interface DataTableProps<T> {
   columns: DataTableColumn<T>[]
   rows: T[]
-  
+
   /**
    * Sets the number of items on each page.
    * If one number specified, the rows per page selection is hidden.
@@ -102,14 +102,14 @@ export interface DataTableProps<T> {
   page?: number
   hideHeader?: boolean
   titleHoverInfo?: string,
-  headerColor?: {backgroundColor: RGB | RGBA | HEX , textColor: RGB | RGBA | HEX | 'inherit'};
-  
+  headerColor?: { backgroundColor: RGB | RGBA | HEX, textColor: RGB | RGBA | HEX | 'inherit' };
+
   /**
    * Note: This currently does not account for the size of the title or pagination element,
    * sets max-height of the table header and body.
    */
   maxHeight?: number | string
-  
+
   /**
    * Reduced the amount of padding on table cells to make the table more compact.
    */
@@ -144,7 +144,7 @@ export interface DataTableProps<T> {
    */
 
   onCellMouseEnter?: (cellValue: string | number, cellRowIndex: number, cellColIndex: number) => void
-  
+
   onCellMouseLeave?: () => void
 }
 
