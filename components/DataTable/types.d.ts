@@ -1,6 +1,6 @@
 import { default as React } from '../../../node_modules/react';
 export interface DataTableColumn<T> {
-    tooltip?: string;
+    tooltip?: React.ReactNode;
     header: string;
     /**
      * Use to render React.ReactNode in column header. Used instead of ```header``` if specified
@@ -97,7 +97,7 @@ export interface DataTableProps<T> {
     defaultColumnsToShow?: (string | JSX.Element)[];
     page?: number;
     hideHeader?: boolean;
-    titleHoverInfo?: string;
+    titleHoverInfo?: React.ReactNode;
     headerColor?: {
         backgroundColor: RGB | RGBA | HEX;
         textColor: RGB | RGBA | HEX | 'inherit';
