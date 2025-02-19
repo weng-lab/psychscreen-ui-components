@@ -24,6 +24,12 @@
     "dist"
   ],
   "dependencies": {
+    "@visx/axis": "^3.12.0",
+    "@visx/drag": "^3.12.0",
+    "@visx/group": "^3.12.0",
+    "@visx/scale": "^3.12.0",
+    "@visx/tooltip": "^3.12.0",
+    "@visx/zoom": "^3.12.0",
     "cytoscape": "^3.30.2",
     "cytoscape-cose-bilkent": "^4.1.0",
     "cytoscape-popper": "^4.0.1",
