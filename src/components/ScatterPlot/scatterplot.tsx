@@ -374,6 +374,7 @@ const ScatterPlot = <T extends object>(
                             <Stack direction="column" sx={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}>
                                 <ControlButtons
                                     selectable={selectable}
+                                    resetable={zoom.transformMatrix !== zoom.initialTransformMatrix}
                                     handleSelectionModeChange={handleSelectionModeChange}
                                     selectMode={selectMode}
                                     zoomIn={handleZoomIn}

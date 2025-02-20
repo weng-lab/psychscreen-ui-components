@@ -66,6 +66,7 @@ export type TooltipProps<T> = {
 
 export type ControlButtonsProps = {
     selectable: boolean;
+    resetable: boolean;
     handleSelectionModeChange: (mode: "select" | "pan") => void;
     selectMode: "select" | "pan";
     zoomIn: () => void;

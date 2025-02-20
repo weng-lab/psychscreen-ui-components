@@ -5,6 +5,7 @@ import { ZoomIn, ZoomOut, PanTool, Edit } from "@mui/icons-material"
 
 const ControlButtons = ({
     selectable,
+    resetable,
     handleSelectionModeChange,
     selectMode,
     zoomIn,
@@ -64,7 +65,7 @@ const ControlButtons = ({
                     <ZoomOut />
                 </IconButton>
             </Tooltip>
-            <Button sx={{ height: '30px', textTransform: 'none' }} size="small" variant="outlined" onClick={zoomReset}>
+            <Button sx={{ height: '30px', textTransform: 'none' }} size="small" variant="outlined" onClick={zoomReset} disabled={!resetable}>
                 Reset
             </Button>
         </Stack>
