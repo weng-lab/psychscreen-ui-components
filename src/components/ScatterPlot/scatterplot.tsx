@@ -38,13 +38,14 @@ const ScatterPlot = <T extends object>(
  */
     const Zoom = VisxZoom as unknown as React.FC<ZoomProps<React.ReactElement>>;
     const VisTooltip = VisxTooltip as unknown as React.FC<TooltipProps>;
+
     const [tooltipData, setTooltipData] = React.useState<Point<T> | null>(null);
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const [lines, setLines] = useState<Lines>([]);
-    const [selectMode, setSelectMode] = useState<"select" | "pan">(props.selectable ? "select" : "pan")
-    const [initialLoad, setInitialLoad] = useState<boolean>(false)
-    const [prevPoints, setPrevPoints] = useState<Point<T>[] | null>(null)
-    const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap.defaultOpen ? props.miniMap.defaultOpen : false)
+    const [selectMode, setSelectMode] = useState<"select" | "pan">(props.selectable ? "select" : "pan");
+    const [initialLoad, setInitialLoad] = useState<boolean>(false);
+    const [prevPoints, setPrevPoints] = useState<Point<T>[] | null>(null);
+    const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap.defaultOpen ? props.miniMap.defaultOpen : false);
     const selectable = props.selectable ? props.selectable : false;
     const margin = { top: 20, right: 20, bottom: 70, left: 70 };
     const boundedWidth = Math.min(props.width * 0.9, props.height * 0.9) - margin.left;
@@ -59,6 +60,19 @@ const ScatterPlot = <T extends object>(
     const toggleMiniMap = () => {
         setShowMiniMap(!showMiniMap);
     };
+
+    const groupedPoints: Point<T>[]  = useMemo(() => {
+        const anchor = props.groupPointsAnchor
+        if (anchor && hoveredPoint) {
+            return (
+                props.pointData.filter((point) => point[anchor] === hoveredPoint[anchor])
+            )
+        } else if (hoveredPoint) {
+            return([hoveredPoint]);
+        } else {
+            return([])
+        }
+      }, [hoveredPoint, props.groupPointsAnchor, props.pointData])
 
     //rescale x and y scales when zooming
     //converts to pixel values before applying transformations
@@ -250,8 +264,6 @@ const ScatterPlot = <T extends object>(
     const drawPoints = useCallback((xScaleTransformed: ScaleLinear<number, number, never>, yScaleTransformed: ScaleLinear<number, number, never>) => {
         const canvas = canvasRef.current;
         if (canvas && initialLoad) {
-            console.log("Drawing Points")
-
             const context = canvas.getContext('2d');
 
             if (context) {
@@ -261,7 +273,6 @@ const ScatterPlot = <T extends object>(
                 context.clearRect(0, 0, props.width, props.height);
                 // Render points on the canvas
                 props.pointData.forEach(point => {
-                    const isHovered = hoveredPoint && hoveredPoint.x === point.x && hoveredPoint.y === point.y;
                     const transformedX = xScaleTransformed(point.x);
                     const transformedY = yScaleTransformed(point.y);;
                     const isPointWithinBounds =
@@ -270,7 +281,7 @@ const ScatterPlot = <T extends object>(
                         yScaleTransformed(point.y) >= 0 &&
                         yScaleTransformed(point.y) <= boundedHeight;
 
-                    if (isPointWithinBounds && !isHovered) {
+                    if (isPointWithinBounds) {
                         context.beginPath();
                         context.arc(transformedX, transformedY, point.r || 3, 0, Math.PI * 2);
                         context.fillStyle = point.color;
@@ -280,7 +291,7 @@ const ScatterPlot = <T extends object>(
                 });
             }
         }
-    }, [initialLoad, props.width, props.height, props.pointData, hoveredPoint, boundedWidth, boundedHeight])
+    }, [initialLoad, props.width, props.height, props.pointData, boundedWidth, boundedHeight])
 
     // feels hacky, but this checks the canvas since we have to wait for the canvas to be 
     // initialized, and we have to check if there was a page change so we can reset initialLoad
@@ -389,7 +400,7 @@ const ScatterPlot = <T extends object>(
                                                 backgroundColor: "transparent"
                                             }}
                                         />
-                                        <svg width={props.width} height={props.height} style={{ position: "absolute", cursor: selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'), userSelect: 'none' }} onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave} >
+                                        <svg width={props.width} height={props.height} style={{ position: "absolute", cursor: hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'), userSelect: 'none' }} onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave} >
                                             <Group top={margin.top} left={margin.left}>
                                                 {selectMode === "select" && (
                                                     <>
@@ -431,20 +442,32 @@ const ScatterPlot = <T extends object>(
                                                         )}
                                                     </>
                                                 )}
+                                                {/* Render Hovered point and/or grouped points */}
+                                                {groupedPoints.length > 0 && groupedPoints.map((point, index) => {
+                                                    const isPointWithinBounds = point &&
+                                                        xScaleTransformed(point.x) >= 0 &&
+                                                        xScaleTransformed(point.x) <= boundedWidth &&
+                                                        yScaleTransformed(point.y) >= 0 &&
+                                                        yScaleTransformed(point.y) <= boundedHeight;
 
-                                                {/* Render hovered point last to bring it to foreground */}
-                                                {isHoveredPointWithinBounds && hoveredPoint && (
-                                                    <Circle
-                                                        cx={xScaleTransformed(hoveredPoint.x)}
-                                                        cy={yScaleTransformed(hoveredPoint.y)}
-                                                        r={hoveredPoint.r ? hoveredPoint.r + 2 : 5}
-                                                        fill={hoveredPoint.color}
-                                                        stroke="black"
-                                                        strokeWidth={1}
-                                                        opacity={1}
-                                                        onClick={() => props.onPointClicked && props.onPointClicked(hoveredPoint)}
-                                                    />
-                                                )}
+                                                    if (isPointWithinBounds) {
+                                                        return (
+                                                            <Circle
+                                                                key={index}
+                                                                cx={xScaleTransformed(point.x)}
+                                                                cy={yScaleTransformed(point.y)}
+                                                                r={point.r ? point.r + 2 : 5}
+                                                                fill={point.color}
+                                                                stroke="black"
+                                                                strokeWidth={1}
+                                                                opacity={1}
+                                                                onClick={() => props.onPointClicked && props.onPointClicked(point)}
+                                                            />
+                                                        );
+                                                    }
+
+                                                    return null; // If point is out of bounds, render nothing
+                                                })}
 
                                                 {/* Interactable surface */}
                                                 <rect

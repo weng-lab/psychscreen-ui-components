@@ -29,6 +29,15 @@ const scatterData: Point[] = [
     { x: 5, y: 6, color: 'green' },
 ];
 
+const moreSscatterData: Point[] = [
+    { x: 1, y: 2, color: 'red' },
+    { x: 3, y: 4, color: 'blue' },
+    { x: 5, y: 6, color: 'green' },
+    { x: 2, y: 2, color: 'red' },
+    { x: 4, y: 4, color: 'blue' },
+    { x: 6, y: 6, color: 'green' },
+];
+
 // Mock for the map prop
 const miniMap: MiniMapProps = {
     show: true,
@@ -78,6 +87,53 @@ export const WithoutMiniMap: Story = {
         pointData: scatterData,
         loading: false,
         miniMap: { show: false },
+        leftAxisLable: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label"
+    }
+};
+
+// Default story with selectable points
+export const SelectablePoints: Story = {
+    args: {
+        width: 400,
+        height: 400,
+        selectable: true,
+        onSelectionChange: (selectedPoints) => {
+            console.log('Selected Points:', selectedPoints);
+        },
+        pointData: scatterData,
+        loading: false,
+        miniMap: miniMap,
+        leftAxisLable: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label"
+    }
+};
+
+// Default story with clickable points
+export const ClickablePoints: Story = {
+    args: {
+        width: 400,
+        height: 400,
+        onPointClicked: (point) => {
+            console.log('Clicked Point:', point);
+        },
+        pointData: scatterData,
+        loading: false,
+        miniMap: miniMap,
+        leftAxisLable: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label"
+    }
+};
+
+// Default story with clickable points
+export const HoverMultiplePoints: Story = {
+    args: {
+        width: 400,
+        height: 400,
+        groupPointsAnchor: "color",
+        pointData: moreSscatterData,
+        loading: false,
+        miniMap: miniMap,
         leftAxisLable: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label"
     }

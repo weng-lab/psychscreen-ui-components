@@ -38,6 +38,7 @@ export type ChartProps<T> = {
     onSelectionChange?: (selectedPoints: Point<T>[]) => void;
     //returns a point when clicked on (optional)
     onPointClicked?: (point: Point<T>) => void;
+    groupPointsAnchor?: keyof Point<T>;
     //custom tooltip formating (optional)
     tooltipBody?: (point: Point<T>) => JSX.Element;
     miniMap: MiniMapProps;
