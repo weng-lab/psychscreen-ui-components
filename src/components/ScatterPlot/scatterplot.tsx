@@ -283,7 +283,16 @@ const ScatterPlot = <T extends object>(
 
                     if (isPointWithinBounds) {
                         context.beginPath();
-                        context.arc(transformedX, transformedY, point.r || 3, 0, Math.PI * 2);
+
+                        if (point.shape === "circle") {
+                            context.arc(transformedX, transformedY, point.r || 3, 0, Math.PI * 2); // Draw circle
+                        } else if (point.shape === "triangle") {
+                            const size = point.r || 3;
+                            context.moveTo(transformedX, transformedY - size); // Top point of the triangle
+                            context.lineTo(transformedX - size, transformedY + size); // Bottom-left point
+                            context.lineTo(transformedX + size, transformedY + size); // Bottom-right point
+                            context.closePath();
+                        }
                         context.fillStyle = point.color;
                         context.globalAlpha = (point.opacity !== undefined ? point.opacity : 1);
                         context.fill();
@@ -453,17 +462,36 @@ const ScatterPlot = <T extends object>(
 
                                                     if (isPointWithinBounds) {
                                                         return (
-                                                            <Circle
-                                                                key={index}
-                                                                cx={xScaleTransformed(point.x)}
-                                                                cy={yScaleTransformed(point.y)}
-                                                                r={point.r ? point.r + 2 : 5}
-                                                                fill={point.color}
-                                                                stroke="black"
-                                                                strokeWidth={1}
-                                                                opacity={1}
-                                                                onClick={() => props.onPointClicked && props.onPointClicked(point)}
-                                                            />
+                                                            point.shape === "circle" ? (
+                                                                <Circle
+                                                                    key={index}
+                                                                    cx={xScaleTransformed(point.x)}
+                                                                    cy={yScaleTransformed(point.y)}
+                                                                    r={point.r ? point.r + 2 : 5}
+                                                                    fill={point.color}
+                                                                    stroke="black"
+                                                                    strokeWidth={1}
+                                                                    opacity={1}
+                                                                    onClick={() => props.onPointClicked && props.onPointClicked(point)}
+                                                                />
+                                                            ) : (
+                                                                <>
+                                                                <path
+                                                                    key="hovered-triangle"
+                                                                    d={`
+                                                                        M${xScaleTransformed(point.x)},${yScaleTransformed(point.y) - (point.r ? point.r + 2 : 5)} 
+                                                                        L${xScaleTransformed(point.x) - (point.r ? point.r + 2 : 5)},${yScaleTransformed(point.y) + (point.r ? point.r + 2 : 5)} 
+                                                                        L${xScaleTransformed(point.x) + (point.r ? point.r + 2 : 5)},${yScaleTransformed(point.y) + (point.r ? point.r + 2 : 5)} 
+                                                                        Z
+                                                                    `}
+                                                                    fill={point.color}
+                                                                    stroke="black"
+                                                                    strokeWidth={1}
+                                                                    opacity={1}
+                                                                    onClick={() => props.onPointClicked && props.onPointClicked(point)}
+                                                                />
+                                                                </>
+                                                            )
                                                         );
                                                     }
 

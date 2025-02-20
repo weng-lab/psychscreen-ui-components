@@ -8,6 +8,7 @@ import { ScaleLinear } from '@visx/vendor/d3-scale';
 export type Point<T> = {
     x: number;
     y: number;
+    shape?: "circle" | "triangle";
     r?: number;
     color: string;
     opacity?: number;

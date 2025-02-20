@@ -17,6 +17,7 @@ type Point = {
     x: number;
     y: number;
     color: string;
+    shape: "circle" | "triangle";
 };
 
 export default meta;
@@ -24,18 +25,24 @@ type Story = StoryObj<typeof meta>;
 
 // Example data for the scatter plot
 const scatterData: Point[] = [
-    { x: 1, y: 2, color: 'red' },
-    { x: 3, y: 4, color: 'blue' },
-    { x: 5, y: 6, color: 'green' },
+    { x: 1, y: 2, color: 'red', shape: "circle" },
+    { x: 3, y: 4, color: 'blue', shape: "circle" },
+    { x: 5, y: 6, color: 'green', shape: "circle" },
 ];
 
-const moreSscatterData: Point[] = [
-    { x: 1, y: 2, color: 'red' },
-    { x: 3, y: 4, color: 'blue' },
-    { x: 5, y: 6, color: 'green' },
-    { x: 2, y: 2, color: 'red' },
-    { x: 4, y: 4, color: 'blue' },
-    { x: 6, y: 6, color: 'green' },
+const moreScatterData: Point[] = [
+    { x: 1, y: 2, color: 'red', shape: "circle" },
+    { x: 3, y: 4, color: 'blue', shape: "circle" },
+    { x: 5, y: 6, color: 'green', shape: "circle" },
+    { x: 2, y: 2, color: 'red', shape: "circle" },
+    { x: 4, y: 4, color: 'blue', shape: "circle" },
+    { x: 6, y: 6, color: 'green', shape: "circle" },
+];
+
+const shapeData: Point[] = [
+    { x: 1, y: 2, color: 'red', shape: "circle" },
+    { x: 3, y: 4, color: 'blue', shape: "triangle" },
+    { x: 5, y: 6, color: 'green', shape: "circle" },
 ];
 
 // Mock for the map prop
@@ -125,13 +132,26 @@ export const ClickablePoints: Story = {
     }
 };
 
-// Default story with clickable points
+// Default story with grouped points
 export const HoverMultiplePoints: Story = {
     args: {
         width: 400,
         height: 400,
         groupPointsAnchor: "color",
-        pointData: moreSscatterData,
+        pointData: moreScatterData,
+        loading: false,
+        miniMap: miniMap,
+        leftAxisLable: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label"
+    }
+};
+
+// Default story with multiple shapes
+export const OtherShapes: Story = {
+    args: {
+        width: 400,
+        height: 400,
+        pointData: shapeData,
         loading: false,
         miniMap: miniMap,
         leftAxisLable: "Y-Axis Label",
