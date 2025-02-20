@@ -4,6 +4,7 @@ import { Button, IconButton, Stack, Tooltip } from "@mui/material";
 import { ZoomIn, ZoomOut, PanTool, Edit } from "@mui/icons-material"
 
 const ControlButtons = ({
+    selectable,
     handleSelectionModeChange,
     selectMode,
     zoomIn,
@@ -39,11 +40,15 @@ const ControlButtons = ({
       
     return (
         <Stack direction="column" spacing={5} alignItems={"center"} justifyContent={"center"}>
-            <Tooltip title="Drag to select">
-                <IconButton aria-label="edit" onClick={() => handleSelectionModeChange('select')} sx={{ color: selectMode === "select" ? "primary.main" : "default" }}>
-                    <Edit />
-                </IconButton>
-            </Tooltip>
+            {
+                selectable && (
+                    <Tooltip title="Drag to select">
+                        <IconButton aria-label="edit" onClick={() => handleSelectionModeChange('select')} sx={{ color: selectMode === "select" ? "primary.main" : "default" }}>
+                            <Edit />
+                        </IconButton>
+                    </Tooltip>
+                )
+            }
             <Tooltip title="Drag to pan, or hold Shift and drag">
                 <IconButton aria-label="pan" onClick={() => handleSelectionModeChange('pan')} sx={{ color: selectMode === "pan" ? "primary.main" : "default" }}>
                     <PanTool />

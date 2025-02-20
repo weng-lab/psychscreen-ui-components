@@ -20,6 +20,7 @@ export type Point<T> = {
 */
 export type MiniMapProps = {
     show: boolean;
+    defaultOpen?: boolean;
     position?: { right: number; bottom: number };
     ref?: MutableRefObject<HTMLDivElement | null>;
 };
@@ -32,6 +33,7 @@ export type ChartProps<T> = {
     height: number;
     pointData: Point<T>[];
     loading: boolean;
+    selectable?: boolean;
     //returns an array of selected points inside a lasso (optional)
     onSelectionChange?: (selectedPoints: Point<T>[]) => void;
     //returns a point when clicked on (optional)
@@ -62,6 +64,7 @@ export type TooltipProps<T> = {
 }
 
 export type ControlButtonsProps = {
+    selectable: boolean;
     handleSelectionModeChange: (mode: "select" | "pan") => void;
     selectMode: "select" | "pan";
     zoomIn: () => void;

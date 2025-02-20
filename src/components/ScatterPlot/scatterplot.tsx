@@ -5,7 +5,6 @@ import { ZoomProps } from '@visx/zoom/lib/Zoom'
 import { ChartProps, Line, Lines, Point } from './types';
 import { Tooltip as VisxTooltip } from '@visx/tooltip';
 import { TooltipProps } from '@visx/tooltip/lib/tooltips/Tooltip';
-import { createPortal } from 'react-dom';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
@@ -16,8 +15,10 @@ import { useDrag } from '@visx/drag';
 import { curveBasis } from '@visx/curve';
 import ScatterTooltip from './tooltip';
 import ControlButtons from './controls';
-import { Box, Stack } from '@mui/material';
+import { Box, IconButton, Stack, Tooltip } from '@mui/material';
 import { ScaleLinear } from '@visx/vendor/d3-scale';
+import { HighlightAlt } from "@mui/icons-material"
+import MiniMap from './minimap';
 
 const initialTransformMatrix = {
     scaleX: 1,
@@ -28,38 +29,35 @@ const initialTransformMatrix = {
     skewY: 0,
 }
 
-const ScatterPlot = <T,>({
-    width,
-    height,
-    pointData,
-    loading,
-    onSelectionChange,
-    onPointClicked,
-    tooltipBody,
-    miniMap,
-    leftAxisLable,
-    bottomAxisLabel
-}: ChartProps<T>) => {
+const ScatterPlot = <T extends object>(
+    props: ChartProps<T>
+)=> {
     /**
  * Hacky workaround for complex type compatability issues. Hopefully this will fix itself when ugrading to React 19 - Jonathan 12/11/24
  * @todo remove this when possible
  */
     const Zoom = VisxZoom as unknown as React.FC<ZoomProps<React.ReactElement>>;
-    const Tooltip = VisxTooltip as unknown as React.FC<TooltipProps>;
+    const VisTooltip = VisxTooltip as unknown as React.FC<TooltipProps>;
     const [tooltipData, setTooltipData] = React.useState<Point<T> | null>(null);
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const [lines, setLines] = useState<Lines>([]);
-    const [selectMode, setSelectMode] = useState<"select" | "pan">("select")
+    const [selectMode, setSelectMode] = useState<"select" | "pan">(props.selectable ? "select" : "pan")
     const [initialLoad, setInitialLoad] = useState<boolean>(false)
     const [prevPoints, setPrevPoints] = useState<Point<T>[] | null>(null)
+    const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap.defaultOpen ? props.miniMap.defaultOpen : false)
+    const selectable = props.selectable ? props.selectable : false;
     const margin = { top: 20, right: 20, bottom: 70, left: 70 };
-    const boundedWidth = Math.min(width * 0.9, height * 0.9) - margin.left;
+    const boundedWidth = Math.min(props.width * 0.9, props.height * 0.9) - margin.left;
     const boundedHeight = boundedWidth;
-    const hoveredPoint = tooltipData ? pointData.find(point => point.x === tooltipData.x && point.y === tooltipData.y) : null;
+    const hoveredPoint = tooltipData ? props.pointData.find(point => point.x === tooltipData.x && point.y === tooltipData.y) : null;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     const handleSelectionModeChange = (mode: "select" | "pan") => {
         setSelectMode(mode);
+    };
+
+    const toggleMiniMap = () => {
+        setShowMiniMap(!showMiniMap);
     };
 
     //rescale x and y scales when zooming
@@ -88,28 +86,28 @@ const ScatterPlot = <T,>({
 
     //scales for the x and y axes
     const xScale = useMemo(() => {
-        if (!pointData || pointData.length === 0) return scaleLinear({ domain: [0, 1], range: [0, boundedWidth] });
+        if (!props.pointData || props.pointData.length === 0) return scaleLinear({ domain: [0, 1], range: [0, boundedWidth] });
         return scaleLinear({
             domain: [
-                Math.min(...pointData.map(d => d.x)) - 1,
-                Math.max(...pointData.map(d => d.x)) + 1,
+                Math.min(...props.pointData.map(d => d.x)) - 1,
+                Math.max(...props.pointData.map(d => d.x)) + 1,
             ],
             range: [0, boundedWidth],
             nice: true,
         });
-    }, [pointData, boundedWidth]);
+    }, [props.pointData, boundedWidth]);
 
     const yScale = useMemo(() => {
-        if (!pointData || pointData.length === 0) return scaleLinear({ domain: [0, 1], range: [boundedHeight, 0] });
+        if (!props.pointData || props.pointData.length === 0) return scaleLinear({ domain: [0, 1], range: [boundedHeight, 0] });
         return scaleLinear({
             domain: [
-                Math.min(...pointData.map(d => d.y)) - 1,
-                Math.max(...pointData.map(d => d.y)) + 1,
+                Math.min(...props.pointData.map(d => d.y)) - 1,
+                Math.max(...props.pointData.map(d => d.y)) + 1,
             ],
             range: [boundedHeight, 0], // Y-axis is inverted
             nice: true,
         });
-    }, [pointData, boundedHeight]);
+    }, [props.pointData, boundedHeight]);
 
     // Setup dragging for lasso drawing
     const onDragStart = useCallback(
@@ -168,7 +166,7 @@ const ScatterPlot = <T,>({
                 const xScaleTransformed = rescaleX(xScale, zoom.transformMatrix.translateX, zoom.transformMatrix.scaleX);
                 const yScaleTransformed = rescaleY(yScale, zoom.transformMatrix.translateY, zoom.transformMatrix.scaleY);
 
-                const pointsInsideLasso = pointData.filter((point) => {
+                const pointsInsideLasso = props.pointData.filter((point) => {
                     const scaledPoint = {
                         x: xScaleTransformed(point.x),
                         y: yScaleTransformed(point.y),
@@ -176,15 +174,15 @@ const ScatterPlot = <T,>({
                     return isPointInLasso(scaledPoint, lasso);
                 });
 
-                if (onSelectionChange) {
-                    onSelectionChange(pointsInsideLasso);
+                if (props.onSelectionChange) {
+                    props.onSelectionChange(pointsInsideLasso);
                 }
                 setLines([]);
             } else {
                 setLines([]);
             }
         },
-        [lines, pointData, xScale, yScale, setLines, onSelectionChange, selectMode]
+        [selectMode, lines, xScale, yScale, props]
     );
 
     //visx draggable variables (canot declare before functions)
@@ -224,7 +222,7 @@ const ScatterPlot = <T,>({
             const threshhold = 5;
 
             //find the exact point being hovered over within the threshhold
-            const hoveredPoint = pointData.find((curr) => {
+            const hoveredPoint = props.pointData.find((curr) => {
                 const transformedX = xScaleTransformed(curr.x);
                 const transformedY = yScaleTransformed(curr.y);
                 return (
@@ -240,7 +238,7 @@ const ScatterPlot = <T,>({
                 setTooltipData(null);
                 setTooltipOpen(false);
             }
-        }, [pointData, xScale, yScale, margin.left, margin.top, isDragging]
+        }, [isDragging, margin.left, margin.top, xScale, yScale, props.pointData]
     );
 
 
@@ -260,9 +258,9 @@ const ScatterPlot = <T,>({
                 context.setTransform(2, 0, 0, 2, 0, 0);
 
                 // Clear the canvas before rendering
-                context.clearRect(0, 0, width, height);
+                context.clearRect(0, 0, props.width, props.height);
                 // Render points on the canvas
-                pointData.forEach(point => {
+                props.pointData.forEach(point => {
                     const isHovered = hoveredPoint && hoveredPoint.x === point.x && hoveredPoint.y === point.y;
                     const transformedX = xScaleTransformed(point.x);
                     const transformedY = yScaleTransformed(point.y);;
@@ -282,24 +280,24 @@ const ScatterPlot = <T,>({
                 });
             }
         }
-    }, [initialLoad, width, height, pointData, hoveredPoint, boundedWidth, boundedHeight])
+    }, [initialLoad, props.width, props.height, props.pointData, hoveredPoint, boundedWidth, boundedHeight])
 
     // feels hacky, but this checks the canvas since we have to wait for the canvas to be 
     // initialized, and we have to check if there was a page change so we can reset initialLoad
     // TODO come up with a better solution
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (prevPoints !== pointData) {
+        if (prevPoints !== props.pointData) {
             //check to see if there was a page change by comparing the point data
             setInitialLoad(false)
         }
         //check to see if the canvas has been initialized and if the initial points have been loaded already
         if (canvas && !initialLoad) {
             setInitialLoad(true)
-            setPrevPoints(pointData)
+            setPrevPoints(props.pointData)
         }
 
-    }, [initialLoad, pointData, prevPoints]);
+    }, [initialLoad, props.pointData, prevPoints]);
 
     //Axis styling
     const axisLeftLabel = (
@@ -312,7 +310,7 @@ const ScatterPlot = <T,>({
             x={0}
             dx={-50} //adjust to move outside of chart area
         >
-            {leftAxisLable}
+            {props.leftAxisLable}
         </Text>
     );
 
@@ -325,17 +323,17 @@ const ScatterPlot = <T,>({
             x={boundedWidth / 2}
             dy={50}
         >
-            {bottomAxisLabel}
+            {props.bottomAxisLabel}
         </Text>
     );
 
-    if (loading || !pointData) {
+    if (props.loading || !props.pointData) {
         return <CircularProgress />;
     }
 
     return (
         <>
-            <Zoom width={width} height={height} scaleXMin={1 / 2} scaleXMax={10} scaleYMin={1 / 2} scaleYMax={10} initialTransformMatrix={initialTransformMatrix}>
+            <Zoom width={props.width} height={props.height} scaleXMin={1 / 2} scaleXMax={10} scaleYMin={1 / 2} scaleYMax={10} initialTransformMatrix={initialTransformMatrix}>
                 {(zoom) => {
                     // rescale as we zoom and pan
                     const xScaleTransformed = rescaleX(xScale, zoom.transformMatrix.translateX, zoom.transformMatrix.scaleX);
@@ -364,6 +362,7 @@ const ScatterPlot = <T,>({
                         <>
                             <Stack direction="column" sx={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}>
                                 <ControlButtons
+                                    selectable={selectable}
                                     handleSelectionModeChange={handleSelectionModeChange}
                                     selectMode={selectMode}
                                     zoomIn={handleZoomIn}
@@ -373,24 +372,24 @@ const ScatterPlot = <T,>({
                             </Stack>
                             {/* Zoomable Group for Points */}
                             <Stack justifyContent="center" alignItems="center" direction="row" sx={{ position: "relative", }}>
-                                <Box sx={{ width: width, height: height }} >
+                                <Box sx={{ width: props.width, height: props.height }} >
                                     <div style={{ position: 'relative' }}>
                                         <canvas
                                             ref={canvasRef}
-                                            width={width * 2}
-                                            height={height * 2}
+                                            width={props.width * 2}
+                                            height={props.height * 2}
                                             style={{
                                                 cursor: selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'),
                                                 userSelect: 'none',
                                                 position: "absolute",
                                                 top: margin.top,
                                                 left: margin.left,
-                                                width: width,
-                                                height: height,
+                                                width: props.width,
+                                                height: props.height,
                                                 backgroundColor: "transparent"
                                             }}
                                         />
-                                        <svg width={width} height={height} style={{ position: "absolute", cursor: selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'), userSelect: 'none' }} onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave} >
+                                        <svg width={props.width} height={props.height} style={{ position: "absolute", cursor: selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'), userSelect: 'none' }} onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave} >
                                             <Group top={margin.top} left={margin.left}>
                                                 {selectMode === "select" && (
                                                     <>
@@ -443,15 +442,15 @@ const ScatterPlot = <T,>({
                                                         stroke="black"
                                                         strokeWidth={1}
                                                         opacity={1}
-                                                        onClick={() => onPointClicked && onPointClicked(hoveredPoint)}
+                                                        onClick={() => props.onPointClicked && props.onPointClicked(hoveredPoint)}
                                                     />
                                                 )}
 
                                                 {/* Interactable surface */}
                                                 <rect
                                                     fill="transparent"
-                                                    width={width}
-                                                    height={height}
+                                                    width={props.width}
+                                                    height={props.height}
                                                     onMouseDown={selectMode === "select" ? dragStart : zoom.dragStart}
                                                     onMouseUp={selectMode === "select" ? (event) => {
                                                         dragEnd(event);
@@ -503,87 +502,37 @@ const ScatterPlot = <T,>({
                                 </Box>
                             </Stack>
                             {
-                                miniMap.show && createPortal(
-                                    <div
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: miniMap.position ? miniMap.position.bottom : 10,
-                                            right: miniMap.position ? miniMap.position.right : 10,
-                                        }}
-                                    >
-                                        {/* Canvas for rendering points on minimap */}
-                                        <canvas
-                                            width={(width - 100) / 4}
-                                            height={(height - 100) / 4}
-                                            ref={(canvas) => {
-                                                if (canvas) {
-                                                    const context = canvas.getContext('2d');
-                                                    const scaleFactor = 0.25;
-                                                    const scaledWidth = (width - 100) * scaleFactor;
-                                                    const scaledHeight = (height - 100) * scaleFactor;
-                                                    if (context) {
-                                                        // Clear canvas
-                                                        context.clearRect(0, 0, canvas.width, canvas.height);
-    
-                                                        // Draw background and outline
-                                                        context.fillStyle = 'white';
-                                                        context.fillRect(0, 0, scaledWidth, scaledHeight);
-                                                        context.strokeStyle = 'grey';
-                                                        context.lineWidth = 4;
-                                                        context.strokeRect(0, 0, scaledWidth, scaledHeight);
-    
-                                                        // Draw points
-                                                        pointData.forEach(point => {
-                                                            const transformedX = xScale(point.x) * scaleFactor;
-                                                            const transformedY = yScale(point.y) * scaleFactor;
-                                                            context.beginPath();
-                                                            context.arc(transformedX, transformedY, 3 * scaleFactor, 0, Math.PI * 2);
-                                                            context.fillStyle = point.color;
-                                                            context.fill();
-                                                        });
-                                                    }
-                                                }
-                                            }}
-                                            style={{ display: 'block' }}
-                                        />
-
-                                        {/* SVG for rendering the zoom window */}
-                                        <svg
-                                            width={(width - 100) / 4}
-                                            height={(height - 100) / 4}
-                                            style={{ position: 'absolute', top: 0, left: 0 }}
-                                        >
-                                            <g
-                                                transform={`
-                                                    scale(0.25)
-                                                `}
-                                            >
-                                                <rect
-                                                    width={width - 100}
-                                                    height={height - 100}
-                                                    fill="#0d0f98"
-                                                    fillOpacity={0.2}
-                                                    stroke="#0d0f98"
-                                                    strokeWidth={4}
-                                                    rx={8}
-                                                    transform={zoom.toStringInvert()}
-                                                />
-                                            </g>
-                                        </svg>
-                                    </div>,
-                                    miniMap.ref?.current || document.body
+                                props.miniMap.show && (
+                                    <Tooltip title="Toggle Minimap">
+                                        <IconButton sx={{ position: 'absolute', right: 10, bottom: 10, zIndex: 10, width: 'auto', height: 'auto', color: showMiniMap ? "primary.main" : "default" }} size="small" onClick={toggleMiniMap}>
+                                            <HighlightAlt />
+                                        </IconButton>
+                                    </Tooltip>
+                                )
+                            }
+                            {
+                                showMiniMap && props.miniMap.show && (
+                                    <MiniMap
+                                        miniMap={props.miniMap}
+                                        width={props.width}
+                                        height={props.height}
+                                        pointData={props.pointData}
+                                        xScale={xScale}
+                                        yScale={yScale}
+                                        zoom={zoom}
+                                    />
                                 )
                             }
 
                             {/* tooltip */}
                             {
                                 tooltipOpen && tooltipData && isHoveredPointWithinBounds && (
-                                    <Tooltip left={xScaleTransformed(tooltipData.x)} top={yScaleTransformed(tooltipData.y)}>
+                                    <VisTooltip left={xScaleTransformed(tooltipData.x) + 200} top={yScaleTransformed(tooltipData.y)}>
                                         <ScatterTooltip
-                                            tooltipBody={tooltipBody}
+                                            tooltipBody={props.tooltipBody}
                                             tooltipData={tooltipData}
                                         />
-                                    </Tooltip>
+                                    </VisTooltip>
                                 )
                             }
                         </>

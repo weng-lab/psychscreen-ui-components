@@ -1,80 +1,84 @@
-import ScatterPlot  from './scatterplot';
-import { Point, MiniMapProps } from './types';
+import { Meta, StoryObj } from '@storybook/react';
+import ScatterPlot from './scatterplot';
+import { MiniMapProps } from './types';
+
+const meta = {
+    title: 'ScatterPlot',
+    component: ScatterPlot,
+    tags: ['autodocs'],
+    argTypes: {
+    },
+    parameters: {
+        controls: { expanded: true },
+    },
+} satisfies Meta<typeof ScatterPlot>;
+
+type Point = {
+    x: number;
+    y: number;
+    color: string;
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Example data for the scatter plot
-const scatterData: Point<T>[] = [
-    { x: 10, y: 20, color: 'red' },
-    { x: 30, y: 40, color: 'blue' },
-    { x: 50, y: 60, color: 'green' },
+const scatterData: Point[] = [
+    { x: 1, y: 2, color: 'red' },
+    { x: 3, y: 4, color: 'blue' },
+    { x: 5, y: 6, color: 'green' },
 ];
 
 // Mock for the map prop
 const miniMap: MiniMapProps = {
     show: true,
-    position: { right: 10, bottom: 10 }
-};
-
-export default {
-    title: 'Components/Chart',
-    component: ScatterPlot,
+    defaultOpen: true,
+    position: { right: 50, bottom: 50 }
 };
 
 // Default story with scatter data
-export const Default = () => (
-    <ScatterPlot
-        width={400}
-        height={400}
-        pointData={scatterData}
-        loading={false}
-        miniMap={miniMap}
-        leftAxisLable="UMAP-2"
-        bottomAxisLabel="UMAP-1"
-    />
-);
+export const Default: Story = {
+    args: {
+        width: 400,
+        height: 400,
+        pointData: scatterData,
+        loading: false,
+        miniMap: miniMap,
+        leftAxisLable: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label"
+    }
+};
 
-// Loading state story
-export const LoadingState = () => (
-    <ScatterPlot
-        width={400}
-        height={400}
-        pointData={scatterData}
-        loading={true}
-        miniMap={miniMap}
-        leftAxisLable="UMAP-2"
-        bottomAxisLabel="UMAP-1"
-    />
-);
-
-// Story with a custom tooltipBody
-export const CustomTooltip = () => (
-    <ScatterPlot
-        width={400}
-        height={400}
-        pointData={scatterData}
-        loading={false}
-        miniMap={miniMap}
-        leftAxisLable="UMAP-2"
-        bottomAxisLabel="UMAP-1"
-        tooltipBody={(point) => (
+// Default story with scatter data
+export const CustomTooltip: Story = {
+    args: {
+        width: 400,
+        height: 400,
+        pointData: scatterData,
+        loading: false,
+        miniMap: miniMap,
+        leftAxisLable: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label",
+        tooltipBody: (point) => (
             <div>
                 <strong>Point Details:</strong>
                 <p>X: {point.x}</p>
                 <p>Y: {point.y}</p>
                 <p>Color: {point.color}</p>
             </div>
-        )}
-    />
-);
+        ),
+    }
+};
 
-// Story with no mini map
-export const WithoutMiniMap = () => (
-    <ScatterPlot
-        width={400}
-        height={400}
-        pointData={scatterData}
-        loading={false}
-        miniMap={{ show: false }}
-        leftAxisLable="UMAP-2"
-        bottomAxisLabel="UMAP-1"
-    />
-);
+// Default story with no mini map
+export const WithoutMiniMap: Story = {
+    args: {
+        width: 400,
+        height: 400,
+        pointData: scatterData,
+        loading: false,
+        miniMap: { show: false },
+        leftAxisLable: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label"
+    }
+};
