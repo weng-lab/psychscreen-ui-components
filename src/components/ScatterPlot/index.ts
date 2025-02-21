@@ -1,3 +1,3 @@
 import ScatterPlot from "./scatterplot"
 export { ScatterPlot }
-export type { MiniMapProps, ChartProps } from "./types"
+export type { MiniMapProps, ChartProps, Point } from "./types"
