@@ -22,6 +22,9 @@ export type { SliderProps } from './components/Slider';
 export { DataTable } from './components/DataTable';
 export type { DataTableProps, DataTableColumn } from './components/DataTable';
 
+export { ScatterPlot } from './components/ScatterPlot';
+export type { MiniMapProps, ChartProps } from './components/ScatterPlot';
+
 export { CustomizedTable } from './components/Table';
 export type { CustomizedTableProps } from './components/Table';
 
