@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Zoom as VisxZoom } from '@visx/zoom'
 import { ZoomProps } from '@visx/zoom/lib/Zoom'
@@ -43,15 +43,12 @@ const ScatterPlot = <T extends object>(
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const [lines, setLines] = useState<Lines>([]);
     const [selectMode, setSelectMode] = useState<"select" | "pan">(props.selectable ? "select" : "pan");
-    const [initialLoad, setInitialLoad] = useState<boolean>(false);
-    const [prevPoints, setPrevPoints] = useState<Point<T>[] | null>(null);
     const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap.defaultOpen ? props.miniMap.defaultOpen : false);
     const selectable = props.selectable ? props.selectable : false;
     const margin = { top: 20, right: 20, bottom: 70, left: 70 };
     const boundedWidth = Math.min(props.width * 0.9, props.height * 0.9) - margin.left;
     const boundedHeight = boundedWidth;
     const hoveredPoint = tooltipData ? props.pointData.find(point => point.x === tooltipData.x && point.y === tooltipData.y) : null;
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     const handleSelectionModeChange = (mode: "select" | "pan") => {
         setSelectMode(mode);
@@ -261,9 +258,8 @@ const ScatterPlot = <T extends object>(
         setTooltipData(null);
     }, []);
 
-    const drawPoints = useCallback((xScaleTransformed: ScaleLinear<number, number, never>, yScaleTransformed: ScaleLinear<number, number, never>) => {
-        const canvas = canvasRef.current;
-        if (canvas && initialLoad) {
+    const drawPoints = useCallback((xScaleTransformed: ScaleLinear<number, number, never>, yScaleTransformed: ScaleLinear<number, number, never>, canvas: HTMLCanvasElement) => {
+        if (canvas) {
             const context = canvas.getContext('2d');
 
             if (context) {
@@ -300,24 +296,7 @@ const ScatterPlot = <T extends object>(
                 });
             }
         }
-    }, [initialLoad, props.width, props.height, props.pointData, boundedWidth, boundedHeight])
-
-    // feels hacky, but this checks the canvas since we have to wait for the canvas to be 
-    // initialized, and we have to check if there was a page change so we can reset initialLoad
-    // TODO come up with a better solution
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (prevPoints !== props.pointData) {
-            //check to see if there was a page change by comparing the point data
-            setInitialLoad(false)
-        }
-        //check to see if the canvas has been initialized and if the initial points have been loaded already
-        if (canvas && !initialLoad) {
-            setInitialLoad(true)
-            setPrevPoints(props.pointData)
-        }
-
-    }, [initialLoad, props.pointData, prevPoints]);
+    }, [props.width, props.height, props.pointData, boundedWidth, boundedHeight])
 
     //Axis styling
     const axisLeftLabel = (
@@ -375,8 +354,6 @@ const ScatterPlot = <T extends object>(
                     const handleZoomReset = () => {
                         zoom.reset();
                     }
-
-                    drawPoints(xScaleTransformed, yScaleTransformed)
                     
                     return (
                         <>
@@ -396,7 +373,11 @@ const ScatterPlot = <T extends object>(
                                 <Box sx={{ width: props.width, height: props.height }} >
                                     <div style={{ position: 'relative' }}>
                                         <canvas
-                                            ref={canvasRef}
+                                            ref={(canvas) => {
+                                                if (canvas) {
+                                                    drawPoints(xScaleTransformed, yScaleTransformed, canvas);
+                                                }
+                                            }}
                                             width={props.width * 2}
                                             height={props.height * 2}
                                             style={{
