@@ -106,7 +106,9 @@ export const SelectablePoints: Story = {
         height: 400,
         selectable: true,
         onSelectionChange: (selectedPoints) => {
-            console.log('Selected Points:', selectedPoints);
+            window.alert(
+                `You Seleted Points: ${JSON.stringify(selectedPoints)}`
+            );
         },
         pointData: scatterData,
         loading: false,
@@ -117,20 +119,20 @@ export const SelectablePoints: Story = {
 };
 
 // Default story with clickable points
-export const ClickablePoints: Story = {
-    args: {
-        width: 400,
-        height: 400,
-        onPointClicked: (point) => {
-            console.log('Clicked Point:', point);
-        },
-        pointData: scatterData,
-        loading: false,
-        miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
-        bottomAxisLabel: "X-Axis Label"
-    }
-};
+// export const ClickablePoints: Story = {
+//     args: {
+//         width: 400,
+//         height: 400,
+//         onPointClicked: (point) => {
+//             console.log('Clicked Point:', point);
+//         },
+//         pointData: scatterData,
+//         loading: false,
+//         miniMap: miniMap,
+//         leftAxisLable: "Y-Axis Label",
+//         bottomAxisLabel: "X-Axis Label"
+//     }
+// };
 
 // Default story with grouped points
 export const HoverMultiplePoints: Story = {
