@@ -6,6 +6,7 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 const client = new ApolloClient({
     uri: 'https://factorbook.api.wenglab.org/graphql',
     cache: new InMemoryCache(),
+    connectToDevTools: true,
 });
 
 const meta = {

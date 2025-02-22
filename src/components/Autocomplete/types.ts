@@ -14,6 +14,7 @@ export type Result = {
     title?: string;
     description: string;
     type?: ResultType;
+    domain?: Domain;
 };
 
 export type ResultType = 'gene' | 'snp' | 'coordinate';

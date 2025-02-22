@@ -40,42 +40,7 @@ interface GeneResult {
     }
 }
 
-export function useAutoComplete(assembly: string) {
-    const [geneFetch, { data: geneData }] = useLazyQuery(gql(GENE_AUTOCOMPLETE_QUERY));
-    const [snpFetch, { data: snpData }] = useLazyQuery(gql(SNP_AUTOCOMPLETE_QUERY));
-
-    const fetch = async (input: string): Promise<Result[]> => {
-        console.log("fetching for input", input);
-
-        const genePromise = new Promise<void>((resolve) => {
-            geneFetch({
-                variables: { name_prefix: [input], assembly: assembly, orderby: 'name', limit: 5 },
-                onCompleted: () => resolve(),
-            });
-        });
-
-        let snpPromise = Promise.resolve();
-        if (input.toLowerCase().startsWith('rs')) {
-            snpPromise = new Promise<void>((resolve) => {
-                snpFetch({
-                    variables: { snpid: input, assembly: assembly === "GRCh38" ? "hg38" : assembly, limit: 3 },
-                    onCompleted: () => resolve(),
-                });
-            });
-        }
-
-        await Promise.all([genePromise, snpPromise]);
-
-        const geneResults = geneResultList(geneData?.gene || []);
-        const snpResults = input.toLowerCase().startsWith('rs') ? snpResultList(snpData?.snpAutocompleteQuery || []) : [];
-
-        return [...geneResults, ...snpResults];
-    };
-
-    return { fetch };
-}
-
-function snpResultList(results: SnpResult[]) {
+export function snpResultList(results: SnpResult[]) {
     let rs: Result[] = [];
     results.forEach((result: SnpResult) => {
         rs.push({
@@ -87,11 +52,16 @@ function snpResultList(results: SnpResult[]) {
     return rs;
 }
 
-function geneResultList(results: GeneResult[]) {
+export function geneResultList(results: GeneResult[]) {
     let rs: Result[] = [];
     results.forEach((result: GeneResult) => {
         rs.push({
             title: result.name,
+            domain: {
+                chromosome: result.coordinates.chromosome,
+                start: result.coordinates.start,
+                end: result.coordinates.end
+            },
             description: `${result.id}\n${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
             type: 'gene'
         });
