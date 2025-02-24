@@ -64,3 +64,34 @@ export const RESOLVE_QUERY = `
             }
         }
     }`;
+
+export const ICRE_AUTOCOMPLETE_QUERY = `
+    query iCREQuery($accession_prefix: [String!], $limit: Int) {
+        iCREQuery(accession_prefix: $accession_prefix, limit: $limit) {
+            rdhs
+            accession
+            celltypes
+            coordinates {
+                start
+                end
+                chromosome
+            }
+        }
+    }
+`;
+
+
+export const CCRE_AUTOCOMPLETE_QUERY = `
+    query cCREQuery($accession_prefix: [String!], $limit: Int, $assembly: String!) {
+        cCREQuery(accession_prefix: $accession_prefix, assembly: $assembly, limit: $limit) {
+            accession
+            coordinates {
+                start
+                end
+                chromosome
+            }
+        }
+    }
+`
+
+

@@ -1,58 +1,67 @@
-import { gql, useLazyQuery } from "@apollo/client";
-import { GENE_AUTOCOMPLETE_QUERY, SNP_AUTOCOMPLETE_QUERY } from "./queries";
-import { Result } from "./types";
+import { useState } from "react";
+import { CCREResult, GeneResult, ICREResult, Result, SnpResult } from "./types";
 
-/**
- * Filters for unique search results, as non-unique results cause undefined
- * behavior in the semantic UI search component.
- *
- * @param results the list of results, each with a title field which distinguishes unique results.
- */
-export const uniq = (results: Result[], d: string): Result[] => {
-    let r: Result[] = [];
-    results.forEach((result: Result) => {
-        let found = false;
-        r.forEach(rr => {
-            if (rr.title === result.title) found = true;
-        });
-        if (!found) r.push(result);
-    });
+type UseCoordinatesReturn = [(input: string) => void, { data: Result[] }];
 
-    return r.length ? r : [{ title: d, description: '' }];
-};
+export function useCoordinates(): UseCoordinatesReturn {
+    const [coords, setCoords] = useState<Result[]>([]);
 
-interface SnpResult {
-    id: string;
-    coordinates: {
-        chromosome: string;
-        start: number;
-        end: number;
+    const fetchCoords = (input: string) => {
+        setCoords([])
+        if (input.startsWith('chr') && input.length <= 5 && input.length > 3) {
+            setCoords([{
+                title: input.split(':')[0] + `:1-100000`,
+                domain: {
+                    chromosome: input.split(':')[0],
+                    start: 1,
+                    end: 100000
+                },
+                description: input.split(':')[0] + `:1-100000`,
+                type: 'coordinate'
+            },
+            ]);
+        }
+        if (input.includes(':') && input.includes('-')) {
+            const chromosome = input.split(':')[0]
+            const start = parseInt(input.split(':')[1].split('-')[0]) || 0;
+            const end = parseInt(input.split(':')[1].split('-')[1]) || start + 1000;
+            if (end > start) {
+                setCoords([{
+                    title: `${chromosome}:${start}-${end}`,
+                    domain: {
+                        chromosome: chromosome,
+                        start: start,
+                        end: end
+                    },
+                    description: `${chromosome}:${start}-${end}`,
+                    type: 'coordinate'
+                }])
+            }
+        }
     }
+    return [fetchCoords, { data: coords }]
 }
 
-interface GeneResult {
-    id: string;
-    name: string;
-    coordinates: {
-        chromosome: string;
-        start: number;
-        end: number;
-    }
-}
-
-export function snpResultList(results: SnpResult[]) {
+export function snpResultList(results: SnpResult[], limit: number) {
+    results = results.slice(0, limit);
     let rs: Result[] = [];
     results.forEach((result: SnpResult) => {
         rs.push({
             title: result.id,
             description: `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
+            domain: {
+                chromosome: result.coordinates.chromosome,
+                start: result.coordinates.start,
+                end: result.coordinates.end
+            },
             type: 'snp'
         });
     });
     return rs;
 }
 
-export function geneResultList(results: GeneResult[]) {
+export function geneResultList(results: GeneResult[], limit: number) {
+    results = results.slice(0, limit);
     let rs: Result[] = [];
     results.forEach((result: GeneResult) => {
         rs.push({
@@ -68,6 +77,44 @@ export function geneResultList(results: GeneResult[]) {
     });
     return rs;
 }
+
+export function icreResultList(results: ICREResult[], limit: number) {
+    results = results.slice(0, limit);
+    let rs: Result[] = [];
+    results.forEach((result: ICREResult) => {
+        rs.push({
+            title: result.accession,
+            domain: {
+                chromosome: result.coordinates.chromosome,
+                start: result.coordinates.start,
+                end: result.coordinates.end
+            },
+            description: `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
+            type: 'icre'
+        });
+    });
+    return rs
+}
+
+export function ccreResultList(results: CCREResult[], limit: number) {
+    results = results.slice(0, limit);
+    let rs: Result[] = [];
+    results.forEach((result: CCREResult) => {
+        rs.push({
+            title: result.accession,
+            domain: {
+                chromosome: result.coordinates.chromosome,
+                start: result.coordinates.start,
+                end: result.coordinates.end
+            },
+            description: `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
+            type: 'ccre'
+        });
+    });
+    return rs
+}
+
+
 // async (_event: React.SyntheticEvent, { value }: { value: string }) => {
 //     const val: string = value.toLowerCase();
 //     let rs: Result[] = [];

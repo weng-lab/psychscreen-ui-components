@@ -1,18 +1,36 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Result, SearchBoxProps } from './types';
 import { gql, useLazyQuery } from '@apollo/client';
-import { GENE_AUTOCOMPLETE_QUERY, SNP_AUTOCOMPLETE_QUERY } from './queries';
-import { geneResultList, snpResultList } from './utils';
-import { TextField } from '@mui/material';
+import { CCRE_AUTOCOMPLETE_QUERY, GENE_AUTOCOMPLETE_QUERY, ICRE_AUTOCOMPLETE_QUERY, SNP_AUTOCOMPLETE_QUERY } from './queries';
+import { ccreResultList, geneResultList, icreResultList, snpResultList, useCoordinates } from './utils';
+import { Box, Button, TextField } from '@mui/material';
 import { Autocomplete } from '@mui/material';
+import { GenomeSearchProps, Result } from './types';
 
-const SearchBox: React.FC<SearchBoxProps> = props => {
+/**
+ * An autocomplete search component for genomic landmarks such as genes, SNPs, ICRs, and CCRs. 
+ * The props extends the MUI Autocomplete props, so you are able to adjust that component's props as well.
+ * You can also use the slots and slotProps to customize the search's internal components, such as the input, button and the bounding box.
+ * To use, pass in a list of the queries you want to run, and the assembly i.e. GRCh38 or mm10. 
+ * You must also provide a function to call when a result is selected, which will run when the user clicks the button.
+ * @param props - extends MUI AutocompleteProps and includes additional props specific to this component
+ */
+const GenomeSearch: React.FC<GenomeSearchProps> = props => {
+    const searchAll = props.queries.includes("all")
+    const searchGene = props.queries.includes("gene") || searchAll
+    const searchSnp = props.queries.includes("snp") || searchAll
+    const searchICRE = props.queries.includes("icre") || searchAll
+    const searchCCRE = props.queries.includes("ccre") || searchAll
+    const searchCoordinate = props.queries.includes("coordinate") || searchAll
+
     const [results, setResults] = useState<Result[]>();
     const [isResultSelected, setIsResultSelected] = useState(false);
-    const [selection, setSelection] = useState<Result | null>(null);
+    const [selection, setSelection] = useState<Result>({} as Result);
 
+    const [fetchCoords, { data: coordsData }] = useCoordinates()
     const [fetchGenes, { data: geneData }] = useLazyQuery(gql(GENE_AUTOCOMPLETE_QUERY));
     const [fetchSnps, { data: snpData }] = useLazyQuery(gql(SNP_AUTOCOMPLETE_QUERY));
+    const [fetchICREs, { data: icreData }] = useLazyQuery(gql(ICRE_AUTOCOMPLETE_QUERY));
+    const [fetchCCREs, { data: ccreData }] = useLazyQuery(gql(CCRE_AUTOCOMPLETE_QUERY));
 
     const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,30 +39,56 @@ const SearchBox: React.FC<SearchBoxProps> = props => {
             clearTimeout(debounceTimeout.current);
         }
         debounceTimeout.current = setTimeout(() => {
-            fetchGenes({
+            searchCoordinate && fetchCoords(
+                input
+            );
+            searchGene && fetchGenes({
+                // $name_prefix: [String], $assembly: String!, $orderby: String, $limit: Int
                 variables: { name_prefix: [input], assembly: props.assembly, orderby: 'name', limit: 5 },
             });
-            fetchSnps({
+            searchSnp && fetchSnps({
+                // $snpid: String, $assembly: String!, $limit: Int
                 variables: { snpid: input, assembly: props.assembly, limit: 3 },
             });
+            searchICRE && fetchICREs({
+                // $accession_prefix: [String!], $limit: Int
+                variables: { accession_prefix: [input], limit: 3 },
+            });
+            searchCCRE && fetchCCREs({
+                // $accession_prefix: [String!], $limit: Int, $assembly: String!
+                variables: { accession_prefix: [input], limit: 3, assembly: props.assembly },
+            });
             setResults([]);
-            setSelection(null);
+            setSelection({} as Result);
         }, 300);
     };
 
     useEffect(() => {
-        if (geneData && snpData) {
-            setResults([
-                ...geneResultList(geneData.gene),
-                ...snpResultList(snpData.snpAutocompleteQuery)
-            ]);
+        let combinedResults: Result[] = []
+        if (searchGene && geneData) {
+            combinedResults.push(...geneResultList(geneData.gene, props.geneLimit || 3))
         }
-    }, [geneData, snpData]);
+        if (searchSnp && snpData) {
+            combinedResults.push(...snpResultList(snpData.snpAutocompleteQuery, props.snpLimit || 3))
+        }
+        if (searchICRE && icreData) {
+            combinedResults.push(...icreResultList(icreData.iCREQuery, props.icreLimit || 3))
+        }
+        if (searchCCRE && ccreData) {
+            combinedResults.push(...ccreResultList(ccreData.cCREQuery, props.ccreLimit || 3))
+        }
+        if (searchCoordinate && coordsData) {
+            combinedResults.push(...coordsData)
+        }
+        setResults(combinedResults)
+    }, [geneData, snpData, coordsData, icreData, ccreData]);
 
-    const onSubmit = useCallback((value: Result) => { console.log(value) }, [])
+    const onSubmit = useCallback((value: Result) => {
+        props.onSearchSubmit && props.onSearchSubmit(value);
+    }, [props.onSearchSubmit])
 
     return (
-        <>
+        <Box display="flex" flexDirection="row" gap={2} style={{ ...props.style }} sx={props.sx}>
             <Autocomplete
                 options={results || []}
                 getOptionLabel={(option: Result) => {
@@ -53,7 +97,7 @@ const SearchBox: React.FC<SearchBoxProps> = props => {
                 groupBy={(option: Result) => option.type || ''}
                 renderOption={(props, option: Result) => {
                     return (
-                        <li {...props} key={option.title}>
+                        <li {...props} key={option.description}>
                             <div>
                                 <strong>{option.title}</strong>
                                 <br />
@@ -68,93 +112,32 @@ const SearchBox: React.FC<SearchBoxProps> = props => {
                         setSelection(value);
                     }
                 }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Search"
-                        onChange={handleInputChange}
-                        value={selection?.title}
-                        sx={{
-                            '& .MuiInputBase-input': {
-                                color: isResultSelected ? 'green' : 'gray',
-                            }
-                        }}
-                    />
-                )}
-                style={{ width: 300 }}
+                renderInput={(params) => {
+                    if (props.slots && props.slots.input) {
+                        return React.cloneElement(props.slots.input as React.ReactElement, {
+                            ...params,
+                            onChange: handleInputChange,
+                            value: selection?.title,
+                        })
+                    }
+                    return (
+                        <TextField
+                            {...params}
+                            label="Search"
+                            onChange={handleInputChange}
+                            value={selection?.title}
+                            sx={{ color: isResultSelected ? 'green' : 'gray' }}
+                            {...props.slotProps?.input}
+                        />
+                    )
+                }}
+                {...props}
             />
-        </>
+            {props.slots && props.slots.button ? React.cloneElement(props.slots.button as React.ReactElement, {
+                onClick: () => onSubmit(selection),
+            }) : <Button variant="contained" onClick={() => onSubmit(selection)} {...props.slotProps?.button}>{props.slotProps?.button?.children || "Go"}</Button>}
+        </Box>
     );
 };
 
-export default SearchBox;
-{/* <Autocomplete
-                options={results || []}
-                getOptionLabel={(option: Result) => {
-                    console.log('Option label:', option.title);
-                    return option.title || '';
-                }}
-                groupBy={(option: Result) => option.type || ''}
-                renderOption={(props, option: Result) => {
-                    console.log('Rendering option:', option);
-                    return (
-                        <li {...props} key={option.title}>
-                            <div>
-                                <strong>{option.title}</strong>
-                                <br />
-                                <span>{option.description}</span>
-                            </div>
-                        </li>
-                    );
-                }}
-                filterOptions={(options) => options}
-                onChange={(_event, value) => {
-                    console.log('Selected value:', value);
-                    if (value) {
-                        setIsResultSelected(true);
-                        onSubmit(value);
-                    }
-                }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Search"
-                        onChange={handleInputChange}
-                        sx={{
-                            '& .MuiInputBase-input': {
-                                color: isResultSelected ? 'green' : 'gray',
-                            }
-                        }}
-                    />
-                )}
-                style={{ width: 300 }}
-            /> */}
-// const [isResultSelected, setIsResultSelected] = useState(false);
-
-// const onSubmit = useCallback((value: Result) => {
-//     let domainString = ""
-//     switch (value.type) {
-//         case 'gene':
-//             domainString = value.description.split('\n')[1]
-//             break
-//         case 'snp':
-//             domainString = value.description
-//             break
-//         case 'coordinate':
-//             domainString = value.title || ""
-//             break
-//     }
-//     const chromosome = domainString.split(':')[0]
-//     let start = parseInt(domainString.split(':')[1].split('-')[0])
-//     let end = parseInt(domainString.split(':')[1].split('-')[1])
-
-//     // add padding to the resulting domain if the result is a SNP or gene
-//     if (value.type === 'snp' || value.type === 'gene') {
-//         const center = Math.floor((start + end) / 2)
-//         const halfWindow = 2500
-//         start = center - halfWindow
-//         end = center + halfWindow
-//     }
-
-//     props.onSearchSubmit && props.onSearchSubmit({ chromosome, start, end });
-// }, [props.onSearchSubmit])
+export default GenomeSearch;
