@@ -20,7 +20,6 @@ export type Point<T> = {
     If not position or reference is given, it will default to the bottom right corner of the screen if shown
 */
 export type MiniMapProps = {
-    show: boolean;
     defaultOpen?: boolean;
     position?: { right: number; bottom: number };
     ref?: MutableRefObject<HTMLDivElement | null>;
@@ -35,6 +34,8 @@ export type ChartProps<T> = {
     pointData: Point<T>[];
     loading: boolean;
     selectable?: boolean;
+    disableZoom?: boolean;
+    controlsPosition?: "left" | "bottom" | "right";
     //returns an array of selected points inside a lasso (optional)
     onSelectionChange?: (selectedPoints: Point<T>[]) => void;
     //returns a point when clicked on (optional)
@@ -42,7 +43,7 @@ export type ChartProps<T> = {
     groupPointsAnchor?: keyof Point<T>;
     //custom tooltip formating (optional)
     tooltipBody?: (point: Point<T>) => JSX.Element;
-    miniMap: MiniMapProps;
+    miniMap?: MiniMapProps;
     leftAxisLable: string;
     bottomAxisLabel: string;
 };
@@ -73,4 +74,5 @@ export type ControlButtonsProps = {
     zoomIn: () => void;
     zoomOut: () => void;
     zoomReset: () => void;
+    position?: "left" | "bottom" | "right";
 }

@@ -43,7 +43,7 @@ const ScatterPlot = <T extends object>(
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const [lines, setLines] = useState<Lines>([]);
     const [selectMode, setSelectMode] = useState<"select" | "pan">(props.selectable ? "select" : "pan");
-    const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap.defaultOpen ? props.miniMap.defaultOpen : false);
+    const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap?.defaultOpen ? props.miniMap.defaultOpen : false);
     const selectable = props.selectable ? props.selectable : false;
     const margin = { top: 20, right: 20, bottom: 70, left: 70 };
     const boundedWidth = Math.min(props.width * 0.9, props.height * 0.9) - margin.left;
@@ -357,17 +357,31 @@ const ScatterPlot = <T extends object>(
                     
                     return (
                         <>
-                            <Stack direction="column" sx={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}>
-                                <ControlButtons
-                                    selectable={selectable}
-                                    resetable={zoom.transformMatrix !== zoom.initialTransformMatrix}
-                                    handleSelectionModeChange={handleSelectionModeChange}
-                                    selectMode={selectMode}
-                                    zoomIn={handleZoomIn}
-                                    zoomOut={handleZoomOut}
-                                    zoomReset={handleZoomReset}
-                                />
-                            </Stack>
+                            {!props.disableZoom && (
+                                <Stack 
+                                    direction="column" 
+                                    sx={{ 
+                                        position: 'absolute', 
+                                        left: props.controlsPosition === "left" ? 10 : props.controlsPosition === "bottom" ? "50%" : null, 
+                                        right: props.controlsPosition === "right" ? 10 : null, 
+                                        top: props.controlsPosition === "bottom" ? null : '50%', 
+                                        bottom: props.controlsPosition === "bottom" ? 10 : null, 
+                                        transform: props.controlsPosition === "bottom" ? 'translateX(-50%)' : 'translateY(-50%)', 
+                                        zIndex: 10 
+                                        }}
+                                    >
+                                    <ControlButtons
+                                        selectable={selectable}
+                                        resetable={zoom.transformMatrix !== zoom.initialTransformMatrix}
+                                        handleSelectionModeChange={handleSelectionModeChange}
+                                        selectMode={selectMode}
+                                        zoomIn={handleZoomIn}
+                                        zoomOut={handleZoomOut}
+                                        zoomReset={handleZoomReset}
+                                        position={props.controlsPosition}
+                                    />
+                                </Stack>
+                            )}
                             {/* Zoomable Group for Points */}
                             <Stack justifyContent="center" alignItems="center" direction="row" sx={{ position: "relative", }}>
                                 <Box sx={{ width: props.width, height: props.height }} >
@@ -391,7 +405,16 @@ const ScatterPlot = <T extends object>(
                                                 backgroundColor: "transparent"
                                             }}
                                         />
-                                        <svg width={props.width} height={props.height} style={{ position: "absolute", cursor: hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'), userSelect: 'none' }} onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave} >
+                                        <svg 
+                                            width={props.width} 
+                                            height={props.height} 
+                                            style={{ 
+                                                position: "absolute", 
+                                                cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'), 
+                                                userSelect: 'none' 
+                                            }} 
+                                            onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave} 
+                                        >
                                             <Group top={margin.top} left={margin.left}>
                                                 {selectMode === "select" && (
                                                     <>
@@ -484,22 +507,24 @@ const ScatterPlot = <T extends object>(
                                                     fill="transparent"
                                                     width={props.width}
                                                     height={props.height}
-                                                    onMouseDown={selectMode === "select" ? dragStart : zoom.dragStart}
+                                                    onMouseDown={selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
                                                     onMouseUp={selectMode === "select" ? (event) => {
                                                         dragEnd(event);
                                                         onDragEnd(zoom);
-                                                    } : zoom.dragEnd}
-                                                    onMouseMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : zoom.dragMove}
-                                                    onTouchStart={selectMode === "select" ? dragStart : zoom.dragStart}
+                                                    } : props.disableZoom ? undefined : zoom.dragEnd}
+                                                    onMouseMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
+                                                    onTouchStart={selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
                                                     onTouchEnd={selectMode === "select" ? (event) => {
                                                         dragEnd(event);
                                                         onDragEnd(zoom);
-                                                    } : zoom.dragEnd}
-                                                    onTouchMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : zoom.dragMove}
+                                                    } : props.disableZoom ? undefined : zoom.dragEnd}
+                                                    onTouchMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
                                                     onWheel={(event) => {
-                                                        const point = localPoint(event) || { x: 0, y: 0 };
-                                                        const zoomDirection = event.deltaY < 0 ? 1.1 : 0.9;
-                                                        zoom.scale({ scaleX: zoomDirection, scaleY: zoomDirection, point });
+                                                        if (!props.disableZoom) {
+                                                            const point = localPoint(event) || { x: 0, y: 0 };
+                                                            const zoomDirection = event.deltaY < 0 ? 1.1 : 0.9;
+                                                            zoom.scale({ scaleX: zoomDirection, scaleY: zoomDirection, point });
+                                                        }
                                                     }}
                                                 />
                                             </Group>
@@ -535,7 +560,7 @@ const ScatterPlot = <T extends object>(
                                 </Box>
                             </Stack>
                             {
-                                props.miniMap.show && (
+                                props.miniMap && !props.disableZoom && (
                                     <Tooltip title="Toggle Minimap">
                                         <IconButton sx={{ position: 'absolute', right: 10, bottom: 10, zIndex: 10, width: 'auto', height: 'auto', color: showMiniMap ? "primary.main" : "default" }} size="small" onClick={toggleMiniMap}>
                                             <HighlightAlt />
@@ -544,7 +569,7 @@ const ScatterPlot = <T extends object>(
                                 )
                             }
                             {
-                                showMiniMap && props.miniMap.show && (
+                                showMiniMap && props.miniMap && !props.disableZoom && (
                                     <MiniMap
                                         miniMap={props.miniMap}
                                         width={props.width}
