@@ -8,7 +8,7 @@ import { TooltipProps } from '@visx/tooltip/lib/tooltips/Tooltip';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
-import { Circle, LinePath } from '@visx/shape';
+import { LinePath } from '@visx/shape';
 import { localPoint } from '@visx/event';
 import { Text } from '@visx/text';
 import { useDrag } from '@visx/drag';
@@ -285,12 +285,16 @@ const ScatterPlot = <T extends object>(
                         yScaleTransformed(point.y) <= boundedHeight;
 
                     if (isPointWithinBounds) {
+                        // check for hovered styling
+                        const hovered = groupedPoints.some((gp) => point.x === gp.x && point.y === gp.y)
+                        //increase size if hovered
+                        const size = (point.r || 3) + (hovered ? 2 : 0);
+
                         context.beginPath();
 
                         if (point.shape === "circle") {
-                            context.arc(transformedX, transformedY, point.r || 3, 0, Math.PI * 2); // Draw circle
+                            context.arc(transformedX, transformedY, size, 0, Math.PI * 2); // Draw circle
                         } else if (point.shape === "triangle") {
-                            const size = point.r || 3;
                             context.moveTo(transformedX, transformedY - size); // Top point of the triangle
                             context.lineTo(transformedX - size, transformedY + size); // Bottom-left point
                             context.lineTo(transformedX + size, transformedY + size); // Bottom-right point
@@ -299,11 +303,17 @@ const ScatterPlot = <T extends object>(
                         context.fillStyle = point.color;
                         context.globalAlpha = (point.opacity !== undefined ? point.opacity : 1);
                         context.fill();
+                        // If hovered, add a black stroke
+                        if (hovered) {
+                            context.lineWidth = 1;
+                            context.strokeStyle = "black";
+                            context.stroke();
+                        }
                     }
                 });
             }
         }
-    }, [props.width, props.height, props.pointData, boundedWidth, boundedHeight])
+    }, [props.width, props.height, props.pointData, boundedWidth, boundedHeight, groupedPoints])
 
     //Axis styling
     const axisLeftLabel = (
@@ -463,51 +473,6 @@ const ScatterPlot = <T extends object>(
                                                         )}
                                                     </>
                                                 )}
-                                                {/* Render Hovered point and/or grouped points */}
-                                                {groupedPoints.length > 0 && groupedPoints.map((point, index) => {
-                                                    const isPointWithinBounds = point &&
-                                                        xScaleTransformed(point.x) >= 0 &&
-                                                        xScaleTransformed(point.x) <= boundedWidth &&
-                                                        yScaleTransformed(point.y) >= 0 &&
-                                                        yScaleTransformed(point.y) <= boundedHeight;
-
-                                                    if (isPointWithinBounds) {
-                                                        return (
-                                                            point.shape === "circle" ? (
-                                                                <Circle
-                                                                    key={index}
-                                                                    cx={xScaleTransformed(point.x)}
-                                                                    cy={yScaleTransformed(point.y)}
-                                                                    r={point.r ? point.r + 2 : 5}
-                                                                    fill={point.color}
-                                                                    stroke="black"
-                                                                    strokeWidth={1}
-                                                                    opacity={1}
-                                                                    onClick={() => props.onPointClicked && props.onPointClicked(point)}
-                                                                />
-                                                            ) : (
-                                                                <>
-                                                                <path
-                                                                    key="hovered-triangle"
-                                                                    d={`
-                                                                        M${xScaleTransformed(point.x)},${yScaleTransformed(point.y) - (point.r ? point.r + 2 : 5)} 
-                                                                        L${xScaleTransformed(point.x) - (point.r ? point.r + 2 : 5)},${yScaleTransformed(point.y) + (point.r ? point.r + 2 : 5)} 
-                                                                        L${xScaleTransformed(point.x) + (point.r ? point.r + 2 : 5)},${yScaleTransformed(point.y) + (point.r ? point.r + 2 : 5)} 
-                                                                        Z
-                                                                    `}
-                                                                    fill={point.color}
-                                                                    stroke="black"
-                                                                    strokeWidth={1}
-                                                                    opacity={1}
-                                                                    onClick={() => props.onPointClicked && props.onPointClicked(point)}
-                                                                />
-                                                                </>
-                                                            )
-                                                        );
-                                                    }
-
-                                                    return null; // If point is out of bounds, render nothing
-                                                })}
 
                                                 {/* Interactable surface */}
                                                 <rect
