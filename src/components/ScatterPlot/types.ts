@@ -23,6 +23,7 @@ export type Point<T> = {
 export type MiniMapProps = {
     defaultOpen?: boolean;
     position?: { right: number; bottom: number };
+    ref?: MutableRefObject<HTMLDivElement | null>;
 };
 
 /*
@@ -47,7 +48,6 @@ export type ChartProps<T> = {
     miniMap?: MiniMapProps;
     leftAxisLable: string;
     bottomAxisLabel: string;
-    ref?: MutableRefObject<HTMLDivElement | null>;
 };
 
 export type Line = { x: number; y: number }[];

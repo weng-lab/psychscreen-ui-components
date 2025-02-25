@@ -3,7 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Zoom as VisxZoom } from '@visx/zoom'
 import { ZoomProps } from '@visx/zoom/lib/Zoom'
 import { ChartProps, Line, Lines, Point, ZoomType } from './types';
-import { Tooltip as VisxTooltip } from '@visx/tooltip';
+import { Tooltip as VisxTooltip, Portal } from '@visx/tooltip';
 import { TooltipProps } from '@visx/tooltip/lib/tooltips/Tooltip';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
@@ -231,14 +231,8 @@ const ScatterPlot = <T extends object>(
                 return;
             }
 
-            if (props.ref?.current) {
-                const rect = props.ref.current.getBoundingClientRect();
-                setMouseX(event.clientX - rect.left);
-                setMouseY(event.clientY - rect.top); 
-            } else {
-                setMouseX(event.pageX);
-                setMouseY(event.pageY);
-            }
+            setMouseX(event.pageX);
+            setMouseY(event.pageY);
 
             const point = localPoint(event.currentTarget, event);
             if (!point) return;
@@ -268,7 +262,7 @@ const ScatterPlot = <T extends object>(
                 setTooltipData(null);
                 setTooltipOpen(false);
             }
-        }, [isDragging, props.ref, props.pointData, margin.left, margin.top, xScale, yScale]
+        }, [isDragging, props.pointData, margin.left, margin.top, xScale, yScale]
     );
 
 
@@ -580,12 +574,14 @@ const ScatterPlot = <T extends object>(
                             {/* tooltip */}
                             {
                                 !props.disableTooltip && tooltipOpen && tooltipData && isHoveredPointWithinBounds && (
-                                    <VisTooltip left={(mouseX + 10)} top={(mouseY)}>
-                                        <ScatterTooltip
-                                            tooltipBody={props.tooltipBody}
-                                            tooltipData={tooltipData}
-                                        />
-                                    </VisTooltip>
+                                    <Portal>
+                                        <VisTooltip left={(mouseX + 10)} top={(mouseY)}>
+                                            <ScatterTooltip
+                                                tooltipBody={props.tooltipBody}
+                                                tooltipData={tooltipData}
+                                            />
+                                        </VisTooltip>
+                                    </Portal>
                                 )
                             }
                         </>
