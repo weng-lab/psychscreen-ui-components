@@ -1,5 +1,6 @@
 import { MutableRefObject } from "react";
 import { ScaleLinear } from '@visx/vendor/d3-scale';
+import { ProvidedZoom } from "@visx/zoom/lib/types";
 
 /*
     All information given to a point on the plot, including its coordinates(x and y), its radius, color, and opacity, and its metadata information
@@ -59,7 +60,7 @@ export type MapProps<T> = {
     pointData: Point<T>[];
     xScale: ScaleLinear<number, number, never>;
     yScale: ScaleLinear<number, number, never>;
-    zoom;
+    zoom: ZoomType;
 }
 
 export type TooltipProps<T> = {
@@ -77,3 +78,20 @@ export type ControlButtonsProps = {
     zoomReset: () => void;
     position?: "left" | "bottom" | "right";
 }
+
+interface TransformMatrix {
+    scaleX: number;
+    scaleY: number;
+    translateX: number;
+    translateY: number;
+    skewX: number;
+    skewY: number;
+}
+
+type ZoomState = {
+    initialTransformMatrix: TransformMatrix;
+    transformMatrix: TransformMatrix;
+    isDragging: boolean;
+};
+
+export type ZoomType = ProvidedZoom<React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>>> & ZoomState

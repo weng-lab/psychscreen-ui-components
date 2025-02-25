@@ -2,8 +2,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Zoom as VisxZoom } from '@visx/zoom'
 import { ZoomProps } from '@visx/zoom/lib/Zoom'
-import { ChartProps, Line, Lines, Point } from './types';
-import { Tooltip as VisxTooltip } from '@visx/tooltip';
+import { ChartProps, Line, Lines, Point, ZoomType } from './types';
+import { Tooltip as VisxTooltip, Portal } from '@visx/tooltip';
 import { TooltipProps } from '@visx/tooltip/lib/tooltips/Tooltip';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
@@ -19,6 +19,7 @@ import { Box, IconButton, Stack, Tooltip } from '@mui/material';
 import { ScaleLinear } from '@visx/vendor/d3-scale';
 import { HighlightAlt } from "@mui/icons-material"
 import MiniMap from './minimap';
+import { HandlerArgs } from '@visx/drag/lib/useDrag';
 
 const initialTransformMatrix = {
     scaleX: 1,
@@ -131,8 +132,8 @@ const ScatterPlot = <T extends object>(
 
     // Setup dragging for lasso drawing
     const onDragStart = useCallback(
-        (currDrag) => {
-            if (selectMode === "select") {
+        (currDrag: HandlerArgs) => {
+            if (selectMode === "select" && currDrag?.x !== undefined && currDrag?.y !== undefined) {
                 // add the new line with the starting point
                 const adjustedX = (currDrag.x - margin.left);
                 const adjustedY = (currDrag.y - margin.top);
@@ -143,8 +144,8 @@ const ScatterPlot = <T extends object>(
     );
 
     const onDragMove = useCallback(
-        (currDrag) => {
-            if (selectMode === "select") {
+        (currDrag: HandlerArgs) => {
+            if (selectMode === "select" && currDrag?.x !== undefined && currDrag?.y !== undefined) {
                 // add the new point to the current line
                 const adjustedX = (currDrag.x - margin.left);
                 const adjustedY = (currDrag.y - margin.top);
@@ -178,7 +179,7 @@ const ScatterPlot = <T extends object>(
     };
 
     const onDragEnd = useCallback(
-        (zoom) => {
+        (zoom: ZoomType) => {
             if (selectMode === "select") {
                 if (lines.length === 0) return;
 
@@ -223,7 +224,7 @@ const ScatterPlot = <T extends object>(
 
     //find the closest point to cursor within threshold to show the tooltip
     const handleMouseMove = useCallback(
-        (event: React.MouseEvent<SVGElement>, zoom) => {
+        (event: React.MouseEvent<SVGElement>, zoom: ZoomType) => {
             if (isDragging || zoom.isDragging) {
                 setTooltipOpen(false);
                 setTooltipData(null);
@@ -261,7 +262,7 @@ const ScatterPlot = <T extends object>(
                 setTooltipData(null);
                 setTooltipOpen(false);
             }
-        }, [isDragging, margin.left, margin.top, xScale, yScale, props.pointData]
+        }, [isDragging, props.pointData, margin.left, margin.top, xScale, yScale]
     );
 
 
@@ -279,43 +280,54 @@ const ScatterPlot = <T extends object>(
 
                 // Clear the canvas before rendering
                 context.clearRect(0, 0, props.width, props.height);
-                // Render points on the canvas
-                props.pointData.forEach(point => {
+
+                const hoveredPoints = new Set(groupedPoints.map(gp => `${gp.x},${gp.y}`));
+
+                const nonHoveredPoints = props.pointData.filter(
+                    (point) => !hoveredPoints.has(`${point.x},${point.y}`)
+                );
+                const hoveredOnlyPoints = props.pointData.filter(
+                    (point) => hoveredPoints.has(`${point.x},${point.y}`)
+                );
+               
+                const drawPoint = (point: Point<T>, isHovered: boolean) => {
                     const transformedX = xScaleTransformed(point.x);
-                    const transformedY = yScaleTransformed(point.y);;
+                    const transformedY = yScaleTransformed(point.y);
                     const isPointWithinBounds =
                         xScaleTransformed(point.x) >= 0 &&
                         xScaleTransformed(point.x) <= boundedWidth &&
                         yScaleTransformed(point.y) >= 0 &&
                         yScaleTransformed(point.y) <= boundedHeight;
-
+                    const size = (point.r || 3) + (isHovered ? 2 : 0);
                     if (isPointWithinBounds) {
-                        // check for hovered styling
-                        const hovered = groupedPoints.some((gp) => point.x === gp.x && point.y === gp.y)
-                        //increase size if hovered
-                        const size = (point.r || 3) + (hovered ? 2 : 0);
-
                         context.beginPath();
 
                         if (point.shape === "circle") {
-                            context.arc(transformedX, transformedY, size, 0, Math.PI * 2); // Draw circle
+                            context.arc(transformedX, transformedY, size, 0, Math.PI * 2);
                         } else if (point.shape === "triangle") {
-                            context.moveTo(transformedX, transformedY - size); // Top point of the triangle
-                            context.lineTo(transformedX - size, transformedY + size); // Bottom-left point
-                            context.lineTo(transformedX + size, transformedY + size); // Bottom-right point
+                            context.moveTo(transformedX, transformedY - size);
+                            context.lineTo(transformedX - size, transformedY + size);
+                            context.lineTo(transformedX + size, transformedY + size);
                             context.closePath();
                         }
+
                         context.fillStyle = point.color;
-                        context.globalAlpha = (point.opacity !== undefined ? point.opacity : 1);
+                        context.globalAlpha = point.opacity !== undefined ? point.opacity : 1;
                         context.fill();
-                        // If hovered, add a black stroke
-                        if (hovered) {
+
+                        if (isHovered) {
                             context.lineWidth = 1;
                             context.strokeStyle = "black";
                             context.stroke();
                         }
                     }
-                });
+
+                };
+
+                // First draw all non-hovered points then render hovered points on top
+                nonHoveredPoints.forEach((point) => drawPoint(point, false));
+                hoveredOnlyPoints.forEach((point) => drawPoint(point, true));
+
             }
         }
     }, [props.width, props.height, props.pointData, boundedWidth, boundedHeight, groupedPoints])
@@ -348,7 +360,7 @@ const ScatterPlot = <T extends object>(
         </Text>
     );
 
-    if (props.loading || !props.pointData) {
+    if (props.loading || !props.pointData) { 
         return <CircularProgress />;
     }
 
@@ -562,12 +574,14 @@ const ScatterPlot = <T extends object>(
                             {/* tooltip */}
                             {
                                 !props.disableTooltip && tooltipOpen && tooltipData && isHoveredPointWithinBounds && (
-                                    <VisTooltip left={(mouseX + 10)} top={(mouseY)}>
-                                        <ScatterTooltip
-                                            tooltipBody={props.tooltipBody}
-                                            tooltipData={tooltipData}
-                                        />
-                                    </VisTooltip>
+                                    <Portal>
+                                        <VisTooltip left={(mouseX + 10)} top={(mouseY)}>
+                                            <ScatterTooltip
+                                                tooltipBody={props.tooltipBody}
+                                                tooltipData={tooltipData}
+                                            />
+                                        </VisTooltip>
+                                    </Portal>
                                 )
                             }
                         </>
