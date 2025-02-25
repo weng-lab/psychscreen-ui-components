@@ -8,7 +8,7 @@ import { TooltipProps } from '@visx/tooltip/lib/tooltips/Tooltip';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
-import { Circle, LinePath } from '@visx/shape';
+import { LinePath } from '@visx/shape';
 import { localPoint } from '@visx/event';
 import { Text } from '@visx/text';
 import { useDrag } from '@visx/drag';
@@ -43,7 +43,9 @@ const ScatterPlot = <T extends object>(
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const [lines, setLines] = useState<Lines>([]);
     const [selectMode, setSelectMode] = useState<"select" | "pan">(props.selectable ? "select" : "pan");
-    const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap.defaultOpen ? props.miniMap.defaultOpen : false);
+    const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap?.defaultOpen ? props.miniMap.defaultOpen : false);
+    const [mouseX, setMouseX] = useState(0);
+    const [mouseY, setMouseY] = useState(0);
     const selectable = props.selectable ? props.selectable : false;
     const margin = { top: 20, right: 20, bottom: 70, left: 70 };
     const boundedWidth = Math.min(props.width * 0.9, props.height * 0.9) - margin.left;
@@ -61,9 +63,16 @@ const ScatterPlot = <T extends object>(
     const groupedPoints: Point<T>[]  = useMemo(() => {
         const anchor = props.groupPointsAnchor
         if (anchor && hoveredPoint) {
-            return (
-                props.pointData.filter((point) => point[anchor] === hoveredPoint[anchor])
-            )
+            return props.pointData.filter((point) => {
+            if (anchor in point) {
+                // If the anchor is a key of Point<T>, compare directly
+                return point[anchor as keyof Point<T>] === hoveredPoint[anchor as keyof Point<T>];
+            } else if (point.metaData && hoveredPoint.metaData) {
+                // If the anchor is a key of T (metaData), compare inside metaData
+                return point.metaData[anchor as keyof T] === hoveredPoint.metaData[anchor as keyof T];
+            }
+            return false;
+        });
         } else if (hoveredPoint) {
             return([hoveredPoint]);
         } else {
@@ -221,6 +230,9 @@ const ScatterPlot = <T extends object>(
                 return;
             }
 
+            setMouseX(event.pageX);
+            setMouseY(event.pageY);
+
             const point = localPoint(event.currentTarget, event);
             if (!point) return;
             const adjustedX = point.x - margin.left;
@@ -278,12 +290,16 @@ const ScatterPlot = <T extends object>(
                         yScaleTransformed(point.y) <= boundedHeight;
 
                     if (isPointWithinBounds) {
+                        // check for hovered styling
+                        const hovered = groupedPoints.some((gp) => point.x === gp.x && point.y === gp.y)
+                        //increase size if hovered
+                        const size = (point.r || 3) + (hovered ? 2 : 0);
+
                         context.beginPath();
 
                         if (point.shape === "circle") {
-                            context.arc(transformedX, transformedY, point.r || 3, 0, Math.PI * 2); // Draw circle
+                            context.arc(transformedX, transformedY, size, 0, Math.PI * 2); // Draw circle
                         } else if (point.shape === "triangle") {
-                            const size = point.r || 3;
                             context.moveTo(transformedX, transformedY - size); // Top point of the triangle
                             context.lineTo(transformedX - size, transformedY + size); // Bottom-left point
                             context.lineTo(transformedX + size, transformedY + size); // Bottom-right point
@@ -292,11 +308,17 @@ const ScatterPlot = <T extends object>(
                         context.fillStyle = point.color;
                         context.globalAlpha = (point.opacity !== undefined ? point.opacity : 1);
                         context.fill();
+                        // If hovered, add a black stroke
+                        if (hovered) {
+                            context.lineWidth = 1;
+                            context.strokeStyle = "black";
+                            context.stroke();
+                        }
                     }
                 });
             }
         }
-    }, [props.width, props.height, props.pointData, boundedWidth, boundedHeight])
+    }, [props.width, props.height, props.pointData, boundedWidth, boundedHeight, groupedPoints])
 
     //Axis styling
     const axisLeftLabel = (
@@ -357,17 +379,31 @@ const ScatterPlot = <T extends object>(
                     
                     return (
                         <>
-                            <Stack direction="column" sx={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}>
-                                <ControlButtons
-                                    selectable={selectable}
-                                    resetable={zoom.transformMatrix !== zoom.initialTransformMatrix}
-                                    handleSelectionModeChange={handleSelectionModeChange}
-                                    selectMode={selectMode}
-                                    zoomIn={handleZoomIn}
-                                    zoomOut={handleZoomOut}
-                                    zoomReset={handleZoomReset}
-                                />
-                            </Stack>
+                            {!props.disableZoom && (
+                                <Stack 
+                                    direction="column" 
+                                    sx={{ 
+                                        position: 'absolute', 
+                                        left: props.controlsPosition === "left" ? 10 : props.controlsPosition === "bottom" ? "50%" : null, 
+                                        right: props.controlsPosition === "right" ? 10 : null, 
+                                        top: props.controlsPosition === "bottom" ? null : '50%', 
+                                        bottom: props.controlsPosition === "bottom" ? 10 : null, 
+                                        transform: props.controlsPosition === "bottom" ? 'translateX(-50%)' : 'translateY(-50%)', 
+                                        zIndex: 10 
+                                        }}
+                                    >
+                                    <ControlButtons
+                                        selectable={selectable}
+                                        resetable={zoom.transformMatrix !== zoom.initialTransformMatrix}
+                                        handleSelectionModeChange={handleSelectionModeChange}
+                                        selectMode={selectMode}
+                                        zoomIn={handleZoomIn}
+                                        zoomOut={handleZoomOut}
+                                        zoomReset={handleZoomReset}
+                                        position={props.controlsPosition}
+                                    />
+                                </Stack>
+                            )}
                             {/* Zoomable Group for Points */}
                             <Stack justifyContent="center" alignItems="center" direction="row" sx={{ position: "relative", }}>
                                 <Box sx={{ width: props.width, height: props.height }} >
@@ -391,7 +427,16 @@ const ScatterPlot = <T extends object>(
                                                 backgroundColor: "transparent"
                                             }}
                                         />
-                                        <svg width={props.width} height={props.height} style={{ position: "absolute", cursor: hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'), userSelect: 'none' }} onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave} >
+                                        <svg 
+                                            width={props.width} 
+                                            height={props.height} 
+                                            style={{ 
+                                                position: "absolute", 
+                                                cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'), 
+                                                userSelect: 'none' 
+                                            }} 
+                                            onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave} 
+                                        >
                                             <Group top={margin.top} left={margin.left}>
                                                 {selectMode === "select" && (
                                                     <>
@@ -433,73 +478,30 @@ const ScatterPlot = <T extends object>(
                                                         )}
                                                     </>
                                                 )}
-                                                {/* Render Hovered point and/or grouped points */}
-                                                {groupedPoints.length > 0 && groupedPoints.map((point, index) => {
-                                                    const isPointWithinBounds = point &&
-                                                        xScaleTransformed(point.x) >= 0 &&
-                                                        xScaleTransformed(point.x) <= boundedWidth &&
-                                                        yScaleTransformed(point.y) >= 0 &&
-                                                        yScaleTransformed(point.y) <= boundedHeight;
-
-                                                    if (isPointWithinBounds) {
-                                                        return (
-                                                            point.shape === "circle" ? (
-                                                                <Circle
-                                                                    key={index}
-                                                                    cx={xScaleTransformed(point.x)}
-                                                                    cy={yScaleTransformed(point.y)}
-                                                                    r={point.r ? point.r + 2 : 5}
-                                                                    fill={point.color}
-                                                                    stroke="black"
-                                                                    strokeWidth={1}
-                                                                    opacity={1}
-                                                                    onClick={() => props.onPointClicked && props.onPointClicked(point)}
-                                                                />
-                                                            ) : (
-                                                                <>
-                                                                <path
-                                                                    key="hovered-triangle"
-                                                                    d={`
-                                                                        M${xScaleTransformed(point.x)},${yScaleTransformed(point.y) - (point.r ? point.r + 2 : 5)} 
-                                                                        L${xScaleTransformed(point.x) - (point.r ? point.r + 2 : 5)},${yScaleTransformed(point.y) + (point.r ? point.r + 2 : 5)} 
-                                                                        L${xScaleTransformed(point.x) + (point.r ? point.r + 2 : 5)},${yScaleTransformed(point.y) + (point.r ? point.r + 2 : 5)} 
-                                                                        Z
-                                                                    `}
-                                                                    fill={point.color}
-                                                                    stroke="black"
-                                                                    strokeWidth={1}
-                                                                    opacity={1}
-                                                                    onClick={() => props.onPointClicked && props.onPointClicked(point)}
-                                                                />
-                                                                </>
-                                                            )
-                                                        );
-                                                    }
-
-                                                    return null; // If point is out of bounds, render nothing
-                                                })}
 
                                                 {/* Interactable surface */}
                                                 <rect
                                                     fill="transparent"
                                                     width={props.width}
                                                     height={props.height}
-                                                    onMouseDown={selectMode === "select" ? dragStart : zoom.dragStart}
+                                                    onMouseDown={selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
                                                     onMouseUp={selectMode === "select" ? (event) => {
                                                         dragEnd(event);
                                                         onDragEnd(zoom);
-                                                    } : zoom.dragEnd}
-                                                    onMouseMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : zoom.dragMove}
-                                                    onTouchStart={selectMode === "select" ? dragStart : zoom.dragStart}
+                                                    } : props.disableZoom ? undefined : zoom.dragEnd}
+                                                    onMouseMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
+                                                    onTouchStart={selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
                                                     onTouchEnd={selectMode === "select" ? (event) => {
                                                         dragEnd(event);
                                                         onDragEnd(zoom);
-                                                    } : zoom.dragEnd}
-                                                    onTouchMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : zoom.dragMove}
+                                                    } : props.disableZoom ? undefined : zoom.dragEnd}
+                                                    onTouchMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
                                                     onWheel={(event) => {
-                                                        const point = localPoint(event) || { x: 0, y: 0 };
-                                                        const zoomDirection = event.deltaY < 0 ? 1.1 : 0.9;
-                                                        zoom.scale({ scaleX: zoomDirection, scaleY: zoomDirection, point });
+                                                        if (!props.disableZoom) {
+                                                            const point = localPoint(event) || { x: 0, y: 0 };
+                                                            const zoomDirection = event.deltaY < 0 ? 1.1 : 0.9;
+                                                            zoom.scale({ scaleX: zoomDirection, scaleY: zoomDirection, point });
+                                                        }
                                                     }}
                                                 />
                                             </Group>
@@ -535,7 +537,7 @@ const ScatterPlot = <T extends object>(
                                 </Box>
                             </Stack>
                             {
-                                props.miniMap.show && (
+                                props.miniMap && !props.disableZoom && (
                                     <Tooltip title="Toggle Minimap">
                                         <IconButton sx={{ position: 'absolute', right: 10, bottom: 10, zIndex: 10, width: 'auto', height: 'auto', color: showMiniMap ? "primary.main" : "default" }} size="small" onClick={toggleMiniMap}>
                                             <HighlightAlt />
@@ -544,7 +546,7 @@ const ScatterPlot = <T extends object>(
                                 )
                             }
                             {
-                                showMiniMap && props.miniMap.show && (
+                                showMiniMap && props.miniMap && !props.disableZoom && (
                                     <MiniMap
                                         miniMap={props.miniMap}
                                         width={props.width}
@@ -559,8 +561,8 @@ const ScatterPlot = <T extends object>(
 
                             {/* tooltip */}
                             {
-                                tooltipOpen && tooltipData && isHoveredPointWithinBounds && (
-                                    <VisTooltip left={xScaleTransformed(tooltipData.x) + 200} top={yScaleTransformed(tooltipData.y)}>
+                                !props.disableTooltip && tooltipOpen && tooltipData && isHoveredPointWithinBounds && (
+                                    <VisTooltip left={(mouseX + 10)} top={(mouseY)}>
                                         <ScatterTooltip
                                             tooltipBody={props.tooltipBody}
                                             tooltipData={tooltipData}

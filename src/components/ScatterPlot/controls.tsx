@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { ControlButtonsProps } from "./types";
-import { Button, IconButton, Stack, Tooltip } from "@mui/material";
-import { ZoomIn, ZoomOut, PanTool, Edit } from "@mui/icons-material"
+import { IconButton, Stack, Tooltip } from "@mui/material";
+import { ZoomIn, ZoomOut, PanTool, Edit, SettingsBackupRestore } from "@mui/icons-material"
 
 const ControlButtons = ({
     selectable,
@@ -10,7 +10,8 @@ const ControlButtons = ({
     selectMode,
     zoomIn,
     zoomOut,
-    zoomReset
+    zoomReset,
+    position
 }: ControlButtonsProps) => {
 
     useEffect(() => {
@@ -40,7 +41,7 @@ const ControlButtons = ({
       }, [handleSelectionModeChange]);
       
     return (
-        <Stack direction="column" spacing={5} alignItems={"center"} justifyContent={"center"}>
+        <Stack direction={position === "bottom" ? "row" : "column"} spacing={5} alignItems={"center"} justifyContent={"center"}>
             {
                 selectable && (
                     <Tooltip title="Drag to select">
@@ -50,11 +51,15 @@ const ControlButtons = ({
                     </Tooltip>
                 )
             }
+            {
+                selectable && (
             <Tooltip title="Drag to pan, or hold Shift and drag">
                 <IconButton aria-label="pan" onClick={() => handleSelectionModeChange('pan')} sx={{ color: selectMode === "pan" ? "primary.main" : "default" }}>
                     <PanTool />
                 </IconButton>
             </Tooltip>
+                )
+            }
             <Tooltip title="Zoom In">
                 <IconButton aria-label="zoom-in" onClick={zoomIn}>
                     <ZoomIn />
@@ -65,9 +70,11 @@ const ControlButtons = ({
                     <ZoomOut />
                 </IconButton>
             </Tooltip>
-            <Button sx={{ height: '30px', textTransform: 'none' }} size="small" variant="outlined" onClick={zoomReset} disabled={!resetable}>
-                Reset
-            </Button>
+            <Tooltip title="Reset Zoom and Pan">
+                <IconButton aria-label="resetZoom" onClick={zoomReset} disabled={!resetable}>
+                    <SettingsBackupRestore />
+                </IconButton>
+            </Tooltip>
         </Stack>
     );
 }
