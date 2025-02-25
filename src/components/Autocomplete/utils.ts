@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { CCREResult, GeneResult, ICREResult, Result, SnpResult } from "./types";
+import { CCREResponse, GeneResponse, ICREResponse, Result, ResultType, SnpResponse } from "./types";
 
 type UseCoordinatesReturn = [(input: string, assembly: string) => void, { data: Result[] }];
 
+// Hook to fetch coordinates based on input
 export function useCoordinates(): UseCoordinatesReturn {
     const [coords, setCoords] = useState<Result[]>([]);
 
@@ -46,6 +47,69 @@ export function useCoordinates(): UseCoordinatesReturn {
     return [fetchCoords, { data: coords }]
 }
 
+// Common interface for result formatting options
+interface ResultFormatterOptions<T> {
+    getTitle: (result: T) => string;
+    getDescription: (result: T) => string;
+    type: string;
+}
+
+// Generic formatter function
+function formatResults<T extends { coordinates: { chromosome: string; start: number; end: number } }>(
+    results: T[] | null,
+    limit: number,
+    options: ResultFormatterOptions<T>
+): Result[] {
+    if (!results) {
+        return [];
+    }
+
+    return results.slice(0, limit).map(result => ({
+        title: options.getTitle(result),
+        description: options.getDescription(result),
+        domain: {
+            chromosome: result.coordinates.chromosome,
+            start: result.coordinates.start,
+            end: result.coordinates.end
+        },
+        type: options.type as ResultType
+    }));
+}
+
+// Specific formatters using the generic function
+export function snpResultList(results: SnpResponse[], limit: number): Result[] {
+    return formatResults(results, limit, {
+        getTitle: result => result.id,
+        getDescription: result => `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
+        type: 'snp'
+    });
+}
+
+export function geneResultList(results: GeneResponse[], limit: number): Result[] {
+    return formatResults(results, limit, {
+        getTitle: result => result.name,
+        getDescription: result => `${result.id}\n${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
+        type: 'gene'
+    });
+}
+
+export function icreResultList(results: ICREResponse[], limit: number): Result[] {
+    return formatResults(results, limit, {
+        getTitle: result => result.accession,
+        getDescription: result => `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
+        type: 'icre'
+    });
+}
+
+export function ccreResultList(results: CCREResponse[], limit: number): Result[] {
+    return formatResults(results, limit, {
+        getTitle: result => result.accession,
+        getDescription: result => `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
+        type: 'ccre'
+    });
+}
+
+// Object to store chromosome lengths for GRCh38 and mm10
 const chromosomeLengths: { [key: string]: { [key: string]: number } } = {
     GRCh38: {
         "chr1": 248956422,
@@ -101,150 +165,3 @@ const chromosomeLengths: { [key: string]: { [key: string]: number } } = {
         "chry": 91744698,
     },
 }
-
-export function snpResultList(results: SnpResult[], limit: number) {
-    if (!results) {
-        return [];
-    }
-    results = results.slice(0, limit);
-    let rs: Result[] = [];
-    results.forEach((result: SnpResult) => {
-        rs.push({
-            title: result.id,
-            description: `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
-            domain: {
-                chromosome: result.coordinates.chromosome,
-                start: result.coordinates.start,
-                end: result.coordinates.end
-            },
-            type: 'snp'
-        });
-    });
-    return rs;
-}
-
-export function geneResultList(results: GeneResult[], limit: number) {
-    if (!results) {
-        return [];
-    }
-    results = results.slice(0, limit);
-    let rs: Result[] = [];
-    results.forEach((result: GeneResult) => {
-        rs.push({
-            title: result.name,
-            domain: {
-                chromosome: result.coordinates.chromosome,
-                start: result.coordinates.start,
-                end: result.coordinates.end
-            },
-            description: `${result.id}\n${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
-            type: 'gene'
-        });
-    });
-    return rs;
-}
-
-export function icreResultList(results: ICREResult[], limit: number) {
-    if (!results) {
-        return [];
-    }
-    results = results.slice(0, limit);
-    let rs: Result[] = [];
-    results.forEach((result: ICREResult) => {
-        rs.push({
-            title: result.accession,
-            domain: {
-                chromosome: result.coordinates.chromosome,
-                start: result.coordinates.start,
-                end: result.coordinates.end
-            },
-            description: `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
-            type: 'icre'
-        });
-    });
-    return rs
-}
-
-export function ccreResultList(results: CCREResult[], limit: number) {
-    if (!results) {
-        return [];
-    }
-    results = results.slice(0, limit);
-    let rs: Result[] = [];
-    results.forEach((result: CCREResult) => {
-        rs.push({
-            title: result.accession,
-            domain: {
-                chromosome: result.coordinates.chromosome,
-                start: result.coordinates.start,
-                end: result.coordinates.end
-            },
-            description: `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
-            type: 'ccre'
-        });
-    });
-    return rs
-}
-
-
-// async (_event: React.SyntheticEvent, { value }: { value: string }) => {
-//     const val: string = value.toLowerCase();
-//     let rs: Result[] = [];
-//     if (val.startsWith('rs') && props.assembly === 'GRCh38') {
-//         const response = await fetch(api, {
-//             method: 'POST',
-
-//             body: JSON.stringify({
-//                 query: SNP_AUTOCOMPLETE_QUERY,
-//                 variables: { snpid: value, assembly: 'hg38', limit: 3 },
-//             }),
-//             headers: { 'Content-Type': 'application/json' },
-//         });
-//         const rst = (await response.json()).data
-//             ?.snpAutocompleteQuery
-//             ?.slice(0, 3)
-//             .map((result: { id: string; coordinates: { chromosome: string; start: number; end: number } }) => ({
-//                 title: result.id,
-//                 description: `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`
-//             }));
-//         rs = uniq(rst, value);
-//     }
-//     if (
-//         value.toLowerCase().match(/^chr[0-9x-y]+$/g)?.length === 1 &&
-//         value.length <= 5
-//     )
-//         rs = [
-//             { title: value + ':1-100000', description: `\n${value}:1-100000` },
-//             { title: value + ':1-1000000', description: `\n${value}:1-1000000` },
-//             {
-//                 title: `${value}:1-10000000`,
-//                 description: `\n${value}:1-10000000`,
-//             },
-//         ];
-//     const response = await fetch(api, {
-//         method: 'POST',
-//         body: JSON.stringify({
-//             query: GENE_AUTOCOMPLETE_QUERY,
-//             variables: { name_prefix: [value], assembly: props.assembly, orderby: 'name', limit: 5 },
-//         }),
-//         headers: { 'Content-Type': 'application/json' },
-//     });
-//     const genesRes = (await response.json()).data
-//         ?.gene
-//         ?.map((result: { name: string, id: string, coordinates: { chromosome: string; start: number; end: number } }) => ({
-//             title: result.name,
-//             description: `${result.id}\n${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`
-//         })
-//         );
-//     const res: Result[] | undefined = genesRes && genesRes.length === 0 && rs.length > 0 ? undefined : uniq(genesRes, value);
-//     const list = rs ? (res ? [...rs, ...res] : rs) : res
-//     list?.forEach(item => {
-//         if (item.title?.startsWith('rs')) {
-//             item.type = 'snp';
-//         } else if (item.title?.startsWith('chr')) {
-//             item.type = 'coordinate';
-//         } else {
-//             item.type = 'gene';
-//         }
-//     })
-//     setResults(list);

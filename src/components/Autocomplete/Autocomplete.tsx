@@ -20,6 +20,7 @@ function GenomeSearch({
     onSearchSubmit, defaultResults, style, sx, slots, slotProps,
     ...autocompleteProps
 }: GenomeSearchProps) {
+    // Boolean flags for each query
     const searchAll = queries.includes("all")
     const searchGene = queries.includes("gene") || searchAll
     const searchSnp = queries.includes("snp") || searchAll
@@ -27,10 +28,13 @@ function GenomeSearch({
     const searchCCRE = queries.includes("ccre") || searchAll
     const searchCoordinate = queries.includes("coordinate") || searchAll
 
+    // State variables
+    const [inputValue, setInputValue] = useState('');
+    const [selection, setSelection] = useState<Result>({} as Result);
     const [results, setResults] = useState<Result[]>(defaultResults || []);
     const [isResultSelected, setIsResultSelected] = useState(false);
-    const [selection, setSelection] = useState<Result>({} as Result);
 
+    // GraphQL queries
     const [fetchCoords, { data: coordsData }] = useCoordinates()
     const [fetchGenes, { data: geneData, loading: geneLoading }] = useLazyQuery(gql(GENE_AUTOCOMPLETE_QUERY));
     const [fetchSnps, { data: snpData, loading: snpLoading }] = useLazyQuery(gql(SNP_AUTOCOMPLETE_QUERY));
@@ -38,9 +42,10 @@ function GenomeSearch({
     const [fetchCCREs, { data: ccreData, loading: ccreLoading }] = useLazyQuery(gql(CCRE_AUTOCOMPLETE_QUERY));
     const isLoading = geneLoading || snpLoading || icreLoading || ccreLoading
 
-    const [inputValue, setInputValue] = useState('');
-
+    // Debounce timeout
     const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Handle input change
     const handleInputChange = (_event: any, newInputValue: string) => {
         setInputValue(newInputValue);
         if (debounceTimeout.current) {
@@ -70,6 +75,7 @@ function GenomeSearch({
         }, 300);
     };
 
+    // Effect to set results
     useEffect(() => {
         if (isLoading) { return }
 
@@ -83,10 +89,12 @@ function GenomeSearch({
         setResults(temp)
     }, [geneData, snpData, coordsData, icreData, ccreData, isLoading]);
 
+    // Handle submit
     const onSubmit = useCallback((value: Result) => {
         onSearchSubmit && onSearchSubmit(value);
     }, [onSearchSubmit])
 
+    // Handle enter key down
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && results && results.length === 1) {
             setIsResultSelected(true);
@@ -94,10 +102,6 @@ function GenomeSearch({
             onSubmit(results[0]);
         }
     }, [results, onSubmit]);
-
-    useEffect(() => {
-        console.log("results", results)
-    }, [results])
 
     return (
         <Box display="flex" flexDirection="row" gap={2} style={{ ...style }} sx={sx}>
@@ -117,12 +121,15 @@ function GenomeSearch({
                 }
                 renderOption={(props, option: Result) => {
                     return (
-                        <li {...props} key={option.title || "no-title" + option.description || "no-description"}>
-                            <div>
-                                <strong>{option.title}</strong>
-                                <br />
-                                <span>{option.description}</span>
-                            </div>
+                        <li {...props} key={`${option.type}-${option.title || 'untitled'}-${option.description || 'no-desc'}`}>
+                            <Box>
+                                <Typography variant="body1" component="div" fontWeight="bold">
+                                    {option.title}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" style={{ whiteSpace: 'pre-line' }}>
+                                    {option.description}
+                                </Typography>
+                            </Box>
                         </li>
                     );
                 }}
@@ -132,11 +139,6 @@ function GenomeSearch({
                         setIsResultSelected(true);
                         setSelection(value);
                     }
-                }}
-                onAbort={() => {
-                    console.log("abort")
-                    setResults([]);
-                    setSelection({} as Result);
                 }}
                 renderInput={(params) => {
                     if (slots && slots.input) {

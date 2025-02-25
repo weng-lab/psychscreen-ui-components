@@ -1,12 +1,13 @@
 import { AutocompleteProps, BoxProps, ButtonProps, TextFieldProps } from "@mui/material";
 
+// Props for the GenomeSearch component
 export type GenomeSearchProps = Partial<AutocompleteProps<Result, false, true, false, React.ElementType>> & {
     assembly: "GRCh38" | "mm10";
     onSearchSubmit: (result: Result) => void;
     defaultResults?: Result[];
 
     // queries
-    queries: ("gene" | "snp" | "coordinate" | "icre" | "ccre" | "all")[];
+    queries: ResultType[];
     geneLimit?: number;
     snpLimit?: number;
     icreLimit?: number;
@@ -33,7 +34,10 @@ export type Domain = {
     end: number;
 };
 
-export type ResultType = 'gene' | 'snp' | 'coordinate' | 'icre' | 'ccre';
+// Result types used to distinguish between different types of results
+export type ResultType = 'gene' | 'snp' | 'coordinate' | 'icre' | 'ccre' | 'all';
+
+// Result object used to display in the autocomplete dropdown
 export type Result = {
     title?: string;
     description?: string;
@@ -41,7 +45,8 @@ export type Result = {
     domain: Domain;
 };
 
-export interface SnpResult {
+// Response from the SNP GraphQL query
+export interface SnpResponse {
     id: string;
     coordinates: {
         chromosome: string;
@@ -50,7 +55,8 @@ export interface SnpResult {
     }
 }
 
-export interface GeneResult {
+// Response from the Gene GraphQL query
+export interface GeneResponse {
     id: string;
     name: string;
     coordinates: {
@@ -60,14 +66,16 @@ export interface GeneResult {
     }
 }
 
-export interface ICREResult {
+// Response from the ICRE GraphQL query
+export interface ICREResponse {
     accession: string;
     coordinates: Domain
     celltypes: string[]
     rdhs: string
 }
 
-export interface CCREResult {
+// Response from the CCRE GraphQL query
+export interface CCREResponse {
     accession: string;
     coordinates: Domain
     celltypes: string[]
