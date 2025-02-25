@@ -44,6 +44,8 @@ const ScatterPlot = <T extends object>(
     const [lines, setLines] = useState<Lines>([]);
     const [selectMode, setSelectMode] = useState<"select" | "pan">(props.selectable ? "select" : "pan");
     const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap?.defaultOpen ? props.miniMap.defaultOpen : false);
+    const [mouseX, setMouseX] = useState(0);
+    const [mouseY, setMouseY] = useState(0);
     const selectable = props.selectable ? props.selectable : false;
     const margin = { top: 20, right: 20, bottom: 70, left: 70 };
     const boundedWidth = Math.min(props.width * 0.9, props.height * 0.9) - margin.left;
@@ -227,6 +229,9 @@ const ScatterPlot = <T extends object>(
                 setTooltipData(null);
                 return;
             }
+
+            setMouseX(event.pageX);
+            setMouseY(event.pageY);
 
             const point = localPoint(event.currentTarget, event);
             if (!point) return;
@@ -557,7 +562,7 @@ const ScatterPlot = <T extends object>(
                             {/* tooltip */}
                             {
                                 tooltipOpen && tooltipData && isHoveredPointWithinBounds && (
-                                    <VisTooltip left={xScaleTransformed(tooltipData.x) + 200} top={yScaleTransformed(tooltipData.y)}>
+                                    <VisTooltip left={(mouseX + 10)} top={(mouseY)}>
                                         <ScatterTooltip
                                             tooltipBody={props.tooltipBody}
                                             tooltipData={tooltipData}
