@@ -3,6 +3,7 @@ import { AutocompleteProps, BoxProps, ButtonProps, TextFieldProps } from "@mui/m
 export type GenomeSearchProps = Partial<AutocompleteProps<Result, false, true, false, React.ElementType>> & {
     assembly: "GRCh38" | "mm10";
     onSearchSubmit: (result: Result) => void;
+    defaultResults?: Result[];
 
     // queries
     queries: ("gene" | "snp" | "coordinate" | "icre" | "ccre" | "all")[];

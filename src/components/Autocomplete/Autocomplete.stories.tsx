@@ -32,7 +32,7 @@ export const Default: Story = {
     args: {
         assembly: 'GRCh38',
         onSearchSubmit: (r: Result) => console.log('Going to', r.domain.chromosome, r.domain.start, r.domain.end),
-        queries: ["all"],
+        queries: ["gene", "snp", "ccre", "coordinate"],
         ccreLimit: 3,
         geneLimit: 3,
         icreLimit: 3,
