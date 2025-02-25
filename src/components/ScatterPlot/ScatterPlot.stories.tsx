@@ -60,11 +60,12 @@ export const Default: Story = {
         loading: false,
         miniMap: miniMap,
         leftAxisLable: "Y-Axis Label",
-        bottomAxisLabel: "X-Axis Label"
+        bottomAxisLabel: "X-Axis Label",
+        disableTooltip: true
     }
 };
 
-// Default story with scatter data
+// Default story with tooltip
 export const CustomTooltip: Story = {
     args: {
         width: 500,
@@ -93,7 +94,8 @@ export const WithoutMiniMap: Story = {
         pointData: scatterData,
         loading: false,
         leftAxisLable: "Y-Axis Label",
-        bottomAxisLabel: "X-Axis Label"
+        bottomAxisLabel: "X-Axis Label",
+        disableTooltip: true
     }
 };
 
@@ -112,7 +114,8 @@ export const SelectablePoints: Story = {
         loading: false,
         miniMap: miniMap,
         leftAxisLable: "Y-Axis Label",
-        bottomAxisLabel: "X-Axis Label"
+        bottomAxisLabel: "X-Axis Label",
+        disableTooltip: true
     }
 };
 
@@ -142,7 +145,8 @@ export const HoverMultiplePoints: Story = {
         loading: false,
         miniMap: miniMap,
         leftAxisLable: "Y-Axis Label",
-        bottomAxisLabel: "X-Axis Label"
+        bottomAxisLabel: "X-Axis Label",
+        disableTooltip: true
     }
 };
 
@@ -155,7 +159,8 @@ export const OtherShapes: Story = {
         loading: false,
         miniMap: miniMap,
         leftAxisLable: "Y-Axis Label",
-        bottomAxisLabel: "X-Axis Label"
+        bottomAxisLabel: "X-Axis Label",
+        disableTooltip: true
     }
 };
 
@@ -169,7 +174,8 @@ export const ZoomDisabled: Story = {
         miniMap: miniMap,
         leftAxisLable: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
-        disableZoom: true
+        disableZoom: true,
+        disableTooltip: true
     }
 };
 
@@ -190,6 +196,7 @@ export const ZoomDisabledButSelectable: Story = {
                 `You Seleted Points: ${JSON.stringify(selectedPoints)}`
             );
         },
+        disableTooltip: true
     }
 };
 
@@ -210,5 +217,6 @@ export const ControlsPositioning: Story = {
                 `You Seleted Points: ${JSON.stringify(selectedPoints)}`
             );
         },
+        disableTooltip: true
     }
 };

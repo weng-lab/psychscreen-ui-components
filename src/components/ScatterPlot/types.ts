@@ -35,6 +35,7 @@ export type ChartProps<T> = {
     loading: boolean;
     selectable?: boolean;
     disableZoom?: boolean;
+    disableTooltip?: boolean;
     controlsPosition?: "left" | "bottom" | "right";
     //returns an array of selected points inside a lasso (optional)
     onSelectionChange?: (selectedPoints: Point<T>[]) => void;

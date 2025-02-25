@@ -561,7 +561,7 @@ const ScatterPlot = <T extends object>(
 
                             {/* tooltip */}
                             {
-                                tooltipOpen && tooltipData && isHoveredPointWithinBounds && (
+                                !props.disableTooltip && tooltipOpen && tooltipData && isHoveredPointWithinBounds && (
                                     <VisTooltip left={(mouseX + 10)} top={(mouseY)}>
                                         <ScatterTooltip
                                             tooltipBody={props.tooltipBody}
