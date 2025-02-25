@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Zoom as VisxZoom } from '@visx/zoom'
 import { ZoomProps } from '@visx/zoom/lib/Zoom'
-import { ChartProps, Line, Lines, Point } from './types';
+import { ChartProps, Line, Lines, Point, ZoomType } from './types';
 import { Tooltip as VisxTooltip } from '@visx/tooltip';
 import { TooltipProps } from '@visx/tooltip/lib/tooltips/Tooltip';
 import { Group } from '@visx/group';
@@ -19,6 +19,7 @@ import { Box, IconButton, Stack, Tooltip } from '@mui/material';
 import { ScaleLinear } from '@visx/vendor/d3-scale';
 import { HighlightAlt } from "@mui/icons-material"
 import MiniMap from './minimap';
+import { HandlerArgs } from '@visx/drag/lib/useDrag';
 
 const initialTransformMatrix = {
     scaleX: 1,
@@ -131,8 +132,8 @@ const ScatterPlot = <T extends object>(
 
     // Setup dragging for lasso drawing
     const onDragStart = useCallback(
-        (currDrag) => {
-            if (selectMode === "select") {
+        (currDrag: HandlerArgs) => {
+            if (selectMode === "select" && currDrag?.x !== undefined && currDrag?.y !== undefined) {
                 // add the new line with the starting point
                 const adjustedX = (currDrag.x - margin.left);
                 const adjustedY = (currDrag.y - margin.top);
@@ -143,8 +144,8 @@ const ScatterPlot = <T extends object>(
     );
 
     const onDragMove = useCallback(
-        (currDrag) => {
-            if (selectMode === "select") {
+        (currDrag: HandlerArgs) => {
+            if (selectMode === "select" && currDrag?.x !== undefined && currDrag?.y !== undefined) {
                 // add the new point to the current line
                 const adjustedX = (currDrag.x - margin.left);
                 const adjustedY = (currDrag.y - margin.top);
@@ -178,7 +179,7 @@ const ScatterPlot = <T extends object>(
     };
 
     const onDragEnd = useCallback(
-        (zoom) => {
+        (zoom: ZoomType) => {
             if (selectMode === "select") {
                 if (lines.length === 0) return;
 
@@ -223,7 +224,7 @@ const ScatterPlot = <T extends object>(
 
     //find the closest point to cursor within threshold to show the tooltip
     const handleMouseMove = useCallback(
-        (event: React.MouseEvent<SVGElement>, zoom) => {
+        (event: React.MouseEvent<SVGElement>, zoom: ZoomType) => {
             if (isDragging || zoom.isDragging) {
                 setTooltipOpen(false);
                 setTooltipData(null);
@@ -365,7 +366,7 @@ const ScatterPlot = <T extends object>(
         </Text>
     );
 
-    if (props.loading || !props.pointData) {
+    if (props.loading || !props.pointData) { 
         return <CircularProgress />;
     }
 
