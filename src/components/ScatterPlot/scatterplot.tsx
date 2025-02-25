@@ -61,9 +61,16 @@ const ScatterPlot = <T extends object>(
     const groupedPoints: Point<T>[]  = useMemo(() => {
         const anchor = props.groupPointsAnchor
         if (anchor && hoveredPoint) {
-            return (
-                props.pointData.filter((point) => point[anchor] === hoveredPoint[anchor])
-            )
+            return props.pointData.filter((point) => {
+            if (anchor in point) {
+                // If the anchor is a key of Point<T>, compare directly
+                return point[anchor as keyof Point<T>] === hoveredPoint[anchor as keyof Point<T>];
+            } else if (point.metaData && hoveredPoint.metaData) {
+                // If the anchor is a key of T (metaData), compare inside metaData
+                return point.metaData[anchor as keyof T] === hoveredPoint.metaData[anchor as keyof T];
+            }
+            return false;
+        });
         } else if (hoveredPoint) {
             return([hoveredPoint]);
         } else {
