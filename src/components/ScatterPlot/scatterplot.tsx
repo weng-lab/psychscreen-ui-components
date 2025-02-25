@@ -230,8 +230,14 @@ const ScatterPlot = <T extends object>(
                 return;
             }
 
-            setMouseX(event.pageX);
-            setMouseY(event.pageY);
+            if (props.ref?.current) {
+                const rect = props.ref.current.getBoundingClientRect();
+                setMouseX(event.clientX - rect.left);
+                setMouseY(event.clientY - rect.top); 
+            } else {
+                setMouseX(event.pageX);
+                setMouseY(event.pageY);
+            }
 
             const point = localPoint(event.currentTarget, event);
             if (!point) return;
@@ -261,7 +267,7 @@ const ScatterPlot = <T extends object>(
                 setTooltipData(null);
                 setTooltipOpen(false);
             }
-        }, [isDragging, margin.left, margin.top, xScale, yScale, props.pointData]
+        }, [isDragging, props.ref, props.pointData, margin.left, margin.top, xScale, yScale]
     );
 
 
@@ -279,43 +285,54 @@ const ScatterPlot = <T extends object>(
 
                 // Clear the canvas before rendering
                 context.clearRect(0, 0, props.width, props.height);
-                // Render points on the canvas
-                props.pointData.forEach(point => {
+
+                const hoveredPoints = new Set(groupedPoints.map(gp => `${gp.x},${gp.y}`));
+
+                const nonHoveredPoints = props.pointData.filter(
+                    (point) => !hoveredPoints.has(`${point.x},${point.y}`)
+                );
+                const hoveredOnlyPoints = props.pointData.filter(
+                    (point) => hoveredPoints.has(`${point.x},${point.y}`)
+                );
+               
+                const drawPoint = (point: Point<T>, isHovered: boolean) => {
                     const transformedX = xScaleTransformed(point.x);
-                    const transformedY = yScaleTransformed(point.y);;
+                    const transformedY = yScaleTransformed(point.y);
                     const isPointWithinBounds =
                         xScaleTransformed(point.x) >= 0 &&
                         xScaleTransformed(point.x) <= boundedWidth &&
                         yScaleTransformed(point.y) >= 0 &&
                         yScaleTransformed(point.y) <= boundedHeight;
-
+                    const size = (point.r || 3) + (isHovered ? 2 : 0);
                     if (isPointWithinBounds) {
-                        // check for hovered styling
-                        const hovered = groupedPoints.some((gp) => point.x === gp.x && point.y === gp.y)
-                        //increase size if hovered
-                        const size = (point.r || 3) + (hovered ? 2 : 0);
-
                         context.beginPath();
 
                         if (point.shape === "circle") {
-                            context.arc(transformedX, transformedY, size, 0, Math.PI * 2); // Draw circle
+                            context.arc(transformedX, transformedY, size, 0, Math.PI * 2);
                         } else if (point.shape === "triangle") {
-                            context.moveTo(transformedX, transformedY - size); // Top point of the triangle
-                            context.lineTo(transformedX - size, transformedY + size); // Bottom-left point
-                            context.lineTo(transformedX + size, transformedY + size); // Bottom-right point
+                            context.moveTo(transformedX, transformedY - size);
+                            context.lineTo(transformedX - size, transformedY + size);
+                            context.lineTo(transformedX + size, transformedY + size);
                             context.closePath();
                         }
+
                         context.fillStyle = point.color;
-                        context.globalAlpha = (point.opacity !== undefined ? point.opacity : 1);
+                        context.globalAlpha = point.opacity !== undefined ? point.opacity : 1;
                         context.fill();
-                        // If hovered, add a black stroke
-                        if (hovered) {
+
+                        if (isHovered) {
                             context.lineWidth = 1;
                             context.strokeStyle = "black";
                             context.stroke();
                         }
                     }
-                });
+
+                };
+
+                // First draw all non-hovered points then render hovered points on top
+                nonHoveredPoints.forEach((point) => drawPoint(point, false));
+                hoveredOnlyPoints.forEach((point) => drawPoint(point, true));
+
             }
         }
     }, [props.width, props.height, props.pointData, boundedWidth, boundedHeight, groupedPoints])

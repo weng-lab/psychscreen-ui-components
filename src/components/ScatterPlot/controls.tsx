@@ -17,14 +17,14 @@ const ControlButtons = ({
     useEffect(() => {
         // Function to handle key press
         const handleKeyDown = (e: KeyboardEvent) => {
-          if (e.key === 'Shift') {
+          if (e.key === 'Shift' && selectable) {
             handleSelectionModeChange('pan'); // Switch to pan mode when Shift is pressed
           }
         };
     
         // Function to handle key release
         const handleKeyUp = (e: KeyboardEvent) => {
-          if (e.key === 'Shift') {
+          if (e.key === 'Shift' && selectable) {
             handleSelectionModeChange('select'); // Switch back to select mode when Shift is released
           }
         };
@@ -38,7 +38,7 @@ const ControlButtons = ({
           window.removeEventListener('keydown', handleKeyDown);
           window.removeEventListener('keyup', handleKeyUp);
         };
-      }, [handleSelectionModeChange]);
+      }, [handleSelectionModeChange, selectable]);
       
     return (
         <Stack direction={position === "bottom" ? "row" : "column"} spacing={5} alignItems={"center"} justifyContent={"center"}>
