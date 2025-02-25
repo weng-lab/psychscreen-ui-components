@@ -1,5 +1,6 @@
 import { MutableRefObject } from '../../../node_modules/react';
 import { ScaleLinear } from '@visx/vendor/d3-scale';
+import { ProvidedZoom } from '@visx/zoom/lib/types';
 export type Point<T> = {
     x: number;
     y: number;
@@ -46,7 +47,7 @@ export type MapProps<T> = {
     pointData: Point<T>[];
     xScale: ScaleLinear<number, number, never>;
     yScale: ScaleLinear<number, number, never>;
-    zoom: any;
+    zoom: ZoomType;
 };
 export type TooltipProps<T> = {
     tooltipBody?: (point: Point<T>) => JSX.Element;
@@ -62,3 +63,18 @@ export type ControlButtonsProps = {
     zoomReset: () => void;
     position?: "left" | "bottom" | "right";
 };
+interface TransformMatrix {
+    scaleX: number;
+    scaleY: number;
+    translateX: number;
+    translateY: number;
+    skewX: number;
+    skewY: number;
+}
+type ZoomState = {
+    initialTransformMatrix: TransformMatrix;
+    transformMatrix: TransformMatrix;
+    isDragging: boolean;
+};
+export type ZoomType = ProvidedZoom<React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>>> & ZoomState;
+export {};
