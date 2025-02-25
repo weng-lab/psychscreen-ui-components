@@ -2,7 +2,7 @@
   "name": "@weng-lab/psychscreen-ui-components",
   "description": "Typescript and Material UI based components used for psychSCREEN",
   "author": "SCREEN Team @ UMass Chan Medical School",
-  "version": "2.0.9",
+  "version": "2.0.11",
   "license": "MIT",
   "type": "module",
   "typings": "dist/index.d.ts",
@@ -25,6 +25,12 @@
   ],
   "dependencies": {
     "@apollo/client": "^3.13.1",
+    "@visx/axis": "^3.12.0",
+    "@visx/drag": "^3.12.0",
+    "@visx/group": "^3.12.0",
+    "@visx/scale": "^3.12.0",
+    "@visx/tooltip": "^3.12.0",
+    "@visx/zoom": "^3.12.0",
     "cytoscape": "^3.30.2",
     "cytoscape-cose-bilkent": "^4.1.0",
     "cytoscape-popper": "^4.0.1",
@@ -78,5 +84,6 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
-  }
+  },
+  "packageManager": "yarn@3.5.0+sha512.2dc70be5fce9f66756d25b00a888f3ca66f86b502b76750e72ba54cec89da767b938c54124595e26f868825688e0fe3552c26c76a330673343057acadd5cfcf2"
 }
