@@ -10,7 +10,6 @@ export type Point<T> = {
     metaData?: T;
 };
 export type MiniMapProps = {
-    show: boolean;
     defaultOpen?: boolean;
     position?: {
         right: number;
@@ -24,11 +23,14 @@ export type ChartProps<T> = {
     pointData: Point<T>[];
     loading: boolean;
     selectable?: boolean;
+    disableZoom?: boolean;
+    disableTooltip?: boolean;
+    controlsPosition?: "left" | "bottom" | "right";
     onSelectionChange?: (selectedPoints: Point<T>[]) => void;
     onPointClicked?: (point: Point<T>) => void;
-    groupPointsAnchor?: keyof Point<T>;
+    groupPointsAnchor?: keyof Point<T> | keyof T;
     tooltipBody?: (point: Point<T>) => JSX.Element;
-    miniMap: MiniMapProps;
+    miniMap?: MiniMapProps;
     leftAxisLable: string;
     bottomAxisLabel: string;
 };
@@ -58,4 +60,5 @@ export type ControlButtonsProps = {
     zoomIn: () => void;
     zoomOut: () => void;
     zoomReset: () => void;
+    position?: "left" | "bottom" | "right";
 };
