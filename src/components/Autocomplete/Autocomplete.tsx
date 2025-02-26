@@ -32,7 +32,6 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     const [inputValue, setInputValue] = useState('');
     const [selection, setSelection] = useState<Result>({} as Result);
     const [results, setResults] = useState<Result[]>(defaultResults || []);
-    const [isResultSelected, setIsResultSelected] = useState(false);
 
     // GraphQL queries
     const [fetchCoords, { data: coordsData }] = useCoordinates()
@@ -97,7 +96,6 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     // Handle enter key down
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && results && results.length === 1) {
-            setIsResultSelected(true);
             setSelection(results[0]);
             onSubmit();
         }
@@ -108,10 +106,8 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
         console.log(newValue)
         if (newValue) {
             setSelection(newValue);
-            setIsResultSelected(true);
         } else {
             setSelection({} as Result);
-            setIsResultSelected(false);
         }
     };
 
@@ -158,7 +154,6 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
                         <TextField
                             {...params}
                             label="Search"
-                            sx={{ color: isResultSelected ? 'green' : 'gray' }}
                             onKeyDown={handleKeyDown}
                             {...slotProps?.input}
                         />
