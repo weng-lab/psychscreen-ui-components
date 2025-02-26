@@ -89,15 +89,15 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     }, [geneData, snpData, coordsData, icreData, ccreData, isLoading]);
 
     // Handle submit
-    const onSubmit = useCallback(() => {
-        onSearchSubmit && onSearchSubmit(selection);
-    }, [onSearchSubmit, selection])
+    const onSubmit = useCallback((r: Result) => {
+        onSearchSubmit && onSearchSubmit(r);
+    }, [onSearchSubmit])
 
     // Handle enter key down
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && results && results.length === 1) {
             setSelection(results[0]);
-            onSubmit();
+            onSubmit(results[0]);
         }
     }, [results, onSubmit]);
 
@@ -164,8 +164,8 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
                 {...autocompleteProps as Partial<AutocompleteProps<Result, false, true, false, React.ElementType>>}
             />
             {slots && slots.button ? React.cloneElement(slots.button as React.ReactElement, {
-                onClick: () => onSubmit(),
-            }) : <Button variant="contained" onClick={() => onSubmit()} {...slotProps?.button}>{slotProps?.button?.children || "Go"}</Button>}
+                onClick: () => onSubmit(selection),
+            }) : <Button variant="contained" onClick={() => onSubmit(selection)} {...slotProps?.button}>{slotProps?.button?.children || "Go"}</Button>}
         </Box>
     );
 };
