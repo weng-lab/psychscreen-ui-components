@@ -42,6 +42,8 @@ export type Result = {
     title?: string;
     description?: string;
     type?: ResultType;
+    id?: string;
+    name?: string;
     domain: Domain;
 };
 

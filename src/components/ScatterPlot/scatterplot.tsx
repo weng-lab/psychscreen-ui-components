@@ -31,7 +31,7 @@ const initialTransformMatrix = {
 
 const ScatterPlot = <T extends object>(
     props: ChartProps<T>
-)=> {
+) => {
     /**
  * Hacky workaround for complex type compatability issues. Hopefully this will fix itself when ugrading to React 19 - Jonathan 12/11/24
  * @todo remove this when possible
@@ -58,18 +58,18 @@ const ScatterPlot = <T extends object>(
         setShowMiniMap(!showMiniMap);
     };
 
-    const groupedPoints: Point<T>[]  = useMemo(() => {
+    const groupedPoints: Point<T>[] = useMemo(() => {
         const anchor = props.groupPointsAnchor
         if (anchor && hoveredPoint) {
             return (
                 props.pointData.filter((point) => point[anchor] === hoveredPoint[anchor])
             )
         } else if (hoveredPoint) {
-            return([hoveredPoint]);
+            return ([hoveredPoint]);
         } else {
-            return([])
+            return ([])
         }
-      }, [hoveredPoint, props.groupPointsAnchor, props.pointData])
+    }, [hoveredPoint, props.groupPointsAnchor, props.pointData])
 
     //rescale x and y scales when zooming
     //converts to pixel values before applying transformations
@@ -354,7 +354,7 @@ const ScatterPlot = <T extends object>(
                     const handleZoomReset = () => {
                         zoom.reset();
                     }
-                    
+
                     return (
                         <>
                             <Stack direction="column" sx={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}>
@@ -457,20 +457,20 @@ const ScatterPlot = <T extends object>(
                                                                 />
                                                             ) : (
                                                                 <>
-                                                                <path
-                                                                    key="hovered-triangle"
-                                                                    d={`
+                                                                    <path
+                                                                        key="hovered-triangle"
+                                                                        d={`
                                                                         M${xScaleTransformed(point.x)},${yScaleTransformed(point.y) - (point.r ? point.r + 2 : 5)} 
                                                                         L${xScaleTransformed(point.x) - (point.r ? point.r + 2 : 5)},${yScaleTransformed(point.y) + (point.r ? point.r + 2 : 5)} 
                                                                         L${xScaleTransformed(point.x) + (point.r ? point.r + 2 : 5)},${yScaleTransformed(point.y) + (point.r ? point.r + 2 : 5)} 
                                                                         Z
                                                                     `}
-                                                                    fill={point.color}
-                                                                    stroke="black"
-                                                                    strokeWidth={1}
-                                                                    opacity={1}
-                                                                    onClick={() => props.onPointClicked && props.onPointClicked(point)}
-                                                                />
+                                                                        fill={point.color}
+                                                                        stroke="black"
+                                                                        strokeWidth={1}
+                                                                        opacity={1}
+                                                                        onClick={() => props.onPointClicked && props.onPointClicked(point)}
+                                                                    />
                                                                 </>
                                                             )
                                                         );

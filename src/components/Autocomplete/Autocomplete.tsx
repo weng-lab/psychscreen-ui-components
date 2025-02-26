@@ -15,11 +15,11 @@ import { GenomeSearchProps, Result } from './types';
  * @param props - extends MUI AutocompleteProps and includes additional props specific to this component
  */
 
-function GenomeSearch({
+const GenomeSearch: React.FC<GenomeSearchProps> = ({
     queries, assembly, geneLimit, snpLimit, icreLimit, ccreLimit,
     onSearchSubmit, defaultResults, style, sx, slots, slotProps,
     ...autocompleteProps
-}: GenomeSearchProps) {
+}) => {
     // Boolean flags for each query
     const searchAll = queries.includes("all")
     const searchGene = queries.includes("gene") || searchAll
@@ -90,22 +90,35 @@ function GenomeSearch({
     }, [geneData, snpData, coordsData, icreData, ccreData, isLoading]);
 
     // Handle submit
-    const onSubmit = useCallback((value: Result) => {
-        onSearchSubmit && onSearchSubmit(value);
-    }, [onSearchSubmit])
+    const onSubmit = useCallback(() => {
+        onSearchSubmit && onSearchSubmit(selection);
+    }, [onSearchSubmit, selection])
 
     // Handle enter key down
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && results && results.length === 1) {
             setIsResultSelected(true);
             setSelection(results[0]);
-            onSubmit(results[0]);
+            onSubmit();
         }
     }, [results, onSubmit]);
 
+    // Update onChange handler
+    const onChange = (_event: any, newValue: Result | null) => {
+        console.log(newValue)
+        if (newValue) {
+            setSelection(newValue);
+            setIsResultSelected(true);
+        } else {
+            setSelection({} as Result);
+            setIsResultSelected(false);
+        }
+    };
+
     return (
-        <Box display="flex" flexDirection="row" gap={2} style={{ ...style }} sx={sx}>
+        <Box display="flex" flexDirection="row" gap={2} style={{ ...style }} sx={sx} {...slotProps?.box}>
             <Autocomplete
+                onChange={onChange}
                 inputValue={inputValue}
                 onInputChange={handleInputChange}
                 options={results}
@@ -133,13 +146,7 @@ function GenomeSearch({
                         </li>
                     );
                 }}
-                filterOptions={(x) => x}
-                onChange={(_event, value) => {
-                    if (value) {
-                        setIsResultSelected(true);
-                        setSelection(value);
-                    }
-                }}
+                // filterOptions={(x) => x}
                 renderInput={(params) => {
                     if (slots && slots.input) {
                         return React.cloneElement(slots.input as React.ReactElement, {
@@ -162,8 +169,8 @@ function GenomeSearch({
                 {...autocompleteProps as Partial<AutocompleteProps<Result, false, true, false, React.ElementType>>}
             />
             {slots && slots.button ? React.cloneElement(slots.button as React.ReactElement, {
-                onClick: () => onSubmit(selection),
-            }) : <Button variant="contained" onClick={() => onSubmit(selection)} {...slotProps?.button}>{slotProps?.button?.children || "Go"}</Button>}
+                onClick: () => onSubmit(),
+            }) : <Button variant="contained" onClick={() => onSubmit()} {...slotProps?.button}>{slotProps?.button?.children || "Go"}</Button>}
         </Box>
     );
 };
