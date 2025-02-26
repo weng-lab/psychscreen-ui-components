@@ -32,7 +32,7 @@ const initialTransformMatrix = {
 
 const ScatterPlot = <T extends object>(
     props: ChartProps<T>
-)=> {
+) => {
     /**
  * Hacky workaround for complex type compatability issues. Hopefully this will fix itself when ugrading to React 19 - Jonathan 12/11/24
  * @todo remove this when possible
@@ -61,25 +61,25 @@ const ScatterPlot = <T extends object>(
         setShowMiniMap(!showMiniMap);
     };
 
-    const groupedPoints: Point<T>[]  = useMemo(() => {
+    const groupedPoints: Point<T>[] = useMemo(() => {
         const anchor = props.groupPointsAnchor
         if (anchor && hoveredPoint) {
             return props.pointData.filter((point) => {
-            if (anchor in point) {
-                // If the anchor is a key of Point<T>, compare directly
-                return point[anchor as keyof Point<T>] === hoveredPoint[anchor as keyof Point<T>];
-            } else if (point.metaData && hoveredPoint.metaData) {
-                // If the anchor is a key of T (metaData), compare inside metaData
-                return point.metaData[anchor as keyof T] === hoveredPoint.metaData[anchor as keyof T];
-            }
-            return false;
-        });
+                if (anchor in point) {
+                    // If the anchor is a key of Point<T>, compare directly
+                    return point[anchor as keyof Point<T>] === hoveredPoint[anchor as keyof Point<T>];
+                } else if (point.metaData && hoveredPoint.metaData) {
+                    // If the anchor is a key of T (metaData), compare inside metaData
+                    return point.metaData[anchor as keyof T] === hoveredPoint.metaData[anchor as keyof T];
+                }
+                return false;
+            });
         } else if (hoveredPoint) {
-            return([hoveredPoint]);
+            return ([hoveredPoint]);
         } else {
-            return([])
+            return ([])
         }
-      }, [hoveredPoint, props.groupPointsAnchor, props.pointData])
+    }, [hoveredPoint, props.groupPointsAnchor, props.pointData])
 
     //rescale x and y scales when zooming
     //converts to pixel values before applying transformations
@@ -289,7 +289,7 @@ const ScatterPlot = <T extends object>(
                 const hoveredOnlyPoints = props.pointData.filter(
                     (point) => hoveredPoints.has(`${point.x},${point.y}`)
                 );
-               
+
                 const drawPoint = (point: Point<T>, isHovered: boolean) => {
                     const transformedX = xScaleTransformed(point.x);
                     const transformedY = yScaleTransformed(point.y);
@@ -360,7 +360,7 @@ const ScatterPlot = <T extends object>(
         </Text>
     );
 
-    if (props.loading || !props.pointData) { 
+    if (props.loading || !props.pointData) {
         return <CircularProgress />;
     }
 
@@ -388,22 +388,22 @@ const ScatterPlot = <T extends object>(
                     const handleZoomReset = () => {
                         zoom.reset();
                     }
-                    
+
                     return (
                         <>
                             {!props.disableZoom && (
-                                <Stack 
-                                    direction="column" 
-                                    sx={{ 
-                                        position: 'absolute', 
-                                        left: props.controlsPosition === "left" ? 10 : props.controlsPosition === "bottom" ? "50%" : null, 
-                                        right: props.controlsPosition === "right" ? 10 : null, 
-                                        top: props.controlsPosition === "bottom" ? null : '50%', 
-                                        bottom: props.controlsPosition === "bottom" ? 10 : null, 
-                                        transform: props.controlsPosition === "bottom" ? 'translateX(-50%)' : 'translateY(-50%)', 
-                                        zIndex: 10 
-                                        }}
-                                    >
+                                <Stack
+                                    direction="column"
+                                    sx={{
+                                        position: 'absolute',
+                                        left: props.controlsPosition === "left" ? 10 : props.controlsPosition === "bottom" ? "50%" : null,
+                                        right: props.controlsPosition === "right" ? 10 : null,
+                                        top: props.controlsPosition === "bottom" ? null : '50%',
+                                        bottom: props.controlsPosition === "bottom" ? 10 : null,
+                                        transform: props.controlsPosition === "bottom" ? 'translateX(-50%)' : 'translateY(-50%)',
+                                        zIndex: 10
+                                    }}
+                                >
                                     <ControlButtons
                                         selectable={selectable}
                                         resetable={zoom.transformMatrix !== zoom.initialTransformMatrix}
@@ -439,15 +439,15 @@ const ScatterPlot = <T extends object>(
                                                 backgroundColor: "transparent"
                                             }}
                                         />
-                                        <svg 
-                                            width={props.width} 
-                                            height={props.height} 
-                                            style={{ 
-                                                position: "absolute", 
-                                                cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'), 
-                                                userSelect: 'none' 
-                                            }} 
-                                            onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave} 
+                                        <svg
+                                            width={props.width}
+                                            height={props.height}
+                                            style={{
+                                                position: "absolute",
+                                                cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'),
+                                                userSelect: 'none'
+                                            }}
+                                            onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave}
                                         >
                                             <Group top={margin.top} left={margin.left}>
                                                 {selectMode === "select" && (
