@@ -31,7 +31,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         assembly: 'GRCh38',
-        onSearchSubmit: (r: Result) => console.log('Going to', r.domain.chromosome, r.domain.start, r.domain.end),
+        onSearchSubmit: (r: Result) => console.log('Going to', r),
         queries: ["gene", "snp", "ccre", "coordinate"],
         ccreLimit: 3,
         geneLimit: 3,

@@ -45,14 +45,17 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Handle input change
-    const handleInputChange = (_event: any, newInputValue: string) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newInputValue = e.target.value
         setInputValue(newInputValue);
         if (debounceTimeout.current) {
             clearTimeout(debounceTimeout.current);
         }
         debounceTimeout.current = setTimeout(() => {
-            setResults([]);
-            setSelection({} as Result);
+            if (!selection) {
+                setResults([]);
+                setSelection({} as Result);
+            }
             if (newInputValue.startsWith('chr')) {
                 searchCoordinate && fetchCoords(
                     newInputValue, assembly
@@ -89,34 +92,31 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     }, [geneData, snpData, coordsData, icreData, ccreData, isLoading]);
 
     // Handle submit
-    const onSubmit = useCallback((r: Result) => {
-        onSearchSubmit && onSearchSubmit(r);
-    }, [onSearchSubmit])
+    const onSubmit = useCallback(() => {
+        let sel = selection
+        if (results?.length === 1) {
+            sel = results[0]
+        }
+        if (!sel.title) return
+        onSearchSubmit && onSearchSubmit(sel);
+    }, [onSearchSubmit, selection, results])
 
     // Handle enter key down
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-        if (event.key === 'Enter' && results && results.length === 1) {
-            setSelection(results[0]);
-            onSubmit(results[0]);
+        if (event.key === 'Enter') {
+            onSubmit()
         }
-    }, [results, onSubmit]);
+    }, [onSubmit]);
 
-    // Update onChange handler
-    const onChange = (_event: any, newValue: Result | null) => {
-        console.log(newValue)
-        if (newValue) {
-            setSelection(newValue);
-        } else {
-            setSelection({} as Result);
-        }
+    const onChange = (_event: React.SyntheticEvent, newValue: Result | null) => {
+        let sel = newValue || {} as Result
+        setSelection(sel);
     };
 
     return (
         <Box display="flex" flexDirection="row" gap={2} style={{ ...style }} sx={sx} {...slotProps?.box}>
             <Autocomplete
                 onChange={onChange}
-                inputValue={inputValue}
-                onInputChange={handleInputChange}
                 options={results}
                 getOptionLabel={(option: Result) => {
                     return option.title || '';
@@ -155,6 +155,8 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
                             {...params}
                             label="Search"
                             onKeyDown={handleKeyDown}
+                            value={inputValue}
+                            onChange={handleInputChange}
                             {...slotProps?.input}
                         />
                     )
@@ -164,8 +166,8 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
                 {...autocompleteProps as Partial<AutocompleteProps<Result, false, true, false, React.ElementType>>}
             />
             {slots && slots.button ? React.cloneElement(slots.button as React.ReactElement, {
-                onClick: () => onSubmit(selection),
-            }) : <Button variant="contained" onClick={() => onSubmit(selection)} {...slotProps?.button}>{slotProps?.button?.children || "Go"}</Button>}
+                onClick: () => onSubmit(),
+            }) : <Button variant="contained" onClick={() => onSubmit()} {...slotProps?.button}>{slotProps?.button?.children || "Go"}</Button>}
         </Box>
     );
 };
