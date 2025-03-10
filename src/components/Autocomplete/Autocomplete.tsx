@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { gql, useLazyQuery } from "@apollo/client";
 import {
-  CCRE_AUTOCOMPLETE_QUERY,
-  GENE_AUTOCOMPLETE_QUERY,
-  ICRE_AUTOCOMPLETE_QUERY,
-  SNP_AUTOCOMPLETE_QUERY,
+  getGenes,
+  getICREs,
+  getSNPs,
 } from "./queries";
 import {
   ccreResultList,
@@ -22,6 +20,7 @@ import {
 } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import { GenomeSearchProps, Result } from "./types";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * An autocomplete search component for genomic landmarks such as genes, SNPs, ICRs, and CCRs.
@@ -48,104 +47,95 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
   ...autocompleteProps
 }) => {
   // Boolean flags for each query
-  const searchAll = queries.includes("all");
-  const searchGene = queries.includes("gene") || searchAll;
-  const searchSnp = queries.includes("snp") || searchAll;
-  const searchICRE = queries.includes("icre") || searchAll;
-  const searchCCRE = queries.includes("ccre") || searchAll;
-  const searchCoordinate = queries.includes("coordinate") || searchAll;
+  const searchGene = queries.includes("gene");
+  const searchSnp = queries.includes("snp");
+  const searchICRE = queries.includes("icre");
+  const searchCCRE = queries.includes("ccre");
+  const searchCoordinate = queries.includes("coordinate");
 
   // State variables
   const [inputValue, setInputValue] = useState("");
   const [selection, setSelection] = useState<Result>({} as Result);
-  const [results, setResults] = useState<Result[]>(defaultResults || []);
-
-  // GraphQL queries
-  const [fetchCoords, { data: coordsData }] = useCoordinates();
-  const [fetchGenes, { data: geneData, loading: geneLoading }] = useLazyQuery(
-    gql(GENE_AUTOCOMPLETE_QUERY)
+  const [results, setResults] = useState<Result[] | null>(
+    defaultResults || null
   );
-  const [fetchSnps, { data: snpData, loading: snpLoading }] = useLazyQuery(
-    gql(SNP_AUTOCOMPLETE_QUERY)
-  );
-  const [fetchICREs, { data: icreData, loading: icreLoading }] = useLazyQuery(
-    gql(ICRE_AUTOCOMPLETE_QUERY)
-  );
-  const [fetchCCREs, { data: ccreData, loading: ccreLoading }] = useLazyQuery(
-    gql(CCRE_AUTOCOMPLETE_QUERY)
-  );
-  const isLoading = geneLoading || snpLoading || icreLoading || ccreLoading;
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Debounce timeout
-  const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const {
+    data: icreData,
+    refetch: refetchICREs,
+    isFetching: icreFetching,
+  } = useQuery({
+    queryKey: ["icres"],
+    queryFn: () => getICREs(inputValue, icreLimit || 3),
+    enabled: false,
+  });
 
-  // Handle input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newInputValue = e.target.value;
-    setInputValue(newInputValue);
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
-    }
-    debounceTimeout.current = setTimeout(() => {
-      if (!selection) {
-        setResults([]);
-        setSelection({} as Result);
-      }
-      if (newInputValue.startsWith("chr")) {
-        searchCoordinate && fetchCoords(newInputValue, assembly);
-      } else {
-        searchGene &&
-          fetchGenes({
-            variables: {
-              name_prefix: [newInputValue],
-              assembly: assembly,
-              limit: geneLimit || 5,
-            },
-          });
-        searchSnp &&
-          fetchSnps({
-            variables: {
-              snpid: newInputValue,
-              assembly: assembly,
-              limit: snpLimit || 3,
-            },
-          });
-        searchICRE &&
-          fetchICREs({
-            variables: {
-              accession_prefix: [newInputValue],
-              limit: icreLimit || 3,
-            },
-          });
-        searchCCRE &&
-          fetchCCREs({
-            variables: {
-              accession_prefix: [newInputValue],
-              assembly: assembly,
-              limit: ccreLimit || 3,
-            },
-          });
-      }
-    }, 300);
-  };
+  const {
+    data: geneData,
+    refetch: refetchGenes,
+    isFetching: geneFetching,
+  } = useQuery({
+    queryKey: ["genes"],
+    queryFn: () => getGenes(inputValue, assembly, geneLimit || 3),
+    enabled: false,
+  });
 
-  // Effect to set results
+  const {
+    data: snpData,
+    refetch: refetchSNPs,
+    isFetching: snpFetching,
+  } = useQuery({
+    queryKey: ["snps"],
+    queryFn: () => getSNPs(inputValue, assembly, snpLimit || 3),
+    enabled: false,
+  });
+
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
   useEffect(() => {
-    if (isLoading) {
-      return;
+    if (inputValue.length === 0) {
+      setResults(null);
+    } else {
+      setResults([]);
     }
 
-    const temp = [
-      ...(geneData ? geneResultList(geneData.gene, geneLimit || 5) : []),
-      ...(snpData
-        ? snpResultList(snpData.snpAutocompleteQuery, snpLimit || 3)
-        : []),
-      ...(icreData ? icreResultList(icreData.iCREQuery, icreLimit || 3) : []),
-      ...(ccreData ? ccreResultList(ccreData.cCREQuery, ccreLimit || 3) : []),
-      ...(coordsData ? coordsData : []),
-    ];
-    setResults(temp);
-  }, [geneData, snpData, coordsData, icreData, ccreData, isLoading]);
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Set new timeout
+    timeoutRef.current = setTimeout(() => {
+      if (searchGene) refetchGenes();
+      if (searchICRE && inputValue.toLowerCase().startsWith("eh")) refetchICREs();
+      // if(searchCCRE)refetchCCREs();
+      if (searchSnp && inputValue.toLowerCase().startsWith("rs")) refetchSNPs();
+      // if(searchCoordinate)getCoordinates();
+    }, 100);
+  }, [inputValue]);
+
+  useEffect(() => {
+    setIsLoading(icreFetching || geneFetching || snpFetching);
+  }, [icreFetching, geneFetching, snpFetching]);
+
+  useEffect(() => {
+    if (isLoading) return;
+    const resultsList = [];
+    if (geneData) {
+      resultsList.push(...geneResultList(geneData.data.gene, geneLimit || 3));
+    }
+    if (icreData && inputValue.toLowerCase().startsWith("eh")) {
+      resultsList.push(
+        ...icreResultList(icreData.data.iCREQuery, icreLimit || 3)
+      );
+    }
+    if (snpData && inputValue.toLowerCase().startsWith("rs")) {
+      resultsList.push(...snpResultList(snpData.data.snpAutocompleteQuery, snpLimit || 3));
+    }
+    if (resultsList.length === 0) setResults(null);
+    else setResults(resultsList);
+  }, [isLoading, icreData, geneData, snpData]);
 
   // Handle submit
   const onSubmit = useCallback(() => {
@@ -183,7 +173,7 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     >
       <Autocomplete
         onChange={onChange}
-        options={results}
+        options={results || []}
         getOptionLabel={(option: Result) => {
           return option.title || "";
         }}
@@ -191,8 +181,10 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
         noOptionsText={
           <Typography variant="caption">
             {inputValue
-              ? isLoading
+              ? isLoading || results?.length === 0
                 ? "Loading..."
+                : results === null
+                ? "No results found"
                 : ""
               : "Start typing for options"}
           </Typography>
@@ -220,14 +212,15 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
             </li>
           );
         }}
-        // filterOptions={(x) => x}
+        filterOptions={(x) => x}
         renderInput={(params) => {
           if (slots && slots.input) {
             return React.cloneElement(slots.input as React.ReactElement, {
               ...params,
               onKeyDown: handleKeyDown,
               value: inputValue,
-              onChange: handleInputChange,
+              onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                setInputValue(event.target.value),
             });
           }
           return (
@@ -236,7 +229,9 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
               label="Search"
               onKeyDown={handleKeyDown}
               value={inputValue}
-              onChange={handleInputChange}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setInputValue(event.target.value)
+              }
               {...slotProps?.input}
             />
           );
@@ -265,3 +260,4 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
 };
 
 export default GenomeSearch;
+
