@@ -1,15 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  getGenes,
-  getICREs,
-  getSNPs,
-} from "./queries";
+import { getGenes, getICREs, getSNPs } from "./queries";
 import {
   ccreResultList,
   geneResultList,
+  getCoordinates,
   icreResultList,
   snpResultList,
-  useCoordinates,
 } from "./utils";
 import {
   AutocompleteProps,
@@ -47,11 +43,11 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
   ...autocompleteProps
 }) => {
   // Boolean flags for each query
-  const searchGene = queries.includes("gene");
-  const searchSnp = queries.includes("snp");
-  const searchICRE = queries.includes("icre");
-  const searchCCRE = queries.includes("ccre");
-  const searchCoordinate = queries.includes("coordinate");
+  const searchGene = queries.includes("Gene");
+  const searchSnp = queries.includes("SNP");
+  const searchICRE = queries.includes("iCRE");
+  // const searchCCRE = queries.includes("cCRE");
+  const searchCoordinate = queries.includes("Coordinate");
 
   // State variables
   const [inputValue, setInputValue] = useState("");
@@ -66,7 +62,7 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     refetch: refetchICREs,
     isFetching: icreFetching,
   } = useQuery({
-    queryKey: ["icres"],
+    queryKey: ["icres", inputValue],
     queryFn: () => getICREs(inputValue, icreLimit || 3),
     enabled: false,
   });
@@ -76,7 +72,7 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     refetch: refetchGenes,
     isFetching: geneFetching,
   } = useQuery({
-    queryKey: ["genes"],
+    queryKey: ["genes", inputValue],
     queryFn: () => getGenes(inputValue, assembly, geneLimit || 3),
     enabled: false,
   });
@@ -86,7 +82,7 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     refetch: refetchSNPs,
     isFetching: snpFetching,
   } = useQuery({
-    queryKey: ["snps"],
+    queryKey: ["snps", inputValue],
     queryFn: () => getSNPs(inputValue, assembly, snpLimit || 3),
     enabled: false,
   });
@@ -108,10 +104,9 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     // Set new timeout
     timeoutRef.current = setTimeout(() => {
       if (searchGene) refetchGenes();
-      if (searchICRE && inputValue.toLowerCase().startsWith("eh")) refetchICREs();
-      // if(searchCCRE)refetchCCREs();
+      if (searchICRE && inputValue.toLowerCase().startsWith("eh"))
+        refetchICREs();
       if (searchSnp && inputValue.toLowerCase().startsWith("rs")) refetchSNPs();
-      // if(searchCoordinate)getCoordinates();
     }, 100);
   }, [inputValue]);
 
@@ -131,8 +126,14 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
       );
     }
     if (snpData && inputValue.toLowerCase().startsWith("rs")) {
-      resultsList.push(...snpResultList(snpData.data.snpAutocompleteQuery, snpLimit || 3));
+      resultsList.push(
+        ...snpResultList(snpData.data.snpAutocompleteQuery, snpLimit || 3)
+      );
     }
+    if (searchCoordinate && inputValue.toLowerCase().startsWith("chr")) {
+      resultsList.push(...getCoordinates(inputValue, assembly));
+    }
+
     if (resultsList.length === 0) setResults(null);
     else setResults(resultsList);
   }, [isLoading, icreData, geneData, snpData]);
@@ -178,41 +179,9 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
           return option.title || "";
         }}
         groupBy={(option: Result) => option.type || ""}
-        noOptionsText={
-          <Typography variant="caption">
-            {inputValue
-              ? isLoading || results?.length === 0
-                ? "Loading..."
-                : results === null
-                ? "No results found"
-                : ""
-              : "Start typing for options"}
-          </Typography>
-        }
-        renderOption={(props, option: Result) => {
-          return (
-            <li
-              {...props}
-              key={`${option.type}-${option.title || "untitled"}-${
-                option.description || "no-desc"
-              }`}
-            >
-              <Box>
-                <Typography variant="body1" component="div" fontWeight="bold">
-                  {option.title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ whiteSpace: "pre-line" }}
-                >
-                  {option.description}
-                </Typography>
-              </Box>
-            </li>
-          );
-        }}
-        filterOptions={(x) => x}
+        renderGroup={(params) => renderGroup(params, inputValue)}
+        noOptionsText={noOptionsText(inputValue, isLoading, results)}
+        renderOption={renderOptions}
         renderInput={(params) => {
           if (slots && slots.input) {
             return React.cloneElement(slots.input as React.ReactElement, {
@@ -242,6 +211,7 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
           AutocompleteProps<Result, false, true, false, React.ElementType>
         >)}
       />
+      {/* Submit Button */}
       {slots && slots.button ? (
         React.cloneElement(slots.button as React.ReactElement, {
           onClick: () => onSubmit(),
@@ -259,5 +229,111 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
   );
 };
 
-export default GenomeSearch;
+/**
+ * Renders the group of options. Orders the options by relevance to the input value.
+ * @param params - The params object from the Autocomplete component
+ * @param inputValue - The current input value
+ * @returns A rendered group of options
+ */
+function renderGroup(params: any, inputValue: string) {
+  // Sort items within each group by title match relevance
+  const sortedOptions = Array.isArray(params.children)
+    ? params.children.sort((a: any, b: any) => {
+        const aTitle = (
+          a.props?.children?.props?.children?.[0]?.props?.children || ""
+        ).toLowerCase();
+        const bTitle = (
+          b.props?.children?.props?.children?.[0]?.props?.children || ""
+        ).toLowerCase();
+        const query = inputValue.toLowerCase();
+        // Exact matches first
+        if (aTitle === query && bTitle !== query) return -1;
+        if (bTitle === query && aTitle !== query) return 1;
 
+        // Starts with query second
+        if (aTitle.startsWith(query) && !bTitle.startsWith(query)) return -1;
+        if (bTitle.startsWith(query) && !aTitle.startsWith(query)) return 1;
+
+        // Contains query third
+        if (aTitle.includes(query) && !bTitle.includes(query)) return -1;
+        if (bTitle.includes(query) && !aTitle.includes(query)) return 1;
+
+        // Alphabetical order for equal relevance
+        return aTitle.localeCompare(bTitle);
+      })
+    : [];
+
+  return (
+    <div key={params.key}>
+      <Typography
+        variant="subtitle2"
+        sx={{ color: "gray", paddingInline: 1.5, paddingBlock: 1 }}
+      >
+        {params.group}
+      </Typography>
+      {sortedOptions}
+    </div>
+  );
+}
+
+/**
+ * Renders the "no options" text.
+ * @param inputValue - The current input value
+ * @param isLoading - Whether the results are still loading
+ * @param results - The results from the query
+ * @returns A rendered "no options" text
+ */
+function noOptionsText(
+  inputValue: string,
+  isLoading: boolean,
+  results: Result[] | null
+) {
+  return (
+    <Typography variant="caption">
+      {inputValue
+        ? isLoading || results?.length === 0
+          ? "Loading..."
+          : results === null
+          ? "No results found"
+          : ""
+        : "Start typing for options"}
+    </Typography>
+  );
+}
+
+/**
+ * Renders the individual options.
+ * @param props - The props object from the Autocomplete component
+ * @param option - The current option
+ * @returns A rendered option
+ */
+function renderOptions(props: any, option: Result) {
+  return (
+    <li
+      {...props}
+      key={`${option.type}-${option.title || "untitled"}-${
+        option.description || "no-description"
+      }`}
+    >
+      <Box>
+        <Typography
+          variant="body1"
+          component="div"
+          fontWeight="bold"
+          sx={option.type === "Gene" ? { fontStyle: "italic" } : {}}
+        >
+          {option.title}
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          style={{ whiteSpace: "pre-line" }}
+        >
+          {option.description}
+        </Typography>
+      </Box>
+    </li>
+  );
+}
+
+export default GenomeSearch;
