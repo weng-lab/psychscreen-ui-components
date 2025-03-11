@@ -1,27 +1,13 @@
 import { Meta, StoryObj } from '@storybook/react';
 import GenomeSearch from './Autocomplete';
 import { Result } from './types';
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Button, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-
-const client = new ApolloClient({
-    uri: 'https://screen.api.wenglab.org/graphql',
-    cache: new InMemoryCache(),
-    connectToDevTools: true,
-});
 
 const meta = {
     title: 'Autocomplete',
     component: GenomeSearch,
     tags: ['autodocs'],
-    decorators: [
-        (Story) => (
-            <ApolloProvider client={client}>
-                <Story />
-            </ApolloProvider>
-        ),
-    ],
 } satisfies Meta<typeof GenomeSearch>;
 
 export default meta;
@@ -32,7 +18,7 @@ export const Default: Story = {
     args: {
         assembly: 'GRCh38',
         onSearchSubmit: (r: Result) => console.log('Going to', r),
-        queries: ["gene", "snp", "ccre", "coordinate"],
+        queries: ["Gene", "SNP", "iCRE", "cCRE", "Coordinate"],
         ccreLimit: 3,
         geneLimit: 3,
         icreLimit: 3,
@@ -47,7 +33,7 @@ export const InputSlot: Story = {
     args: {
         assembly: 'GRCh38',
         onSearchSubmit: (r: Result) => console.log('Going to', r.title),
-        queries: ["all"],
+        queries: ["Gene", "SNP", "iCRE", "cCRE", "Coordinate"],
         ccreLimit: 3,
         geneLimit: 3,
         icreLimit: 3,
@@ -62,7 +48,7 @@ export const ButtonSlotProps: Story = {
     args: {
         assembly: 'GRCh38',
         onSearchSubmit: (r: Result) => console.log('Going to', r.title),
-        queries: ["all"],
+        queries: ["Gene", "SNP", "iCRE", "cCRE", "Coordinate"],
         ccreLimit: 3,
         geneLimit: 3,
         icreLimit: 3,
@@ -80,7 +66,7 @@ export const ButtonAndInputSlot: Story = {
     args: {
         assembly: 'GRCh38',
         onSearchSubmit: (r: Result) => console.log('Going to', r.title),
-        queries: ["all"],
+        queries: ["Gene", "SNP", "iCRE", "cCRE", "Coordinate"],
         ccreLimit: 3,
         geneLimit: 3,
         icreLimit: 3,
