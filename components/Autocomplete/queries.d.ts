@@ -3,3 +3,7 @@ export declare const GENE_AUTOCOMPLETE_QUERY = "\n    query Genes(\n        $id:
 export declare const RESOLVE_QUERY = "\n    query q(\n        $id: String!\n        $assembly: String!\n    ) {\n        resolve(\n            id: $id\n            assembly: $assembly\n        ) {\n            coordinates {\n                chromosome\n                start\n                end\n            }\n        }\n    }";
 export declare const ICRE_AUTOCOMPLETE_QUERY = "\n    query iCREQuery($accession_prefix: [String!], $limit: Int) {\n        iCREQuery(accession_prefix: $accession_prefix, limit: $limit) {\n            rdhs\n            accession\n            celltypes\n            coordinates {\n                start\n                end\n                chromosome\n            }\n        }\n    }\n";
 export declare const CCRE_AUTOCOMPLETE_QUERY = "\n    query cCREQuery($accession_prefix: [String!], $limit: Int, $assembly: String!) {\n        cCREQuery(accession_prefix: $accession_prefix, assembly: $assembly, limit: $limit) {\n            accession\n            coordinates {\n                start\n                end\n                chromosome\n            }\n        }\n    }\n";
+export declare const getICREs: (value: string, limit: number) => Promise<any>;
+export declare const getCCREs: (value: string, assembly: string, limit: number) => Promise<any>;
+export declare const getGenes: (value: string, assembly: string, limit: number) => Promise<any>;
+export declare const getSNPs: (value: string, assembly: string, limit: number) => Promise<any>;
