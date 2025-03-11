@@ -456,7 +456,8 @@ const DataTable = <T extends object>(
                       props.onRowMouseEnter(row, i + page * rowsPerPage)
                     }
                     onMouseLeave={() =>
-                      props.onRowMouseLeave && props.onRowMouseLeave()
+                      props.onRowMouseLeave && 
+                      props.onRowMouseLeave(row, i + page * rowsPerPage)
                     }
                   >
                     {state.columns.map((column, j) => {
@@ -470,7 +471,8 @@ const DataTable = <T extends object>(
                             props.onCellMouseEnter(column.value(row), i, j)
                           }
                           onMouseLeave={() =>
-                            props.onCellMouseLeave && props.onCellMouseLeave()
+                            props.onCellMouseLeave && 
+                            props.onCellMouseLeave(column.value(row), i, j)
                           }
                         >
                           {column.FunctionalRender ?
