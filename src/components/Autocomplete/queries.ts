@@ -149,6 +149,7 @@ export const getSNPs = async (value: string, assembly: string, limit: number) =>
       variables: {
         assembly: assembly.toLowerCase(),
         snpid: value,
+        limit: limit,
       },
     }),
     headers: { "Content-Type": "application/json" },

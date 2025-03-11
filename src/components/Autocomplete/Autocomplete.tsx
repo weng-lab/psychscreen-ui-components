@@ -183,7 +183,7 @@ const Search: React.FC<GenomeSearchProps> = ({
   return (
     <Box
       display="flex"
-      flexDirection="row"
+      flexDirection="row" 
       gap={2}
       style={{ ...style }}
       sx={{ ...sx}}
