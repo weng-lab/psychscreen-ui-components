@@ -128,14 +128,23 @@ export interface DataTableProps<T> {
      * @param rowIndex The index of the row as it's currently displayed
      */
     onRowMouseEnter?: (rowObject: T, rowIndex: number) => void;
-    onRowMouseLeave?: () => void;
+    /**
+   * @param rowObject The object representing the row
+   * @param rowIndex The index of the row as it's currently displayed
+   */
+    onRowMouseLeave?: (rowObject: T, rowIndex: number) => void;
     /**
      * @param cellValue The value of the cell
      * @param cellRowIndex The index of the cell's row as it's currently displayed
      * @param cellColIndex The index of the cell's column as it's currently displayed
      */
     onCellMouseEnter?: (cellValue: string | number, cellRowIndex: number, cellColIndex: number) => void;
-    onCellMouseLeave?: () => void;
+    /**
+     * @param cellValue The value of the cell
+     * @param cellRowIndex The index of the cell's row as it's currently displayed
+     * @param cellColIndex The index of the cell's column as it's currently displayed
+     */
+    onCellMouseLeave?: (cellValue: string | number, cellRowIndex: number, cellColIndex: number) => void;
 }
 export type DataTableState<T> = {
     page: number;
