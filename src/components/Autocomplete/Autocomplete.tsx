@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { getGenes, getICREs, getSNPs } from "./queries";
+import { getCCREs, getGenes, getICREs, getSNPs } from "./queries";
 import {
   ccreResultList,
   geneResultList,
@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import { GenomeSearchProps, Result } from "./types";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 
 /**
  * An autocomplete search component for genomic landmarks such as genes, SNPs, ICRs, and CCRs.
@@ -27,7 +27,7 @@ import { useQuery } from "@tanstack/react-query";
  * @param props - extends MUI AutocompleteProps and includes additional props specific to this component
  */
 
-const GenomeSearch: React.FC<GenomeSearchProps> = ({
+const Search: React.FC<GenomeSearchProps> = ({
   queries,
   assembly,
   geneLimit,
@@ -46,7 +46,7 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
   const searchGene = queries.includes("Gene");
   const searchSnp = queries.includes("SNP");
   const searchICRE = queries.includes("iCRE");
-  // const searchCCRE = queries.includes("cCRE");
+  const searchCCRE = queries.includes("cCRE");
   const searchCoordinate = queries.includes("Coordinate");
 
   // State variables
@@ -64,6 +64,16 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
   } = useQuery({
     queryKey: ["icres", inputValue],
     queryFn: () => getICREs(inputValue, icreLimit || 3),
+    enabled: false,
+  });
+
+  const {
+    data: ccreData,
+    refetch: refetchCCREs,
+    isFetching: ccreFetching,
+  } = useQuery({
+    queryKey: ["ccres", inputValue],
+    queryFn: () => getCCREs(inputValue, assembly, ccreLimit || 3),
     enabled: false,
   });
 
@@ -106,13 +116,15 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
       if (searchGene) refetchGenes();
       if (searchICRE && inputValue.toLowerCase().startsWith("eh"))
         refetchICREs();
+      if (searchCCRE && inputValue.toLowerCase().startsWith("eh"))
+        refetchCCREs();
       if (searchSnp && inputValue.toLowerCase().startsWith("rs")) refetchSNPs();
     }, 100);
   }, [inputValue]);
 
   useEffect(() => {
-    setIsLoading(icreFetching || geneFetching || snpFetching);
-  }, [icreFetching, geneFetching, snpFetching]);
+    setIsLoading(icreFetching || ccreFetching || geneFetching || snpFetching);
+  }, [icreFetching, ccreFetching, geneFetching, snpFetching]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -123,6 +135,11 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
     if (icreData && inputValue.toLowerCase().startsWith("eh")) {
       resultsList.push(
         ...icreResultList(icreData.data.iCREQuery, icreLimit || 3)
+      );
+    }
+    if (ccreData && inputValue.toLowerCase().startsWith("eh")) {
+      resultsList.push(
+        ...ccreResultList(ccreData.data.cCREQuery, ccreLimit || 3)
       );
     }
     if (snpData && inputValue.toLowerCase().startsWith("rs")) {
@@ -136,7 +153,7 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
 
     if (resultsList.length === 0) setResults(null);
     else setResults(resultsList);
-  }, [isLoading, icreData, geneData, snpData]);
+  }, [isLoading, icreData, ccreData, geneData, snpData]);
 
   // Handle submit
   const onSubmit = useCallback(() => {
@@ -169,12 +186,12 @@ const GenomeSearch: React.FC<GenomeSearchProps> = ({
       flexDirection="row"
       gap={2}
       style={{ ...style }}
-      sx={sx}
+      sx={{ ...sx}}
       {...slotProps?.box}
     >
       <Autocomplete
         onChange={onChange}
-        options={results || []}
+        options={inputValue === "" ? defaultResults || [] : results || []}
         getOptionLabel={(option: Result) => {
           return option.title || "";
         }}
@@ -333,6 +350,20 @@ function renderOptions(props: any, option: Result) {
         </Typography>
       </Box>
     </li>
+  );
+}
+
+/**
+ * Wraps the Search component in a QueryClientProvider.
+ * @param props - The props object from the Autocomplete component
+ * @returns A wrapped Search component
+ */
+const client = new QueryClient();
+function GenomeSearch(props: GenomeSearchProps) {
+  return (
+    <QueryClientProvider client={client}>
+      <Search {...props} />
+    </QueryClientProvider>
   );
 }
 

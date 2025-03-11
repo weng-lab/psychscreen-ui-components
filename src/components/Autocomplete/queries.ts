@@ -108,6 +108,22 @@ export const getICREs = async (value: string, limit: number) => {
   return response.json();
 };
 
+export const getCCREs = async (value: string, assembly: string, limit: number) => {
+  const response = await fetch("https://screen.api.wenglab.org/graphql", {
+    method: "POST",
+    body: JSON.stringify({
+      query: CCRE_AUTOCOMPLETE_QUERY, 
+      variables: {
+        accession_prefix: [value],
+        assembly: assembly.toLowerCase(),
+        limit: limit,
+      },
+    }),
+    headers: { "Content-Type": "application/json" },
+  });
+  return response.json();
+};
+
 export const getGenes = async (value: string, assembly: string, limit: number) => {
   const response = await fetch("https://screen.api.wenglab.org/graphql", {
     method: "POST",
