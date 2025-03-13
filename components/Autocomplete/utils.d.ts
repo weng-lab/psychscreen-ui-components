@@ -10,3 +10,4 @@ export declare function snpResultList(results: SnpResponse[], limit: number): Re
 export declare function geneResultList(results: GeneResponse[], limit: number): Result[];
 export declare function icreResultList(results: ICREResponse[], limit: number): Result[];
 export declare function ccreResultList(results: CCREResponse[], limit: number): Result[];
+export declare function isDomain(input: string): boolean;
