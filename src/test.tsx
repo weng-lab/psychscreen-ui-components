@@ -17,8 +17,9 @@ function App() {
         assembly="GRCh38"
         onSearchSubmit={(r: Result) => console.log(r)}
         queries={["Gene", "SNP", "iCRE", "cCRE", "Coordinate"]}
-        style={{ width: "400px", height: "45px", paddingBottom: "30px" }}
+        style={{ width: "400px" }}
         defaultResults={[]}
+        geneLimit={5}
       />
     </Box>
   );

@@ -5,6 +5,7 @@ import {
   geneResultList,
   getCoordinates,
   icreResultList,
+  isDomain,
   snpResultList,
 } from "./utils";
 import {
@@ -147,7 +148,7 @@ const Search: React.FC<GenomeSearchProps> = ({
         ...snpResultList(snpData.data.snpAutocompleteQuery, snpLimit || 3)
       );
     }
-    if (searchCoordinate && inputValue.toLowerCase().startsWith("chr")) {
+    if (searchCoordinate && isDomain(inputValue)) {
       resultsList.push(...getCoordinates(inputValue, assembly));
     }
 
@@ -199,6 +200,7 @@ const Search: React.FC<GenomeSearchProps> = ({
         renderGroup={(params) => renderGroup(params, inputValue)}
         noOptionsText={noOptionsText(inputValue, isLoading, results)}
         renderOption={renderOptions}
+        filterOptions={(x) => x}
         renderInput={(params) => {
           if (slots && slots.input) {
             return React.cloneElement(slots.input as React.ReactElement, {
@@ -254,7 +256,7 @@ const Search: React.FC<GenomeSearchProps> = ({
  */
 function renderGroup(params: any, inputValue: string) {
   // Sort items within each group by title match relevance
-  const sortedOptions = Array.isArray(params.children)
+  const sortedOptions = Array.isArray(params.children) && !isDomain(inputValue)
     ? params.children.sort((a: any, b: any) => {
         const aTitle = (
           a.props?.children?.props?.children?.[0]?.props?.children || ""
@@ -278,7 +280,7 @@ function renderGroup(params: any, inputValue: string) {
         // Alphabetical order for equal relevance
         return aTitle.localeCompare(bTitle);
       })
-    : [];
+    : params.children;
 
   return (
     <div key={params.key}>

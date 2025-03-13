@@ -36,6 +36,7 @@ export const GENE_AUTOCOMPLETE_QUERY = `
             name_prefix: $name_prefix
             limit: $limit
             assembly: $assembly
+            orderby: "name"
         ) {
             id
             name

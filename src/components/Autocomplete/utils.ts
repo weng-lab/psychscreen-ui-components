@@ -15,53 +15,43 @@ import {
  */
 export function getCoordinates(input: string, assembly: string): Result[] {
   const results: Result[] = [];
-  input = input.replace(/,/g, '');
+  input = input.replace(/,/g, "");
 
-  if (input.startsWith("chr") && input.length <= 5 && input.length > 3) {
-    results.push({
-      title: input.split(":")[0] + `:1-100000`,
-      domain: {
-        chromosome: input.split(":")[0],
-        start: 1,
-        end: 100000,
-      },
-      description: input.split(":")[0] + `:1-100000`,
-      type: "Coordinate",
-    });
-  }
   if (input.includes(":") && input.includes("-")) {
     const chromosome = input.split(":")[0];
     const start = parseInt(input.split(":")[1].split("-")[0]) || 0;
     const end = parseInt(input.split(":")[1].split("-")[1]) || start + 1000;
-
     const chrLength = chromosomeLengths[assembly][chromosome];
 
     // Only set coordinates if end is greater than start and within chromosome length
     if (end > start && chrLength && end <= chrLength) {
       results.push({
-        title: `${chromosome}:${start}-${end}`,
+        title: `${chromosome}:${start.toLocaleString()}-${end.toLocaleString()}`,
         domain: {
           chromosome: chromosome,
           start: start,
           end: end,
         },
-        description: `${chromosome}:${start}-${end}`,
+        description: `${chromosome}:${start.toLocaleString()}-${end.toLocaleString()}`,
         type: "Coordinate",
       });
     }
-  }
-  if (input.includes("\t")) {
+  } else if (input.includes("\t")) {
     const [chromosome, start, end] = input.split("\t");
     const chrLength = chromosomeLengths[assembly][chromosome];
-    if (parseInt(end) > parseInt(start) && chrLength && parseInt(end) <= chrLength) {
+    if (
+      parseInt(end) > parseInt(start) &&
+      chrLength &&
+      parseInt(end) <= chrLength
+    ) {
       results.push({
-        title: `${chromosome}:${start}-${end}`,
+        title: `${chromosome}:${start.toLocaleString()}-${end.toLocaleString()}`,
         domain: {
           chromosome: chromosome,
           start: parseInt(start),
           end: parseInt(end),
         },
-        description: `${chromosome}:${start}-${end}`,
+        description: `${chromosome}:${start.toLocaleString()}-${end.toLocaleString()}`,
         type: "Coordinate",
       });
     }
@@ -202,3 +192,16 @@ const chromosomeLengths: { [key: string]: { [key: string]: number } } = {
     chry: 91744698,
   },
 };
+
+export function isDomain(input: string) {
+  const hasTabs = input.includes("\t");
+  const hasHyphens = input.includes("-");
+  const hasChromosomeNumber = input.length >= 4 && /^\d$/.test(input[3]);
+  console.log(
+    input,
+    hasTabs || hasHyphens || (input.startsWith("chr") && hasChromosomeNumber)
+  );
+  return (
+    (hasTabs || hasHyphens) && input.startsWith("chr") && hasChromosomeNumber
+  );
+}
