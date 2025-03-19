@@ -59,7 +59,7 @@ export const Default: Story = {
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableTooltip: true
     }
@@ -73,7 +73,7 @@ export const CustomTooltip: Story = {
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         tooltipBody: (point) => (
             <div>
@@ -93,7 +93,7 @@ export const WithoutMiniMap: Story = {
         height: 500,
         pointData: scatterData,
         loading: false,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableTooltip: true
     }
@@ -113,7 +113,7 @@ export const SelectablePoints: Story = {
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableTooltip: true
     }
@@ -132,7 +132,7 @@ export const ClickablePoints: Story = {
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label"
     }
 };
@@ -146,7 +146,7 @@ export const HoverMultiplePoints: Story = {
         pointData: moreScatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableTooltip: true
     }
@@ -160,7 +160,7 @@ export const OtherShapes: Story = {
         pointData: shapeData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableTooltip: true
     }
@@ -174,7 +174,7 @@ export const ZoomDisabled: Story = {
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableZoom: true,
         disableTooltip: true
@@ -189,7 +189,7 @@ export const ZoomDisabledButSelectable: Story = {
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableZoom: true,
         selectable: true,
@@ -211,7 +211,7 @@ export const ControlsPositioning: Story = {
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         selectable: true,
         onSelectionChange: (selectedPoints) => {

@@ -46,8 +46,8 @@ export type ChartProps<T> = {
     //custom tooltip formating (optional)
     tooltipBody?: (point: Point<T>) => JSX.Element;
     miniMap?: MiniMapProps;
-    leftAxisLable: string;
-    bottomAxisLabel: string;
+    leftAxisLabel?: string;
+    bottomAxisLabel?: string;
 };
 
 export type Line = { x: number; y: number }[];

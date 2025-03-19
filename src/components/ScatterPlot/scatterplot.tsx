@@ -352,7 +352,7 @@ const ScatterPlot = <T extends object>(
             x={0}
             dx={-50} //adjust to move outside of chart area
         >
-            {props.leftAxisLable}
+            {props.leftAxisLabel}
         </Text>
     );
 
