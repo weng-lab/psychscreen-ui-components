@@ -38,6 +38,7 @@ export type ChartProps<T> = {
     disableZoom?: boolean;
     disableTooltip?: boolean;
     controlsPosition?: "left" | "bottom" | "right";
+    controlsHighlight?: string;
     //returns an array of selected points inside a lasso (optional)
     onSelectionChange?: (selectedPoints: Point<T>[]) => void;
     //returns a point when clicked on (optional)
@@ -77,6 +78,7 @@ export type ControlButtonsProps = {
     zoomOut: () => void;
     zoomReset: () => void;
     position?: "left" | "bottom" | "right";
+    highlight?: string;
 }
 
 interface TransformMatrix {

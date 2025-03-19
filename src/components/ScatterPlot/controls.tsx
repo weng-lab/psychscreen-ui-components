@@ -11,10 +11,12 @@ const ControlButtons = ({
     zoomIn,
     zoomOut,
     zoomReset,
-    position
+    position,
+    highlight
 }: ControlButtonsProps) => {
 
     useEffect(() => {
+        console.log(highlight)
         // Function to handle key press
         const handleKeyDown = (e: KeyboardEvent) => {
           if (e.key === 'Shift' && selectable) {
@@ -45,7 +47,7 @@ const ControlButtons = ({
             {
                 selectable && (
                     <Tooltip title="Drag to select">
-                        <IconButton aria-label="edit" onClick={() => handleSelectionModeChange('select')} sx={{ color: selectMode === "select" ? "primary.main" : "default" }}>
+                        <IconButton aria-label="edit" onClick={() => handleSelectionModeChange('select')} sx={{ color: selectMode === "select" ? highlight ? highlight : "primary.main" : "default" }}>
                             <Edit />
                         </IconButton>
                     </Tooltip>
@@ -54,7 +56,7 @@ const ControlButtons = ({
             {
                 selectable && (
             <Tooltip title="Drag to pan, or hold Shift and drag">
-                <IconButton aria-label="pan" onClick={() => handleSelectionModeChange('pan')} sx={{ color: selectMode === "pan" ? "primary.main" : "default" }}>
+                <IconButton aria-label="pan" onClick={() => handleSelectionModeChange('pan')} sx={{ color: selectMode === "pan" ? highlight ? highlight : "primary.main" : "default" }}>
                     <PanTool />
                 </IconButton>
             </Tooltip>

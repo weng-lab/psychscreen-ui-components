@@ -115,7 +115,7 @@ export const SelectablePoints: Story = {
         miniMap: miniMap,
         leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
-        disableTooltip: true
+        disableTooltip: true,
     }
 };
 
@@ -199,7 +199,7 @@ export const ZoomDisabledButSelectable: Story = {
                 `You Seleted Points: ${JSON.stringify(selectedPoints)}`
             );
         },
-        disableTooltip: true
+        disableTooltip: true,
     }
 };
 

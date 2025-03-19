@@ -422,6 +422,7 @@ const ScatterPlot = <T extends object>(
                                         zoomOut={handleZoomOut}
                                         zoomReset={handleZoomReset}
                                         position={props.controlsPosition}
+                                        highlight={props.controlsHighlight}
                                     />
                                 </Stack>
                             )}
@@ -566,7 +567,7 @@ const ScatterPlot = <T extends object>(
                             {
                                 props.miniMap && !props.disableZoom && (
                                     <Tooltip title="Toggle Minimap">
-                                        <IconButton sx={{ position: 'absolute', right: 10, bottom: 10, zIndex: 10, width: 'auto', height: 'auto', color: showMiniMap ? "primary.main" : "default" }} size="small" onClick={toggleMiniMap}>
+                                        <IconButton sx={{ position: 'absolute', right: 10, bottom: 10, zIndex: 10, width: 'auto', height: 'auto', color: showMiniMap ? props.controlsHighlight ? props.controlsHighlight : "primary.main" : "default" }} size="small" onClick={toggleMiniMap}>
                                             <HighlightAlt />
                                         </IconButton>
                                     </Tooltip>
