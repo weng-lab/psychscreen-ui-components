@@ -16,7 +16,6 @@ const ControlButtons = ({
 }: ControlButtonsProps) => {
 
     useEffect(() => {
-        console.log(highlight)
         // Function to handle key press
         const handleKeyDown = (e: KeyboardEvent) => {
           if (e.key === 'Shift' && selectable) {

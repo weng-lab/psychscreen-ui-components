@@ -505,7 +505,7 @@ const ScatterPlot = <T extends object>(
                                                     width={boundedWidth}
                                                     height={boundedHeight}
                                                     style={{
-                                                        cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'),
+                                                        cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'crosshair') : (zoom.isDragging ? 'grabbing' : 'grab'),
                                                     }}
                                                     onMouseDown={selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
                                                     onMouseUp={selectMode === "select" ? (event) => {
