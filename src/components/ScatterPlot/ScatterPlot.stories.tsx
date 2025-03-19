@@ -133,7 +133,8 @@ export const ClickablePoints: Story = {
         loading: false,
         miniMap: miniMap,
         leftAxisLabel: "Y-Axis Label",
-        bottomAxisLabel: "X-Axis Label"
+        bottomAxisLabel: "X-Axis Label",
+        disableTooltip: true
     }
 };
 

@@ -438,7 +438,6 @@ const ScatterPlot = <T extends object>(
                                             width={props.width * 2}
                                             height={props.height * 2}
                                             style={{
-                                                cursor: selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'),
                                                 userSelect: 'none',
                                                 position: "absolute",
                                                 top: margin.top,
@@ -453,7 +452,6 @@ const ScatterPlot = <T extends object>(
                                             height={props.height}
                                             style={{
                                                 position: "absolute",
-                                                cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'),
                                                 userSelect: 'none'
                                             }}
                                             onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave}
@@ -505,12 +503,19 @@ const ScatterPlot = <T extends object>(
                                                     fill="transparent"
                                                     width={props.width}
                                                     height={props.height}
+                                                    style={{
+                                                        cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'),
+                                                    }}
                                                     onMouseDown={selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
                                                     onMouseUp={selectMode === "select" ? (event) => {
                                                         dragEnd(event);
                                                         onDragEnd(zoom);
                                                     } : props.disableZoom ? undefined : zoom.dragEnd}
                                                     onMouseMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
+                                                    onMouseLeave={selectMode === "select" ? (event) => {
+                                                        dragEnd(event);
+                                                        onDragEnd(zoom);
+                                                    } : props.disableZoom ? undefined : zoom.dragEnd}
                                                     onTouchStart={selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
                                                     onTouchEnd={selectMode === "select" ? (event) => {
                                                         dragEnd(event);
