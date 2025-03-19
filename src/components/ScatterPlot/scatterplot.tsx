@@ -271,6 +271,15 @@ const ScatterPlot = <T extends object>(
         setTooltipData(null);
     }, []);
 
+    const handleClick = () => {
+        if (!props.onPointClicked || !hoveredPoint) return;
+
+        if (hoveredPoint) {
+            props.onPointClicked(hoveredPoint);
+        }
+    };
+    
+
     const drawPoints = useCallback((xScaleTransformed: ScaleLinear<number, number, never>, yScaleTransformed: ScaleLinear<number, number, never>, canvas: HTMLCanvasElement) => {
         if (canvas) {
             const context = canvas.getContext('2d');
@@ -515,6 +524,7 @@ const ScatterPlot = <T extends object>(
                                                             zoom.scale({ scaleX: zoomDirection, scaleY: zoomDirection, point });
                                                         }
                                                     }}
+                                                    onClick={handleClick}
                                                 />
                                             </Group>
 
