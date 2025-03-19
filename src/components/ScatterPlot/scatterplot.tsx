@@ -288,7 +288,7 @@ const ScatterPlot = <T extends object>(
                 context.setTransform(2, 0, 0, 2, 0, 0);
 
                 // Clear the canvas before rendering
-                context.clearRect(0, 0, props.width, props.height);
+                context.clearRect(0, 0, boundedWidth, boundedHeight);
 
                 const hoveredPoints = new Set(groupedPoints.map(gp => `${gp.x},${gp.y}`));
 
@@ -339,7 +339,7 @@ const ScatterPlot = <T extends object>(
 
             }
         }
-    }, [props.width, props.height, props.pointData, boundedWidth, boundedHeight, groupedPoints])
+    }, [props.pointData, boundedWidth, boundedHeight, groupedPoints])
 
     //Axis styling
     const axisLeftLabel = (
@@ -375,7 +375,7 @@ const ScatterPlot = <T extends object>(
 
     return (
         <>
-            <Zoom width={props.width} height={props.height} scaleXMin={1 / 2} scaleXMax={10} scaleYMin={1 / 2} scaleYMax={10} initialTransformMatrix={initialTransformMatrix}>
+            <Zoom width={boundedWidth} height={boundedHeight} scaleXMin={1 / 2} scaleXMax={10} scaleYMin={1 / 2} scaleYMax={10} initialTransformMatrix={initialTransformMatrix}>
                 {(zoom) => {
                     // rescale as we zoom and pan
                     const xScaleTransformed = rescaleX(xScale, zoom.transformMatrix.translateX, zoom.transformMatrix.scaleX);
@@ -435,15 +435,15 @@ const ScatterPlot = <T extends object>(
                                                     drawPoints(xScaleTransformed, yScaleTransformed, canvas);
                                                 }
                                             }}
-                                            width={props.width * 2}
-                                            height={props.height * 2}
+                                            width={boundedWidth * 2 }
+                                            height={boundedHeight * 2}
                                             style={{
                                                 userSelect: 'none',
                                                 position: "absolute",
                                                 top: margin.top,
                                                 left: margin.left,
-                                                width: props.width,
-                                                height: props.height,
+                                                width: boundedWidth,
+                                                height: boundedHeight,
                                                 backgroundColor: "transparent"
                                             }}
                                         />
@@ -501,8 +501,8 @@ const ScatterPlot = <T extends object>(
                                                 {/* Interactable surface */}
                                                 <rect
                                                     fill="transparent"
-                                                    width={props.width}
-                                                    height={props.height}
+                                                    width={boundedWidth}
+                                                    height={boundedHeight}
                                                     style={{
                                                         cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'default') : (zoom.isDragging ? 'grabbing' : 'grab'),
                                                     }}
