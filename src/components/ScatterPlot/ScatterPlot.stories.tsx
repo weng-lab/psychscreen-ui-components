@@ -223,3 +223,24 @@ export const ControlsPositioning: Story = {
         disableTooltip: true
     }
 };
+
+// Controls Highlight
+export const ControlsHighlight: Story = {
+    args: {
+        controlsHighlight: "red",
+        width: 500,
+        height: 500,
+        pointData: scatterData,
+        loading: false,
+        miniMap: miniMap,
+        leftAxisLabel: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label",
+        selectable: true,
+        onSelectionChange: (selectedPoints) => {
+            window.alert(
+                `You Seleted Points: ${JSON.stringify(selectedPoints)}`
+            );
+        },
+        disableTooltip: true
+    }
+};
