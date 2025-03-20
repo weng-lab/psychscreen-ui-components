@@ -21,21 +21,29 @@ export type Point<T> = {
     If not position or reference is given, it will default to the bottom right corner of the screen if shown
 */
 export type MiniMapProps = {
-    defaultOpen?: boolean;
     position?: { right: number; bottom: number };
     ref?: MutableRefObject<HTMLDivElement | null>;
 };
 
+export type InitialState<S, Z> = {
+    minimap?: {
+        open?: boolean;
+    };
+    controls?: {
+        selectionType?: S extends true ? "pan" | "select" : Z extends true ? "select" | "none" : "pan";
+    };
+}
+
 /*
     Basic chart properties
 */
-export type ChartProps<T> = {
+export type ChartProps<T, S extends boolean | undefined, Z extends boolean | undefined> = {
     width: number;
     height: number;
     pointData: Point<T>[];
     loading: boolean;
-    selectable?: boolean;
-    disableZoom?: boolean;
+    selectable?: S;
+    disableZoom?: Z;
     disableTooltip?: boolean;
     controlsPosition?: "left" | "bottom" | "right";
     controlsHighlight?: string;
@@ -49,6 +57,7 @@ export type ChartProps<T> = {
     miniMap?: MiniMapProps;
     leftAxisLabel?: string;
     bottomAxisLabel?: string;
+    initialState?: InitialState<S, Z>;
 };
 
 export type Line = { x: number; y: number }[];
@@ -72,8 +81,8 @@ export type TooltipProps<T> = {
 export type ControlButtonsProps = {
     selectable: boolean;
     resetable: boolean;
-    handleSelectionModeChange: (mode: "select" | "pan") => void;
-    selectMode: "select" | "pan";
+    handleSelectionModeChange: (mode: "select" | "pan" | "none") => void;
+    selectMode: "select" | "pan" | "none";
     zoomIn: () => void;
     zoomOut: () => void;
     zoomReset: () => void;

@@ -30,8 +30,8 @@ const initialTransformMatrix = {
     skewY: 0,
 }
 
-const ScatterPlot = <T extends object>(
-    props: ChartProps<T>
+const ScatterPlot = <T extends object, S extends boolean | undefined = undefined, Z extends boolean | undefined = undefined>(
+    props: ChartProps<T, S, Z>
 ) => {
     /**
  * Hacky workaround for complex type compatability issues. Hopefully this will fix itself when ugrading to React 19 - Jonathan 12/11/24
@@ -40,11 +40,23 @@ const ScatterPlot = <T extends object>(
     const Zoom = VisxZoom as unknown as React.FC<ZoomProps<React.ReactElement>>;
     const VisTooltip = VisxTooltip as unknown as React.FC<TooltipProps>;
 
+    const initialState: {
+        minimap: { open: boolean };
+        controls: { selectionType: "pan" | "select" | "none" }
+    } = {
+        minimap: {
+            open: props.initialState?.minimap?.open ?? false,
+        },
+        controls: {
+            selectionType: props.initialState?.controls?.selectionType ? props.initialState?.controls?.selectionType : props.selectable ? "select" : "pan",
+        }
+    }
+
     const [tooltipData, setTooltipData] = React.useState<Point<T> | null>(null);
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const [lines, setLines] = useState<Lines>([]);
-    const [selectMode, setSelectMode] = useState<"select" | "pan">(props.selectable ? "select" : "pan");
-    const [showMiniMap, setShowMiniMap] = useState<boolean>(props.miniMap?.defaultOpen ? props.miniMap.defaultOpen : false);
+    const [selectMode, setSelectMode] = useState<"select" | "pan" | "none">(initialState.controls.selectionType);
+    const [showMiniMap, setShowMiniMap] = useState<boolean>(initialState.minimap.open);
     const [mouseX, setMouseX] = useState(0);
     const [mouseY, setMouseY] = useState(0);
     const selectable = props.selectable ? props.selectable : false;
@@ -53,7 +65,7 @@ const ScatterPlot = <T extends object>(
     const boundedHeight = boundedWidth;
     const hoveredPoint = tooltipData ? props.pointData.find(point => point.x === tooltipData.x && point.y === tooltipData.y) : null;
 
-    const handleSelectionModeChange = (mode: "select" | "pan") => {
+    const handleSelectionModeChange = (mode: "select" | "pan" | "none") => {
         setSelectMode(mode);
     };
 
@@ -505,24 +517,34 @@ const ScatterPlot = <T extends object>(
                                                     width={boundedWidth}
                                                     height={boundedHeight}
                                                     style={{
-                                                        cursor: props.disableZoom ? (isDragging ? 'none' : 'default') : hoveredPoint ? "default" : selectMode === "select" ? (isDragging ? 'none' : 'crosshair') : (zoom.isDragging ? 'grabbing' : 'grab'),
+                                                        cursor: props.disableZoom
+                                                            ? props.selectable
+                                                                ? isDragging ? 'none' : 'crosshair'
+                                                                : isDragging ? 'none' : 'default'
+                                                            : hoveredPoint
+                                                            ? 'default'
+                                                            : selectMode === 'select'
+                                                            ? isDragging ? 'none' : 'crosshair'
+                                                            : zoom.isDragging
+                                                            ? 'grabbing'
+                                                            : 'grab',
                                                     }}
-                                                    onMouseDown={selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
-                                                    onMouseUp={selectMode === "select" ? (event) => {
+                                                    onMouseDown={selectMode === "none" ? undefined : selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
+                                                    onMouseUp={selectMode === "none" ? undefined : selectMode === "select" ? (event) => {
                                                         dragEnd(event);
                                                         onDragEnd(zoom);
                                                     } : props.disableZoom ? undefined : zoom.dragEnd}
-                                                    onMouseMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
-                                                    onMouseLeave={selectMode === "select" ? (event) => {
+                                                    onMouseMove={selectMode === "none" ? undefined : selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
+                                                    onMouseLeave={selectMode === "none" ? undefined : selectMode === "select" ? (event) => {
                                                         dragEnd(event);
                                                         onDragEnd(zoom);
                                                     } : props.disableZoom ? undefined : zoom.dragEnd}
-                                                    onTouchStart={selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
-                                                    onTouchEnd={selectMode === "select" ? (event) => {
+                                                    onTouchStart={selectMode === "none" ? undefined : selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
+                                                    onTouchEnd={selectMode === "none" ? undefined : selectMode === "select" ? (event) => {
                                                         dragEnd(event);
                                                         onDragEnd(zoom);
                                                     } : props.disableZoom ? undefined : zoom.dragEnd}
-                                                    onTouchMove={selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
+                                                    onTouchMove={selectMode === "none" ? undefined : selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
                                                     onWheel={(event) => {
                                                         if (!props.disableZoom) {
                                                             const point = localPoint(event) || { x: 0, y: 0 };
