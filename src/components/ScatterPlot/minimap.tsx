@@ -59,11 +59,7 @@ const MiniMap = <T,>({
                 height={(height - 100) / 4}
                 style={{ position: 'absolute', top: 0, left: 0 }}
             >
-                <g
-                    transform={`
-                                                    scale(0.25)
-                                                `}
-                >
+                <g transform={`scale(0.25)`}>
                     <rect
                         width={width - 100}
                         height={height - 100}
@@ -73,6 +69,38 @@ const MiniMap = <T,>({
                         strokeWidth={4}
                         rx={8}
                         transform={zoom.toStringInvert()}
+                        //drag functionality for window, must invert zoom and take the scale into account
+                        style={{ cursor: zoom.isDragging ? "grabbing" : "grab" }}
+                        onMouseDown={zoom.dragStart}
+                        onMouseUp={zoom.dragEnd}
+                        onMouseMove={(event) => {
+                            if (zoom.isDragging) {
+                                zoom.setTransformMatrix({
+                                    scaleX: zoom.transformMatrix.scaleX,
+                                    scaleY: zoom.transformMatrix.scaleY,
+                                    translateX: zoom.transformMatrix.translateX - event.movementX / .25,
+                                    translateY: zoom.transformMatrix.translateY - event.movementY / .25,
+                                    skewX: zoom.transformMatrix.skewX,
+                                    skewY: zoom.transformMatrix.skewY
+                                });
+                            }
+                        }}
+                        onMouseLeave={zoom.dragEnd}
+                        onTouchStart={zoom.dragStart}
+                        onTouchEnd={zoom.dragEnd}
+                        onTouchMove={(event) => {
+                            if (zoom.isDragging && event.touches.length === 1) {
+                                const touch = event.touches[0];
+                                zoom.setTransformMatrix({
+                                    scaleX: zoom.transformMatrix.scaleX,
+                                    scaleY: zoom.transformMatrix.scaleY,
+                                    translateX: zoom.transformMatrix.translateX - touch.clientX / .25,
+                                    translateY: zoom.transformMatrix.translateY - touch.clientY / .25,
+                                    skewX: zoom.transformMatrix.skewX,
+                                    skewY: zoom.transformMatrix.skewY
+                                });
+                            }
+                        }}
                     />
                 </g>
             </svg>
