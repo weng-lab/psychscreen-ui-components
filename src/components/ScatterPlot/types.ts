@@ -38,8 +38,6 @@ export type InitialState<S, Z> = {
     Basic chart properties
 */
 export type ChartProps<T, S extends boolean | undefined, Z extends boolean | undefined> = {
-    width: number;
-    height: number;
     pointData: Point<T>[];
     loading: boolean;
     selectable?: S;
@@ -47,6 +45,7 @@ export type ChartProps<T, S extends boolean | undefined, Z extends boolean | und
     disableTooltip?: boolean;
     controlsPosition?: "left" | "bottom" | "right";
     controlsHighlight?: string;
+    onDisplayedPointsChange?: (points: Point<T>[]) => void
     //returns an array of selected points inside a lasso (optional)
     onSelectionChange?: (selectedPoints: Point<T>[]) => void;
     //returns a point when clicked on (optional)

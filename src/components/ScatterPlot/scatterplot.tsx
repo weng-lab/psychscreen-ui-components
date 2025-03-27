@@ -20,6 +20,7 @@ import { ScaleLinear } from '@visx/vendor/d3-scale';
 import { HighlightAlt } from "@mui/icons-material"
 import MiniMap from './minimap';
 import { HandlerArgs } from '@visx/drag/lib/useDrag';
+import { useParentSize } from '@visx/responsive';
 
 const initialTransformMatrix = {
     scaleX: 1,
@@ -52,6 +53,8 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
         }
     }
 
+    const { parentRef, width: parentWidth, height: parentHeight } = useParentSize();
+    const size = Math.min(parentHeight, parentWidth)
     const [tooltipData, setTooltipData] = React.useState<Point<T> | null>(null);
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const [lines, setLines] = useState<Lines>([]);
@@ -61,9 +64,10 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     const [mouseY, setMouseY] = useState(0);
     const selectable = props.selectable ? props.selectable : false;
     const margin = { top: 20, right: 20, bottom: 70, left: 70 };
-    const boundedWidth = Math.min(props.width * 0.9, props.height * 0.9) - margin.left;
+    const boundedWidth = Math.min(size * 0.9, size * 0.9) - margin.left;
     const boundedHeight = boundedWidth;
     const hoveredPoint = tooltipData ? props.pointData.find(point => point.x === tooltipData.x && point.y === tooltipData.y) : null;
+    const [previousDisplayedPoints, setPreviousDisplayedPoints] = useState<Point<T>[]>([])
 
     const handleSelectionModeChange = (mode: "select" | "pan" | "none") => {
         setSelectMode(mode);
@@ -290,7 +294,6 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
             props.onPointClicked(hoveredPoint);
         }
     };
-    
 
     const drawPoints = useCallback((xScaleTransformed: ScaleLinear<number, number, never>, yScaleTransformed: ScaleLinear<number, number, never>, canvas: HTMLCanvasElement) => {
         if (canvas) {
@@ -311,16 +314,24 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                     (point) => hoveredPoints.has(`${point.x},${point.y}`)
                 );
 
+                const displayedPoints: Point<T>[] = [];
+
                 const drawPoint = (point: Point<T>, isHovered: boolean) => {
+
                     const transformedX = xScaleTransformed(point.x);
                     const transformedY = yScaleTransformed(point.y);
+
                     const isPointWithinBounds =
                         xScaleTransformed(point.x) >= 0 &&
                         xScaleTransformed(point.x) <= boundedWidth &&
                         yScaleTransformed(point.y) >= 0 &&
                         yScaleTransformed(point.y) <= boundedHeight;
+
                     const size = (point.r || 3) + (isHovered ? 2 : 0);
+
                     if (isPointWithinBounds) {
+                        displayedPoints.push(point);
+
                         context.beginPath();
 
                         if (point.shape === "circle") {
@@ -349,9 +360,31 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                 nonHoveredPoints.forEach((point) => drawPoint(point, false));
                 hoveredOnlyPoints.forEach((point) => drawPoint(point, true));
 
+                const haveDisplayedPointsChanged = (prevPoints: Point<T>[], newPoints: Point<T>[]): boolean => {
+                    if (prevPoints.length !== newPoints.length) return true;
+                    return !prevPoints.every((point, index) => {
+                        const newPoint = newPoints[index];
+                        return (
+                            point.x === newPoint.x &&
+                            point.y === newPoint.y &&
+                            point.r === newPoint.r &&
+                            point.shape === newPoint.shape &&
+                            point.color === newPoint.color &&
+                            point.opacity === newPoint.opacity
+                        );
+                    });
+                };
+
+                if (haveDisplayedPointsChanged(previousDisplayedPoints, displayedPoints)) {
+                    if (props.onDisplayedPointsChange) {
+                        props.onDisplayedPointsChange(displayedPoints);
+                    }
+                    setPreviousDisplayedPoints(displayedPoints); // Update the reference to the current set
+                }
+
             }
         }
-    }, [props.pointData, boundedWidth, boundedHeight, groupedPoints])
+    }, [boundedWidth, boundedHeight, groupedPoints, props, previousDisplayedPoints])
 
     //Axis styling
     const axisLeftLabel = (
@@ -386,7 +419,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     }
 
     return (
-        <>
+        <div ref={parentRef} style={{width: "100%", height: "100%", position: "relative"}}>
             <Zoom width={boundedWidth} height={boundedHeight} scaleXMin={1 / 2} scaleXMax={10} scaleYMin={1 / 2} scaleYMax={10} initialTransformMatrix={initialTransformMatrix}>
                 {(zoom) => {
                     // rescale as we zoom and pan
@@ -440,7 +473,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                             )}
                             {/* Zoomable Group for Points */}
                             <Stack justifyContent="center" alignItems="center" direction="row" sx={{ position: "relative", }}>
-                                <Box sx={{ width: props.width, height: props.height }} >
+                                <Box sx={{ width: size, height: size }} >
                                     <div style={{ position: 'relative' }}>
                                         <canvas
                                             ref={(canvas) => {
@@ -461,8 +494,8 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                             }}
                                         />
                                         <svg
-                                            width={props.width}
-                                            height={props.height}
+                                            width={size}
+                                            height={size}
                                             style={{
                                                 position: "absolute",
                                                 userSelect: 'none'
@@ -599,8 +632,8 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                 showMiniMap && props.miniMap && !props.disableZoom && (
                                     <MiniMap
                                         miniMap={props.miniMap}
-                                        width={props.width}
-                                        height={props.height}
+                                        width={size}
+                                        height={size}
                                         pointData={props.pointData}
                                         xScale={xScale}
                                         yScale={yScale}
@@ -626,7 +659,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                     )
                 }}
             </Zoom >
-        </>
+        </div>
     );
 }
 

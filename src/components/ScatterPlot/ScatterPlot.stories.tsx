@@ -11,6 +11,13 @@ const meta = {
     parameters: {
         controls: { expanded: true },
     },
+    decorators: [
+        (Story) => (
+          <div style={{ width: 850, height: 500}}>
+            <Story />
+          </div>
+        ),
+      ],
 } satisfies Meta<typeof ScatterPlot>;
 
 type Point = {
@@ -53,8 +60,6 @@ const miniMap: MiniMapProps = {
 // Default story with scatter data
 export const Default: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
@@ -73,8 +78,6 @@ export const Default: Story = {
     render: () => {
         return (
             <ScatterPlot
-                width={500}
-                height={500}
                 pointData={scatterData}
                 loading={false}
                 leftAxisLabel=""
@@ -100,8 +103,6 @@ export const Default: Story = {
 // Default story with tooltip
 export const CustomTooltip: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
@@ -129,8 +130,6 @@ export const CustomTooltip: Story = {
 // Default story with no mini map
 export const WithoutMiniMap: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         leftAxisLabel: "Y-Axis Label",
@@ -150,8 +149,6 @@ export const WithoutMiniMap: Story = {
 // Default story with selectable points
 export const SelectablePoints: Story = {
     args: {
-        width: 500,
-        height: 500,
         selectable: true,
         onSelectionChange: (selectedPoints) => {
             window.alert(
@@ -178,8 +175,6 @@ export const SelectablePoints: Story = {
 // Default story with clickable points
 export const ClickablePoints: Story = {
     args: {
-        width: 500,
-        height: 500,
         onPointClicked: (point) => {
             window.alert(
                 `You Seleted Point: ${JSON.stringify(point)}`
@@ -205,8 +200,6 @@ export const ClickablePoints: Story = {
 // Default story with grouped points
 export const HoverMultiplePoints: Story = {
     args: {
-        width: 500,
-        height: 500,
         groupPointsAnchor: "color",
         pointData: moreScatterData,
         loading: false,
@@ -221,15 +214,13 @@ export const HoverMultiplePoints: Story = {
             controls: {
                 selectionType: "pan"
             }
-        }
+        },
     }
 };
 
 // Default story with multiple shapes
 export const OtherShapes: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: shapeData,
         loading: false,
         miniMap: miniMap,
@@ -250,8 +241,6 @@ export const OtherShapes: Story = {
 // Default story with disabled zoom
 export const ZoomDisabled: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
@@ -271,8 +260,6 @@ export const ZoomDisabled: Story = {
     render: () => {
         return (
             <ScatterPlot
-                width={500}
-                height={500}
                 pointData={scatterData}
                 loading={false}
                 leftAxisLabel=""
@@ -299,8 +286,6 @@ export const ZoomDisabled: Story = {
 // Default story with disabled zoom but selectable
 export const ZoomDisabledButSelectable: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
@@ -329,8 +314,6 @@ export const ZoomDisabledButSelectable: Story = {
 export const ControlsPositioning: Story = {
     args: {
         controlsPosition: "bottom",
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
@@ -358,8 +341,6 @@ export const ControlsPositioning: Story = {
 export const ControlsHighlight: Story = {
     args: {
         controlsHighlight: "red",
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
