@@ -135,14 +135,6 @@ export const WithoutMiniMap: Story = {
         leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableTooltip: true,
-        initialState: {
-            minimap: {
-                open: true,
-            },
-            controls: {
-                selectionType: "pan"
-            }
-        }
     }
 };
 

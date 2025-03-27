@@ -1,4 +1,3 @@
-import { MutableRefObject } from "react";
 import { ScaleLinear } from '@visx/vendor/d3-scale';
 import { ProvidedZoom } from "@visx/zoom/lib/types";
 
@@ -22,7 +21,6 @@ export type Point<T> = {
 */
 export type MiniMapProps = {
     position?: { right: number; bottom: number };
-    ref?: MutableRefObject<HTMLDivElement | null>;
 };
 
 export type InitialState<S, Z> = {
