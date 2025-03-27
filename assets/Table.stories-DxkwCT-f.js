@@ -1,0 +1,6 @@
+import{j as a}from"./jsx-runtime-DiklIkkE.js";import{C as m,P as l}from"./Graph-CNIn2lHo.js";import"./scatterplot-DEy6HWyV.js";import"./Autocomplete-ClPZQFOX.js";/* empty css            */import{T as d}from"./Grow-DQG7xyK7.js";import"./index-DRjF_FHU.js";import"./index-Bx0Ph3cE.js";const n=Array.from(Array(1e3).keys()).map(e=>[{header:"Symbol 1",value:"ss "+e},{header:"Symbol 1",value:"ss "+e},{header:"Symbol 1",value:"ss "+e},{header:"Symbol 1",value:"ss "+e},{header:"Symbol 1",value:"ss "+e},{header:"Symbol 1",value:"ss "+e},{header:"Symbol 2",value:e},{header:"Symbol 3",value:e},{header:"Symbol 4",value:e},{header:"Score",value:"score "+e,render:a.jsx("b",{children:"test"+e})}]),v={title:"CustomizedTable",component:m,tags:["autodocs"],argTypes:{children:{control:{type:"text"}}},parameters:{controls:{expanded:!0}},decorators:[e=>a.jsx(d,{theme:l,children:a.jsx(e,{})})]},r={args:{rowsPerPage:[10,100],tabledata:n}};var o,s,t;r.parameters={...r.parameters,docs:{...(o=r.parameters)==null?void 0:o.docs,source:{originalSource:`{
+  args: {
+    rowsPerPage: [10, 100],
+    tabledata: tdata
+  }
+}`,...(t=(s=r.parameters)==null?void 0:s.docs)==null?void 0:t.source}}};const x=["Default"];export{r as Default,x as __namedExportsOrder,v as default};
