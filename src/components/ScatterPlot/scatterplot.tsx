@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Zoom as VisxZoom } from '@visx/zoom'
 import { ZoomProps } from '@visx/zoom/lib/Zoom'
@@ -55,6 +55,9 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
 
     const { parentRef, width: parentWidth, height: parentHeight } = useParentSize();
     const size = Math.min(parentHeight, parentWidth)
+
+    const graphRef = useRef<SVGRectElement | null>(null);
+    
     const [tooltipData, setTooltipData] = React.useState<Point<T> | null>(null);
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const [lines, setLines] = useState<Lines>([]);
@@ -68,6 +71,23 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     const boundedHeight = boundedWidth;
     const hoveredPoint = tooltipData ? props.pointData.find(point => point.x === tooltipData.x && point.y === tooltipData.y) : null;
     const [previousDisplayedPoints, setPreviousDisplayedPoints] = useState<Point<T>[]>([])
+
+    useEffect(() => {
+        const graphElement = graphRef.current;
+
+        const handleWheel = (event: WheelEvent) => {
+            // Prevent default scroll behavior when using the wheel in the graph
+            event.preventDefault();
+        };
+        if (graphElement) {
+            graphElement.addEventListener('wheel', handleWheel, { passive: false });
+        }
+        return () => {
+            if (graphElement) {
+                graphElement.removeEventListener('wheel', handleWheel);
+            }
+        };
+    }, [graphRef]);
 
     const handleSelectionModeChange = (mode: "select" | "pan" | "none") => {
         setSelectMode(mode);
@@ -546,6 +566,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
 
                                                 {/* Interactable surface */}
                                                 <rect
+                                                    ref={graphRef}
                                                     fill="transparent"
                                                     width={boundedWidth}
                                                     height={boundedHeight}
