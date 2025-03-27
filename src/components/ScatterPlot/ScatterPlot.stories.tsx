@@ -11,6 +11,13 @@ const meta = {
     parameters: {
         controls: { expanded: true },
     },
+    decorators: [
+        (Story) => (
+          <div style={{ width: 850, height: 500}}>
+            <Story />
+          </div>
+        ),
+      ],
 } satisfies Meta<typeof ScatterPlot>;
 
 type Point = {
@@ -47,33 +54,59 @@ const shapeData: Point[] = [
 
 // Mock for the map prop
 const miniMap: MiniMapProps = {
-    defaultOpen: true,
     position: { right: 50, bottom: 50 }
 };
 
 // Default story with scatter data
 export const Default: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
-        disableTooltip: true
+        disableTooltip: true,
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "pan"
+            }
+        }
+    },
+    render: () => {
+        return (
+            <ScatterPlot
+                pointData={scatterData}
+                loading={false}
+                leftAxisLabel=""
+                bottomAxisLabel=""
+                miniMap={miniMap}
+                disableTooltip
+                initialState={
+                    {
+                        minimap: {
+                            open: true,
+                        },
+                        controls: {
+                            selectionType: "pan"
+                        }
+                    }
+                }
+            />
+
+        )
     }
 };
 
 // Default story with tooltip
 export const CustomTooltip: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         tooltipBody: (point) => (
             <div>
@@ -83,27 +116,31 @@ export const CustomTooltip: Story = {
                 <p>Color: {point.color}</p>
             </div>
         ),
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "pan"
+            }
+        }
     }
 };
 
 // Default story with no mini map
 export const WithoutMiniMap: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
-        disableTooltip: true
+        disableTooltip: true,
     }
 };
 
 // Default story with selectable points
 export const SelectablePoints: Story = {
     args: {
-        width: 500,
-        height: 500,
         selectable: true,
         onSelectionChange: (selectedPoints) => {
             window.alert(
@@ -113,81 +150,138 @@ export const SelectablePoints: Story = {
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
-        disableTooltip: true
+        disableTooltip: true,
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "pan"
+            }
+        }
     }
 };
 
 // Default story with clickable points
-// export const ClickablePoints: Story = {
-//     args: {
-//         width: 500,
-//         height: 500,
-//         onPointClicked: (point) => {
-//             console.log('Clicked Point:', point);
-//         },
-//         pointData: scatterData,
-//         loading: false,
-//         miniMap: miniMap,
-//         leftAxisLable: "Y-Axis Label",
-//         bottomAxisLabel: "X-Axis Label"
-//     }
-// };
+export const ClickablePoints: Story = {
+    args: {
+        onPointClicked: (point) => {
+            window.alert(
+                `You Seleted Point: ${JSON.stringify(point)}`
+            );
+        },
+        pointData: scatterData,
+        loading: false,
+        miniMap: miniMap,
+        leftAxisLabel: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label",
+        disableTooltip: true,
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "pan"
+            }
+        }
+    }
+};
 
 // Default story with grouped points
 export const HoverMultiplePoints: Story = {
     args: {
-        width: 500,
-        height: 500,
         groupPointsAnchor: "color",
         pointData: moreScatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
-        disableTooltip: true
+        disableTooltip: true,
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "pan"
+            }
+        },
     }
 };
 
 // Default story with multiple shapes
 export const OtherShapes: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: shapeData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
-        disableTooltip: true
+        disableTooltip: true,
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "pan"
+            }
+        }
     }
 };
 
 // Default story with disabled zoom
 export const ZoomDisabled: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableZoom: true,
-        disableTooltip: true
+        disableTooltip: true,
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "none"
+            }
+        }
+    },
+    render: () => {
+        return (
+            <ScatterPlot
+                pointData={scatterData}
+                loading={false}
+                leftAxisLabel=""
+                bottomAxisLabel=""
+                miniMap={miniMap}
+                disableTooltip
+                disableZoom
+                initialState={
+                    {
+                        minimap: {
+                            open: true,
+                        },
+                        controls: {
+                            selectionType: "none"
+                        }
+                    }
+                }
+            />
+
+        )
     }
 };
 
 // Default story with disabled zoom but selectable
 export const ZoomDisabledButSelectable: Story = {
     args: {
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         disableZoom: true,
         selectable: true,
@@ -196,7 +290,15 @@ export const ZoomDisabledButSelectable: Story = {
                 `You Seleted Points: ${JSON.stringify(selectedPoints)}`
             );
         },
-        disableTooltip: true
+        disableTooltip: true,
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "select"
+            }
+        }
     }
 };
 
@@ -204,12 +306,10 @@ export const ZoomDisabledButSelectable: Story = {
 export const ControlsPositioning: Story = {
     args: {
         controlsPosition: "bottom",
-        width: 500,
-        height: 500,
         pointData: scatterData,
         loading: false,
         miniMap: miniMap,
-        leftAxisLable: "Y-Axis Label",
+        leftAxisLabel: "Y-Axis Label",
         bottomAxisLabel: "X-Axis Label",
         selectable: true,
         onSelectionChange: (selectedPoints) => {
@@ -217,6 +317,41 @@ export const ControlsPositioning: Story = {
                 `You Seleted Points: ${JSON.stringify(selectedPoints)}`
             );
         },
-        disableTooltip: true
+        disableTooltip: true,
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "pan"
+            }
+        }
+    }
+};
+
+// Controls Highlight
+export const ControlsHighlight: Story = {
+    args: {
+        controlsHighlight: "red",
+        pointData: scatterData,
+        loading: false,
+        miniMap: miniMap,
+        leftAxisLabel: "Y-Axis Label",
+        bottomAxisLabel: "X-Axis Label",
+        selectable: true,
+        onSelectionChange: (selectedPoints) => {
+            window.alert(
+                `You Seleted Points: ${JSON.stringify(selectedPoints)}`
+            );
+        },
+        disableTooltip: true,
+        initialState: {
+            minimap: {
+                open: true,
+            },
+            controls: {
+                selectionType: "pan"
+            }
+        }
     }
 };

@@ -1,27 +1,48 @@
 import { createRoot } from "react-dom/client";
-import { GenomeSearch, Result } from "./components/Autocomplete";
-import { Box } from "@mui/material";
+import { Stack } from "@mui/material";
+import { MiniMapProps, ScatterPlot } from "./components/ScatterPlot";
+
+type Point = {
+  x: number;
+  y: number;
+  color: string;
+  shape: "circle" | "triangle";
+};
+
+// Example data for the scatter plot
+const scatterData: Point[] = [
+  { x: 1, y: 2, color: 'red', shape: "circle" },
+  { x: 3, y: 4, color: 'blue', shape: "circle" },
+  { x: 5, y: 6, color: 'green', shape: "circle" },
+];
+
+// Mock for the map prop
+const miniMap: MiniMapProps = {
+  position: { right: 50, bottom: 50 }
+};
 
 function App() {
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      sx={{
-        width: "100vw",
-        marginTop: "100px",
-      }}
-    >
-      <GenomeSearch
-        assembly="GRCh38"
-        onSearchSubmit={(r: Result) => console.log(r)}
-        queries={["Gene", "SNP", "iCRE", "cCRE", "Coordinate"]}
-        style={{ width: "400px" }}
-        defaultResults={[]}
-        geneLimit={5}
+    <Stack height={"57vh"} width={"70vw"} padding={1} sx={{ border: '2px solid', borderColor: 'grey.400', borderRadius: '8px' }}>
+      <ScatterPlot
+        pointData={scatterData}
+        loading={false}
+        leftAxisLabel="sdgc"
+        bottomAxisLabel="s.khdcvsvb"
+        miniMap={miniMap}
+        disableTooltip
+        initialState={
+          {
+            minimap: {
+              open: true,
+            },
+            controls: {
+              selectionType: "pan"
+            }
+          }
+        }
       />
-    </Box>
+    </Stack>
   );
 }
 

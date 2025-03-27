@@ -1,4 +1,3 @@
-import { MutableRefObject } from "react";
 import { ScaleLinear } from '@visx/vendor/d3-scale';
 import { ProvidedZoom } from "@visx/zoom/lib/types";
 
@@ -21,23 +20,30 @@ export type Point<T> = {
     If not position or reference is given, it will default to the bottom right corner of the screen if shown
 */
 export type MiniMapProps = {
-    defaultOpen?: boolean;
     position?: { right: number; bottom: number };
-    ref?: MutableRefObject<HTMLDivElement | null>;
 };
+
+export type InitialState<S, Z> = {
+    minimap?: {
+        open?: boolean;
+    };
+    controls?: {
+        selectionType?: S extends true ? "pan" | "select" : Z extends true ? "select" | "none" : "pan";
+    };
+}
 
 /*
     Basic chart properties
 */
-export type ChartProps<T> = {
-    width: number;
-    height: number;
+export type ChartProps<T, S extends boolean | undefined, Z extends boolean | undefined> = {
     pointData: Point<T>[];
     loading: boolean;
-    selectable?: boolean;
-    disableZoom?: boolean;
+    selectable?: S;
+    disableZoom?: Z;
     disableTooltip?: boolean;
     controlsPosition?: "left" | "bottom" | "right";
+    controlsHighlight?: string;
+    onDisplayedPointsChange?: (points: Point<T>[]) => void
     //returns an array of selected points inside a lasso (optional)
     onSelectionChange?: (selectedPoints: Point<T>[]) => void;
     //returns a point when clicked on (optional)
@@ -46,8 +52,9 @@ export type ChartProps<T> = {
     //custom tooltip formating (optional)
     tooltipBody?: (point: Point<T>) => JSX.Element;
     miniMap?: MiniMapProps;
-    leftAxisLable: string;
-    bottomAxisLabel: string;
+    leftAxisLabel?: string;
+    bottomAxisLabel?: string;
+    initialState?: InitialState<S, Z>;
 };
 
 export type Line = { x: number; y: number }[];
@@ -71,12 +78,13 @@ export type TooltipProps<T> = {
 export type ControlButtonsProps = {
     selectable: boolean;
     resetable: boolean;
-    handleSelectionModeChange: (mode: "select" | "pan") => void;
-    selectMode: "select" | "pan";
+    handleSelectionModeChange: (mode: "select" | "pan" | "none") => void;
+    selectMode: "select" | "pan" | "none";
     zoomIn: () => void;
     zoomOut: () => void;
     zoomReset: () => void;
     position?: "left" | "bottom" | "right";
+    highlight?: string;
 }
 
 interface TransformMatrix {
