@@ -363,7 +363,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                             context.closePath();
                         }
 
-                        context.fillStyle = point.color;
+                        context.fillStyle = point.color ? point.color : "black";
                         context.globalAlpha = point.opacity !== undefined ? point.opacity : 1;
                         context.fill();
 
@@ -492,7 +492,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                 </Stack>
                             )}
                             {/* Zoomable Group for Points */}
-                            <Stack justifyContent="center" alignItems="center" direction="row" sx={{ position: "relative", }}>
+                            <Stack justifyContent="center" alignItems="center" direction="row" sx={{ position: "relative"}}>
                                 <Box sx={{ width: size, height: size }} >
                                     <div style={{ position: 'relative' }}>
                                         <canvas
@@ -518,7 +518,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                             height={size}
                                             style={{
                                                 position: "absolute",
-                                                userSelect: 'none'
+                                                userSelect: 'none',
                                             }}
                                             onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave}
                                         >
