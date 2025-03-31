@@ -17,7 +17,11 @@ import {
 } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import { GenomeSearchProps, Result } from "./types";
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 
 /**
  * An autocomplete search component for genomic landmarks such as genes, SNPs, ICRs, and CCRs.
@@ -157,23 +161,26 @@ const Search: React.FC<GenomeSearchProps> = ({
   }, [isLoading, icreData, ccreData, geneData, snpData]);
 
   // Handle submit
-  const onSubmit = useCallback(() => {
-    let sel = selection;
-    if (results?.length === 1) {
-      sel = results[0];
-    }
-    if (!sel.title) return;
+  const onSubmit = (sel: Result) => {
     onSearchSubmit && onSearchSubmit(sel);
-  }, [onSearchSubmit, selection, results]);
+  };
 
   // Handle enter key down
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
       if (event.key === "Enter") {
-        onSubmit();
+        let sel = selection;
+        if (results?.length === 1) {
+          sel = results[0];
+        }
+        if (results?.some((r) => r.title?.toLowerCase() === inputValue.toLowerCase())) {
+          sel = results.find((r) => r.title?.toLowerCase() === inputValue.toLowerCase()) || ({} as Result);
+        }
+        if (!sel.title) return;
+        onSubmit(sel);
       }
     },
-    [onSubmit]
+    [onSubmit, results, selection]
   );
 
   const onChange = (_event: React.SyntheticEvent, newValue: Result | null) => {
@@ -184,10 +191,10 @@ const Search: React.FC<GenomeSearchProps> = ({
   return (
     <Box
       display="flex"
-      flexDirection="row" 
+      flexDirection="row"
       gap={2}
       style={{ ...style }}
-      sx={{ ...sx}}
+      sx={{ ...sx }}
       {...slotProps?.box}
     >
       <Autocomplete
@@ -233,12 +240,18 @@ const Search: React.FC<GenomeSearchProps> = ({
       {/* Submit Button */}
       {slots && slots.button ? (
         React.cloneElement(slots.button as React.ReactElement, {
-          onClick: () => onSubmit(),
+          onClick: (e: React.MouseEvent) => {
+            (slots.button as React.ReactElement).props.onClick?.(e);
+            onSubmit(selection);
+          },
         })
       ) : (
         <Button
           variant="contained"
-          onClick={() => onSubmit()}
+          onClick={(e: React.MouseEvent) => {
+            (slotProps?.button as React.ReactElement)?.props.onClick?.(e);
+            onSubmit(selection);
+          }}
           {...slotProps?.button}
         >
           {slotProps?.button?.children || "Go"}
@@ -256,31 +269,32 @@ const Search: React.FC<GenomeSearchProps> = ({
  */
 function renderGroup(params: any, inputValue: string) {
   // Sort items within each group by title match relevance
-  const sortedOptions = Array.isArray(params.children) && !isDomain(inputValue)
-    ? params.children.sort((a: any, b: any) => {
-        const aTitle = (
-          a.props?.children?.props?.children?.[0]?.props?.children || ""
-        ).toLowerCase();
-        const bTitle = (
-          b.props?.children?.props?.children?.[0]?.props?.children || ""
-        ).toLowerCase();
-        const query = inputValue.toLowerCase();
-        // Exact matches first
-        if (aTitle === query && bTitle !== query) return -1;
-        if (bTitle === query && aTitle !== query) return 1;
+  const sortedOptions =
+    Array.isArray(params.children) && !isDomain(inputValue)
+      ? params.children.sort((a: any, b: any) => {
+          const aTitle = (
+            a.props?.children?.props?.children?.[0]?.props?.children || ""
+          ).toLowerCase();
+          const bTitle = (
+            b.props?.children?.props?.children?.[0]?.props?.children || ""
+          ).toLowerCase();
+          const query = inputValue.toLowerCase();
+          // Exact matches first
+          if (aTitle === query && bTitle !== query) return -1;
+          if (bTitle === query && aTitle !== query) return 1;
 
-        // Starts with query second
-        if (aTitle.startsWith(query) && !bTitle.startsWith(query)) return -1;
-        if (bTitle.startsWith(query) && !aTitle.startsWith(query)) return 1;
+          // Starts with query second
+          if (aTitle.startsWith(query) && !bTitle.startsWith(query)) return -1;
+          if (bTitle.startsWith(query) && !aTitle.startsWith(query)) return 1;
 
-        // Contains query third
-        if (aTitle.includes(query) && !bTitle.includes(query)) return -1;
-        if (bTitle.includes(query) && !aTitle.includes(query)) return 1;
+          // Contains query third
+          if (aTitle.includes(query) && !bTitle.includes(query)) return -1;
+          if (bTitle.includes(query) && !aTitle.includes(query)) return 1;
 
-        // Alphabetical order for equal relevance
-        return aTitle.localeCompare(bTitle);
-      })
-    : params.children;
+          // Alphabetical order for equal relevance
+          return aTitle.localeCompare(bTitle);
+        })
+      : params.children;
 
   return (
     <div key={params.key}>
