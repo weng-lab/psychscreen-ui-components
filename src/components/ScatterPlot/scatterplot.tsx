@@ -57,7 +57,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     const size = Math.min(parentHeight, parentWidth)
 
     const graphRef = useRef<SVGRectElement | null>(null);
-    
+
     const [tooltipData, setTooltipData] = React.useState<Point<T> | null>(null);
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const [lines, setLines] = useState<Lines>([]);
@@ -363,7 +363,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                             context.closePath();
                         }
 
-                        context.fillStyle = point.color;
+                        context.fillStyle = point.color ? point.color : "black";
                         context.globalAlpha = point.opacity !== undefined ? point.opacity : 1;
                         context.fill();
 
@@ -434,12 +434,8 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
         </Text>
     );
 
-    if (props.loading || !props.pointData) {
-        return <CircularProgress />;
-    }
-
     return (
-        <div ref={parentRef} style={{width: "100%", height: "100%", position: "relative"}}>
+        <div ref={parentRef} style={{ width: "100%", height: "100%", position: "relative" }}>
             <Zoom width={boundedWidth} height={boundedHeight} scaleXMin={1 / 2} scaleXMax={10} scaleYMin={1 / 2} scaleYMax={10} initialTransformMatrix={initialTransformMatrix}>
                 {(zoom) => {
                     // rescale as we zoom and pan
@@ -492,152 +488,158 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                 </Stack>
                             )}
                             {/* Zoomable Group for Points */}
-                            <Stack justifyContent="center" alignItems="center" direction="row" sx={{ position: "relative", }}>
+                            <Stack justifyContent="center" alignItems="center" direction="row" sx={{ position: "relative" }}>
                                 <Box sx={{ width: size, height: size }} >
-                                    <div style={{ position: 'relative' }}>
-                                        <canvas
-                                            ref={(canvas) => {
-                                                if (canvas) {
-                                                    drawPoints(xScaleTransformed, yScaleTransformed, canvas);
-                                                }
-                                            }}
-                                            width={boundedWidth * 2 }
-                                            height={boundedHeight * 2}
-                                            style={{
-                                                userSelect: 'none',
-                                                position: "absolute",
-                                                top: margin.top,
-                                                left: margin.left,
-                                                width: boundedWidth,
-                                                height: boundedHeight,
-                                                backgroundColor: "transparent"
-                                            }}
-                                        />
-                                        <svg
-                                            width={size}
-                                            height={size}
-                                            style={{
-                                                position: "absolute",
-                                                userSelect: 'none'
-                                            }}
-                                            onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave}
-                                        >
-                                            <Group top={margin.top} left={margin.left}>
-                                                {selectMode === "select" && (
-                                                    <>
-                                                        {/* Render lasso */}
-                                                        {lines.map((line, i) => (
-                                                            <LinePath
-                                                                key={`line-${i}`}
-                                                                fill="transparent"
-                                                                stroke="black"
-                                                                strokeWidth={3}
-                                                                data={line}
-                                                                curve={curveBasis}
-                                                                x={(d) => d.x}
-                                                                y={(d) => d.y}
-                                                            />
-                                                        ))}
-
-                                                        {isDragging && (
-                                                            <g>
-                                                                {/* Crosshair styling */}
-                                                                <line
-                                                                    x1={x - margin.left + dx - 6}
-                                                                    y1={y - margin.top + dy}
-                                                                    x2={x - margin.left + dx + 6}
-                                                                    y2={y - margin.top + dy}
+                                    {props.loading ? (
+                                        <Box display="flex" width={"100%"} height={"100%"} sx={{ justifyContent: "center", alignItems: "center" }}>
+                                            <CircularProgress />
+                                        </Box>
+                                    ) : (
+                                        <div style={{ position: 'relative' }}>
+                                            <canvas
+                                                ref={(canvas) => {
+                                                    if (canvas) {
+                                                        drawPoints(xScaleTransformed, yScaleTransformed, canvas);
+                                                    }
+                                                }}
+                                                width={boundedWidth * 2}
+                                                height={boundedHeight * 2}
+                                                style={{
+                                                    userSelect: 'none',
+                                                    position: "absolute",
+                                                    top: margin.top,
+                                                    left: margin.left,
+                                                    width: boundedWidth,
+                                                    height: boundedHeight,
+                                                    backgroundColor: "transparent"
+                                                }}
+                                            />
+                                            <svg
+                                                width={size}
+                                                height={size}
+                                                style={{
+                                                    position: "absolute",
+                                                    userSelect: 'none',
+                                                }}
+                                                onMouseMove={(e) => handleMouseMove(e, zoom)} onMouseLeave={handleMouseLeave}
+                                            >
+                                                <Group top={margin.top} left={margin.left}>
+                                                    {selectMode === "select" && (
+                                                        <>
+                                                            {/* Render lasso */}
+                                                            {lines.map((line, i) => (
+                                                                <LinePath
+                                                                    key={`line-${i}`}
+                                                                    fill="transparent"
                                                                     stroke="black"
-                                                                    strokeWidth={1}
+                                                                    strokeWidth={3}
+                                                                    data={line}
+                                                                    curve={curveBasis}
+                                                                    x={(d) => d.x}
+                                                                    y={(d) => d.y}
                                                                 />
-                                                                <line
-                                                                    x1={x - margin.left + dx}
-                                                                    y1={y - margin.top + dy - 6}
-                                                                    x2={x - margin.left + dx}
-                                                                    y2={y - margin.top + dy + 6}
-                                                                    stroke="black"
-                                                                    strokeWidth={1}
-                                                                />
-                                                                <circle cx={x - margin.left} cy={y - margin.top} r={4} fill="transparent" stroke="black" pointerEvents="none" />
-                                                            </g>
-                                                        )}
-                                                    </>
-                                                )}
+                                                            ))}
 
-                                                {/* Interactable surface */}
-                                                <rect
-                                                    ref={graphRef}
-                                                    fill="transparent"
-                                                    width={boundedWidth}
-                                                    height={boundedHeight}
-                                                    style={{
-                                                        cursor: props.disableZoom
-                                                            ? props.selectable
-                                                                ? isDragging ? 'none' : 'crosshair'
-                                                                : isDragging ? 'none' : 'default'
-                                                            : hoveredPoint
-                                                            ? 'default'
-                                                            : selectMode === 'select'
-                                                            ? isDragging ? 'none' : 'crosshair'
-                                                            : zoom.isDragging
-                                                            ? 'grabbing'
-                                                            : 'grab',
-                                                    }}
-                                                    onMouseDown={selectMode === "none" ? undefined : selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
-                                                    onMouseUp={selectMode === "none" ? undefined : selectMode === "select" ? (event) => {
-                                                        dragEnd(event);
-                                                        onDragEnd(zoom);
-                                                    } : props.disableZoom ? undefined : zoom.dragEnd}
-                                                    onMouseMove={selectMode === "none" ? undefined : selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
-                                                    onMouseLeave={selectMode === "none" ? undefined : selectMode === "select" ? (event) => {
-                                                        dragEnd(event);
-                                                        onDragEnd(zoom);
-                                                    } : props.disableZoom ? undefined : zoom.dragEnd}
-                                                    onTouchStart={selectMode === "none" ? undefined : selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
-                                                    onTouchEnd={selectMode === "none" ? undefined : selectMode === "select" ? (event) => {
-                                                        dragEnd(event);
-                                                        onDragEnd(zoom);
-                                                    } : props.disableZoom ? undefined : zoom.dragEnd}
-                                                    onTouchMove={selectMode === "none" ? undefined : selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
-                                                    onWheel={(event) => {
-                                                        if (!props.disableZoom) {
-                                                            const point = localPoint(event) || { x: 0, y: 0 };
-                                                            const zoomDirection = event.deltaY < 0 ? 1.1 : 0.9;
-                                                            zoom.scale({ scaleX: zoomDirection, scaleY: zoomDirection, point });
-                                                        }
-                                                    }}
-                                                    onClick={handleClick}
-                                                />
-                                            </Group>
+                                                            {isDragging && (
+                                                                <g>
+                                                                    {/* Crosshair styling */}
+                                                                    <line
+                                                                        x1={x - margin.left + dx - 6}
+                                                                        y1={y - margin.top + dy}
+                                                                        x2={x - margin.left + dx + 6}
+                                                                        y2={y - margin.top + dy}
+                                                                        stroke="black"
+                                                                        strokeWidth={1}
+                                                                    />
+                                                                    <line
+                                                                        x1={x - margin.left + dx}
+                                                                        y1={y - margin.top + dy - 6}
+                                                                        x2={x - margin.left + dx}
+                                                                        y2={y - margin.top + dy + 6}
+                                                                        stroke="black"
+                                                                        strokeWidth={1}
+                                                                    />
+                                                                    <circle cx={x - margin.left} cy={y - margin.top} r={4} fill="transparent" stroke="black" pointerEvents="none" />
+                                                                </g>
+                                                            )}
+                                                        </>
+                                                    )}
 
-                                            {/* Static Axes Group */}
-                                            <Group top={margin.top} left={margin.left}>
-                                                <AxisLeft
-                                                    numTicks={4}
-                                                    scale={yScaleTransformed}
-                                                    tickLabelProps={() => ({
-                                                        fill: '#1c1917',
-                                                        fontSize: 10,
-                                                        textAnchor: 'end',
-                                                        verticalAnchor: 'middle',
-                                                        x: -10,
-                                                    })}
-                                                />
-                                                <AxisBottom
-                                                    numTicks={4}
-                                                    top={boundedHeight}
-                                                    scale={xScaleTransformed}
-                                                    tickLabelProps={() => ({
-                                                        fill: '#1c1917',
-                                                        fontSize: 11,
-                                                        textAnchor: 'middle',
-                                                    })}
-                                                />
-                                                {axisLeftLabel}
-                                                {axisBottomLabel}
-                                            </Group>
-                                        </svg >
-                                    </div>
+                                                    {/* Interactable surface */}
+                                                    <rect
+                                                        ref={graphRef}
+                                                        fill="transparent"
+                                                        width={boundedWidth}
+                                                        height={boundedHeight}
+                                                        style={{
+                                                            cursor: props.disableZoom
+                                                                ? props.selectable
+                                                                    ? isDragging ? 'none' : 'crosshair'
+                                                                    : isDragging ? 'none' : 'default'
+                                                                : hoveredPoint
+                                                                    ? 'default'
+                                                                    : selectMode === 'select'
+                                                                        ? isDragging ? 'none' : 'crosshair'
+                                                                        : zoom.isDragging
+                                                                            ? 'grabbing'
+                                                                            : 'grab',
+                                                        }}
+                                                        onMouseDown={selectMode === "none" ? undefined : selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
+                                                        onMouseUp={selectMode === "none" ? undefined : selectMode === "select" ? (event) => {
+                                                            dragEnd(event);
+                                                            onDragEnd(zoom);
+                                                        } : props.disableZoom ? undefined : zoom.dragEnd}
+                                                        onMouseMove={selectMode === "none" ? undefined : selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
+                                                        onMouseLeave={selectMode === "none" ? undefined : selectMode === "select" ? (event) => {
+                                                            dragEnd(event);
+                                                            onDragEnd(zoom);
+                                                        } : props.disableZoom ? undefined : zoom.dragEnd}
+                                                        onTouchStart={selectMode === "none" ? undefined : selectMode === "select" ? dragStart : props.disableZoom ? undefined : zoom.dragStart}
+                                                        onTouchEnd={selectMode === "none" ? undefined : selectMode === "select" ? (event) => {
+                                                            dragEnd(event);
+                                                            onDragEnd(zoom);
+                                                        } : props.disableZoom ? undefined : zoom.dragEnd}
+                                                        onTouchMove={selectMode === "none" ? undefined : selectMode === "select" ? (isDragging ? dragMove : undefined) : props.disableZoom ? undefined : zoom.dragMove}
+                                                        onWheel={(event) => {
+                                                            if (!props.disableZoom) {
+                                                                const point = localPoint(event) || { x: 0, y: 0 };
+                                                                const zoomDirection = event.deltaY < 0 ? 1.1 : 0.9;
+                                                                zoom.scale({ scaleX: zoomDirection, scaleY: zoomDirection, point });
+                                                            }
+                                                        }}
+                                                        onClick={handleClick}
+                                                    />
+                                                </Group>
+
+                                                {/* Static Axes Group */}
+                                                <Group top={margin.top} left={margin.left}>
+                                                    <AxisLeft
+                                                        numTicks={4}
+                                                        scale={yScaleTransformed}
+                                                        tickLabelProps={() => ({
+                                                            fill: '#1c1917',
+                                                            fontSize: 10,
+                                                            textAnchor: 'end',
+                                                            verticalAnchor: 'middle',
+                                                            x: -10,
+                                                        })}
+                                                    />
+                                                    <AxisBottom
+                                                        numTicks={4}
+                                                        top={boundedHeight}
+                                                        scale={xScaleTransformed}
+                                                        tickLabelProps={() => ({
+                                                            fill: '#1c1917',
+                                                            fontSize: 11,
+                                                            textAnchor: 'middle',
+                                                        })}
+                                                    />
+                                                    {axisLeftLabel}
+                                                    {axisBottomLabel}
+                                                </Group>
+                                            </svg >
+                                        </div>
+                                    )}
                                 </Box>
                             </Stack>
                             {
@@ -650,7 +652,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                 )
                             }
                             {
-                                showMiniMap && props.miniMap && !props.disableZoom && (
+                                showMiniMap && props.miniMap && !props.disableZoom && !props.loading && (
                                     <MiniMap
                                         miniMap={props.miniMap}
                                         width={size}

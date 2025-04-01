@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { Stack } from "@mui/material";
 import { MiniMapProps, ScatterPlot } from "./components/ScatterPlot";
+import { useEffect, useState } from "react";
 
 type Point = {
   x: number;
@@ -22,11 +23,21 @@ const miniMap: MiniMapProps = {
 };
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+useEffect(() => {
+    const fakeLoading = setTimeout(() => {
+        setIsLoading(false);
+    }, 2000); // Adjust delay as needed
+
+    return () => clearTimeout(fakeLoading); // Cleanup on unmount
+}, []);
+
   return (
     <Stack height={"57vh"} width={"70vw"} padding={1} sx={{ border: '2px solid', borderColor: 'grey.400', borderRadius: '8px' }}>
       <ScatterPlot
         pointData={scatterData}
-        loading={false}
+        loading={isLoading}
         leftAxisLabel="sdgc"
         bottomAxisLabel="s.khdcvsvb"
         miniMap={miniMap}
