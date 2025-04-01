@@ -434,13 +434,12 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
         </Text>
     );
 
-    if (props.loading || !props.pointData) {
-        return <CircularProgress />;
-    }
-
     return (
         <div ref={parentRef} style={{width: "100%", height: "100%", position: "relative"}}>
-            <Zoom width={boundedWidth} height={boundedHeight} scaleXMin={1 / 2} scaleXMax={10} scaleYMin={1 / 2} scaleYMax={10} initialTransformMatrix={initialTransformMatrix}>
+            {props.loading ? (
+                <CircularProgress />
+            ) : (
+                <Zoom width={boundedWidth} height={boundedHeight} scaleXMin={1 / 2} scaleXMax={10} scaleYMin={1 / 2} scaleYMax={10} initialTransformMatrix={initialTransformMatrix}>
                 {(zoom) => {
                     // rescale as we zoom and pan
                     const xScaleTransformed = rescaleX(xScale, zoom.transformMatrix.translateX, zoom.transformMatrix.scaleX);
@@ -680,6 +679,8 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                     )
                 }}
             </Zoom >
+            )
+        }
         </div>
     );
 }
