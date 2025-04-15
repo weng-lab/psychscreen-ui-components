@@ -4,6 +4,7 @@ export type GenomeSearchProps = Partial<AutocompleteProps<Result, false, true, f
     onSearchSubmit: (result: Result) => void;
     defaultResults?: Result[];
     showiCREFlag?: boolean;
+    geneVersion?: number;
     queries: ResultType[];
     geneLimit?: number;
     snpLimit?: number;

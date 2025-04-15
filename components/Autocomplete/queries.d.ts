@@ -5,5 +5,5 @@ export declare const ICRE_AUTOCOMPLETE_QUERY = "\n  query iCREQuery($accession_p
 export declare const CCRE_AUTOCOMPLETE_QUERY = "\n  query cCREAutocompleteQuery(\n    $accession_prefix: [String!]\n    $assembly: String!\n    $includeiCREs: Boolean\n    $limit: Int\n  ) {\n    cCREAutocompleteQuery(\n      includeiCREs: $includeiCREs\n      assembly: $assembly\n      limit: $limit\n      accession_prefix: $accession_prefix\n    ) {    \n      accession\n      isiCRE\n      coordinates {\n        chromosome\n        start\n        end\n      }\n    }\n  }\n";
 export declare const getICREs: (value: string, limit: number) => Promise<any>;
 export declare const getCCREs: (value: string, assembly: string, limit: number, showiCREFlag: boolean) => Promise<any>;
-export declare const getGenes: (value: string, assembly: string, limit: number) => Promise<any>;
+export declare const getGenes: (value: string, assembly: string, limit: number, geneVersion: number) => Promise<any>;
 export declare const getSNPs: (value: string, assembly: string, limit: number) => Promise<any>;
