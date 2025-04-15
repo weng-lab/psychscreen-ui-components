@@ -45,9 +45,7 @@ const CustomizedTable: React.FC<CustomizedTableProps> = (props) => {
   };
 
   let rows = props.tabledata;
-  console.log(rows)
-  console.log(rows
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage))
+
   return (
     <>
       <TableContainer>

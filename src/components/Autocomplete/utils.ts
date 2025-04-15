@@ -197,10 +197,6 @@ export function isDomain(input: string) {
   const hasTabs = input.includes("\t");
   const hasHyphens = input.includes("-");
   const hasChromosomeNumber = input.length >= 4 && /^\d$/.test(input[3]);
-  console.log(
-    input,
-    hasTabs || hasHyphens || (input.startsWith("chr") && hasChromosomeNumber)
-  );
   return (
     (hasTabs || hasHyphens) && input.startsWith("chr") && hasChromosomeNumber
   );

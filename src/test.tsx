@@ -4,7 +4,7 @@ import { GenomeSearch, Result, ResultType } from "./components/Autocomplete";
 import { useState } from "react";
 
 function App() {
-  const query: ResultType[] = ["cCRE"]
+  const query: ResultType[] = ["Gene"]
   const [result, setResult] = useState<Result>()
   return (
     <Box display="flex" flexDirection="column" justifyContent="start" alignItems="center" height="100vh" width="100%">
@@ -13,6 +13,7 @@ function App() {
         assembly="GRCh38"
         queries={query}
         showiCREFlag
+        geneVersion={29}
         onSearchSubmit={(result) => {
           setResult(result)
         }}

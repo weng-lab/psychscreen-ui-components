@@ -147,8 +147,10 @@ export const getCCREs = async (
 export const getGenes = async (
   value: string,
   assembly: string,
-  limit: number
+  limit: number,
+  geneVersion: number
 ) => {
+  console.log(geneVersion)
   const response = await fetch("https://screen.api.wenglab.org/graphql", {
     method: "POST",
     body: JSON.stringify({
@@ -156,7 +158,7 @@ export const getGenes = async (
       variables: {
         assembly: assembly.toLowerCase(),
         name_prefix: value,
-        version: assembly.toLowerCase() === "grch38" ? 29 : 25,
+        version: geneVersion,
         limit: limit,
       },
     }),

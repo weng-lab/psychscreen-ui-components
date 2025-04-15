@@ -48,7 +48,6 @@ const Legend: React.FC<LegendProps> = ({
   const uniqueCategories = order
     ? order
     : Array.from(new Set(simpleCategories)); // simple names
-  console.log(toggles);
 
   // loop on uniqueCat if there is order, else loop on uniqueCategories
   return (

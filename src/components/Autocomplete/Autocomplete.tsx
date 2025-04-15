@@ -36,6 +36,7 @@ const Search: React.FC<GenomeSearchProps> = ({
   queries,
   assembly,
   showiCREFlag,
+  geneVersion,
   geneLimit,
   snpLimit,
   icreLimit,
@@ -81,14 +82,13 @@ const Search: React.FC<GenomeSearchProps> = ({
     queryFn: () => getCCREs(inputValue, assembly, ccreLimit || 3, showiCREFlag || false),
     enabled: false,
   });
-
   const {
     data: geneData,
     refetch: refetchGenes,
     isFetching: geneFetching,
   } = useQuery({
     queryKey: ["genes", inputValue],
-    queryFn: () => getGenes(inputValue, assembly, geneLimit || 3),
+    queryFn: () => getGenes(inputValue, assembly, geneLimit || 3, geneVersion || assembly === "GRCh38" ? 29 : 25),
     enabled: false,
   });
 
@@ -143,7 +143,6 @@ const Search: React.FC<GenomeSearchProps> = ({
       );
     }
     if (ccreData && searchCCRE && inputValue.toLowerCase().startsWith("eh")) {
-      console.log(ccreData.data.cCREAutocompleteQuery)
       resultsList.push(
         ...ccreResultList(ccreData.data.cCREAutocompleteQuery, ccreLimit || 3)
       );
