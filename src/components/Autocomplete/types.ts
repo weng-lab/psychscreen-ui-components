@@ -5,7 +5,7 @@ export type GenomeSearchProps = Partial<AutocompleteProps<Result, false, true, f
     assembly: "GRCh38" | "mm10";
     onSearchSubmit: (result: Result) => void;
     defaultResults?: Result[];
-
+    showiCREFlag?: boolean;
     // queries
     queries: ResultType[];
     geneLimit?: number;
@@ -81,4 +81,5 @@ export interface CCREResponse {
     accession: string;
     coordinates: Domain
     celltypes: string[]
+    isiCRE: boolean
 }

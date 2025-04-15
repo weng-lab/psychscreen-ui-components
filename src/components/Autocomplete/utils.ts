@@ -131,7 +131,7 @@ export function ccreResultList(
   return formatResults(results, limit, {
     getTitle: (result) => result.accession,
     getDescription: (result) =>
-      `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
+      `${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}${result.isiCRE ? ", iCRE" : ""}`,
     type: "cCRE",
   });
 }

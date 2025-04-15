@@ -17,7 +17,11 @@ import {
 } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import { GenomeSearchProps, Result } from "./types";
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 
 /**
  * An autocomplete search component for genomic landmarks such as genes, SNPs, ICRs, and CCRs.
@@ -31,6 +35,7 @@ import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-quer
 const Search: React.FC<GenomeSearchProps> = ({
   queries,
   assembly,
+  showiCREFlag,
   geneLimit,
   snpLimit,
   icreLimit,
@@ -43,13 +48,6 @@ const Search: React.FC<GenomeSearchProps> = ({
   slotProps,
   ...autocompleteProps
 }) => {
-  // Boolean flags for each query
-  const searchGene = queries.includes("Gene");
-  const searchSnp = queries.includes("SNP");
-  const searchICRE = queries.includes("iCRE");
-  const searchCCRE = queries.includes("cCRE");
-  const searchCoordinate = queries.includes("Coordinate");
-
   // State variables
   const [inputValue, setInputValue] = useState("");
   const [selection, setSelection] = useState<Result>({} as Result);
@@ -57,6 +55,12 @@ const Search: React.FC<GenomeSearchProps> = ({
     defaultResults || null
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  const searchGene = queries.includes("Gene");
+  const searchSnp = queries.includes("SNP");
+  const searchICRE = queries.includes("iCRE");
+  const searchCCRE = queries.includes("cCRE");
+  const searchCoordinate = queries.includes("Coordinate");
 
   const {
     data: icreData,
@@ -74,7 +78,7 @@ const Search: React.FC<GenomeSearchProps> = ({
     isFetching: ccreFetching,
   } = useQuery({
     queryKey: ["ccres", inputValue],
-    queryFn: () => getCCREs(inputValue, assembly, ccreLimit || 3),
+    queryFn: () => getCCREs(inputValue, assembly, ccreLimit || 3, showiCREFlag || false),
     enabled: false,
   });
 
@@ -130,31 +134,44 @@ const Search: React.FC<GenomeSearchProps> = ({
   useEffect(() => {
     if (isLoading) return;
     const resultsList = [];
-    if (geneData) {
+    if (geneData && searchGene) {
       resultsList.push(...geneResultList(geneData.data.gene, geneLimit || 3));
     }
-    if (icreData && inputValue.toLowerCase().startsWith("eh")) {
+    if (icreData && searchICRE && inputValue.toLowerCase().startsWith("eh")) {
       resultsList.push(
         ...icreResultList(icreData.data.iCREQuery, icreLimit || 3)
       );
     }
-    if (ccreData && inputValue.toLowerCase().startsWith("eh")) {
+    if (ccreData && searchCCRE && inputValue.toLowerCase().startsWith("eh")) {
+      console.log(ccreData.data.cCREAutocompleteQuery)
       resultsList.push(
-        ...ccreResultList(ccreData.data.cCREQuery, ccreLimit || 3)
+        ...ccreResultList(ccreData.data.cCREAutocompleteQuery, ccreLimit || 3)
       );
     }
-    if (snpData && inputValue.toLowerCase().startsWith("rs")) {
+    if (snpData && searchSnp && inputValue.toLowerCase().startsWith("rs")) {
       resultsList.push(
         ...snpResultList(snpData.data.snpAutocompleteQuery, snpLimit || 3)
       );
     }
-    if (searchCoordinate && isDomain(inputValue)) {
+    if (isDomain(inputValue) && searchCoordinate) {
       resultsList.push(...getCoordinates(inputValue, assembly));
     }
 
     if (resultsList.length === 0) setResults(null);
     else setResults(resultsList);
-  }, [isLoading, icreData, ccreData, geneData, snpData]);
+  }, [
+    isLoading,
+    icreData,
+    ccreData,
+    geneData,
+    snpData,
+    searchGene,
+    searchICRE,
+    searchCCRE,
+    searchSnp,
+    searchCoordinate,
+    inputValue,
+  ]);
 
   // Handle submit
   const onSubmit = useCallback(() => {
@@ -184,10 +201,10 @@ const Search: React.FC<GenomeSearchProps> = ({
   return (
     <Box
       display="flex"
-      flexDirection="row" 
+      flexDirection="row"
       gap={2}
       style={{ ...style }}
-      sx={{ ...sx}}
+      sx={{ ...sx }}
       {...slotProps?.box}
     >
       <Autocomplete
@@ -256,31 +273,32 @@ const Search: React.FC<GenomeSearchProps> = ({
  */
 function renderGroup(params: any, inputValue: string) {
   // Sort items within each group by title match relevance
-  const sortedOptions = Array.isArray(params.children) && !isDomain(inputValue)
-    ? params.children.sort((a: any, b: any) => {
-        const aTitle = (
-          a.props?.children?.props?.children?.[0]?.props?.children || ""
-        ).toLowerCase();
-        const bTitle = (
-          b.props?.children?.props?.children?.[0]?.props?.children || ""
-        ).toLowerCase();
-        const query = inputValue.toLowerCase();
-        // Exact matches first
-        if (aTitle === query && bTitle !== query) return -1;
-        if (bTitle === query && aTitle !== query) return 1;
+  const sortedOptions =
+    Array.isArray(params.children) && !isDomain(inputValue)
+      ? params.children.sort((a: any, b: any) => {
+          const aTitle = (
+            a.props?.children?.props?.children?.[0]?.props?.children || ""
+          ).toLowerCase();
+          const bTitle = (
+            b.props?.children?.props?.children?.[0]?.props?.children || ""
+          ).toLowerCase();
+          const query = inputValue.toLowerCase();
+          // Exact matches first
+          if (aTitle === query && bTitle !== query) return -1;
+          if (bTitle === query && aTitle !== query) return 1;
 
-        // Starts with query second
-        if (aTitle.startsWith(query) && !bTitle.startsWith(query)) return -1;
-        if (bTitle.startsWith(query) && !aTitle.startsWith(query)) return 1;
+          // Starts with query second
+          if (aTitle.startsWith(query) && !bTitle.startsWith(query)) return -1;
+          if (bTitle.startsWith(query) && !aTitle.startsWith(query)) return 1;
 
-        // Contains query third
-        if (aTitle.includes(query) && !bTitle.includes(query)) return -1;
-        if (bTitle.includes(query) && !aTitle.includes(query)) return 1;
+          // Contains query third
+          if (aTitle.includes(query) && !bTitle.includes(query)) return -1;
+          if (bTitle.includes(query) && !aTitle.includes(query)) return 1;
 
-        // Alphabetical order for equal relevance
-        return aTitle.localeCompare(bTitle);
-      })
-    : params.children;
+          // Alphabetical order for equal relevance
+          return aTitle.localeCompare(bTitle);
+        })
+      : params.children;
 
   return (
     <div key={params.key}>
