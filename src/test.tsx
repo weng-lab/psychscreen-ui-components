@@ -1,27 +1,31 @@
 import { createRoot } from "react-dom/client";
 import { Box, Typography } from "@mui/material";
-import { GenomeSearch, ResultType } from "./components/Autocomplete";
-import { useEffect, useState } from "react";
+import { GenomeSearch, Result, ResultType } from "./components/Autocomplete";
+import { useState } from "react";
 
 function App() {
-  const [query, setQuery] = useState<ResultType[]>(["Gene"]);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setQuery(["SNP"]);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
+  const query: ResultType[] = ["cCRE"]
+  const [result, setResult] = useState<Result>()
   return (
-    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="50vh" width="100%">
-      <Typography variant="h1">{query.join(", ")}</Typography>
+    <Box display="flex" flexDirection="column" justifyContent="start" alignItems="center" height="100vh" width="100%">
+      <Typography variant="h2">{query.join(", ")}</Typography>
       <GenomeSearch
         assembly="GRCh38"
         queries={query}
+        showiCREFlag
         onSearchSubmit={(result) => {
-          console.log(result);
+          setResult(result)
         }}
         sx={{ width: "400px" }}
       />
+      {result && (
+        <>
+          <Typography variant="h3">{result.type}</Typography>
+          <Typography variant="h3">{result?.title}</Typography>
+          <Typography variant="h4">{result?.description}</Typography>
+          <Typography variant="h5">{result?.domain.chromosome}:{result?.domain.start}-{result?.domain.end}</Typography>
+        </>
+      )}
     </Box>
   );
 }

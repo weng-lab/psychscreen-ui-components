@@ -35,6 +35,7 @@ import {
 const Search: React.FC<GenomeSearchProps> = ({
   queries,
   assembly,
+  showiCREFlag,
   geneLimit,
   snpLimit,
   icreLimit,
@@ -77,7 +78,7 @@ const Search: React.FC<GenomeSearchProps> = ({
     isFetching: ccreFetching,
   } = useQuery({
     queryKey: ["ccres", inputValue],
-    queryFn: () => getCCREs(inputValue, assembly, ccreLimit || 3),
+    queryFn: () => getCCREs(inputValue, assembly, ccreLimit || 3, showiCREFlag || false),
     enabled: false,
   });
 
@@ -142,8 +143,9 @@ const Search: React.FC<GenomeSearchProps> = ({
       );
     }
     if (ccreData && searchCCRE && inputValue.toLowerCase().startsWith("eh")) {
+      console.log(ccreData.data.cCREAutocompleteQuery)
       resultsList.push(
-        ...ccreResultList(ccreData.data.cCREQuery, ccreLimit || 3)
+        ...ccreResultList(ccreData.data.cCREAutocompleteQuery, ccreLimit || 3)
       );
     }
     if (snpData && searchSnp && inputValue.toLowerCase().startsWith("rs")) {
