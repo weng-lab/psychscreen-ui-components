@@ -26,7 +26,7 @@ export type Domain = {
     start: number;
     end: number;
 };
-export type ResultType = 'Gene' | 'SNP' | 'Coordinate' | 'iCRE' | 'cCRE';
+export type ResultType = "Gene" | "SNP" | "Coordinate" | "iCRE" | "cCRE";
 export type Result = {
     title?: string;
     description?: string;
@@ -51,6 +51,7 @@ export interface GeneResponse {
         start: number;
         end: number;
     };
+    description: string;
 }
 export interface ICREResponse {
     accession: string;
