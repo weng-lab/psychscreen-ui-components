@@ -79,7 +79,8 @@ const Search: React.FC<GenomeSearchProps> = ({
     isFetching: ccreFetching,
   } = useQuery({
     queryKey: ["ccres", inputValue],
-    queryFn: () => getCCREs(inputValue, assembly, ccreLimit || 3, showiCREFlag || false),
+    queryFn: () =>
+      getCCREs(inputValue, assembly, ccreLimit || 3, showiCREFlag || false),
     enabled: false,
   });
   const {
@@ -88,7 +89,13 @@ const Search: React.FC<GenomeSearchProps> = ({
     isFetching: geneFetching,
   } = useQuery({
     queryKey: ["genes", inputValue],
-    queryFn: () => getGenes(inputValue, assembly, geneLimit || 3, geneVersion || assembly === "GRCh38" ? 29 : 25),
+    queryFn: () =>
+      getGenes(
+        inputValue,
+        assembly,
+        geneLimit || 3,
+        geneVersion || assembly === "GRCh38" ? 29 : 25
+      ),
     enabled: false,
   });
 

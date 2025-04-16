@@ -138,7 +138,7 @@ export const getCCREs = async (
         accession_prefix: [value],
         assembly: assembly.toLowerCase(),
         limit: limit,
-        includeiCREs: showiCREFlag
+        includeiCREs: showiCREFlag,
       },
     }),
     headers: { "Content-Type": "application/json" },
@@ -166,25 +166,29 @@ export const getGenes = async (
     headers: { "Content-Type": "application/json" },
   });
   const genes = (await response.json()).data.gene;
-  const out = await Promise.all(genes.map(async (gene: GeneResponse) => {
-    const description = await getDescription(gene.name);
-    return {
-      ...gene,
-      description: toTitleCase(description || gene.name),
-    };
-  }));
+  const out = await Promise.all(
+    genes.map(async (gene: GeneResponse) => {
+      const description = await getDescription(gene.name);
+      return {
+        ...gene,
+        description: toTitleCase(description || gene.name),
+      };
+    })
+  );
   return out;
 };
-const toTitleCase = (str: string) => str.split(' ')
-  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-  .join(' ');
-  
+const toTitleCase = (str: string) =>
+  str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
 async function getDescription(name: string): Promise<string | null> {
   const response = await fetch(
     "https://clinicaltables.nlm.nih.gov/api/ncbi_genes/v3/search?authenticity_token=&terms=" +
       name.toUpperCase()
-  )
-  const data = await response.json()
+  );
+  const data = await response.json();
   const matches =
     data[3] && data[3].filter((x: string[]) => x[3] === name.toUpperCase());
   return matches && matches.length >= 1 ? matches[0][4] : null;
