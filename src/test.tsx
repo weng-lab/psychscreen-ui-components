@@ -4,7 +4,6 @@ import { GenomeSearch, Result, ResultType } from "./components/Autocomplete";
 import { useState } from "react";
 
 function App() {
-
   return (
     <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="50vh" width="100%">
       <GenomeSearch
