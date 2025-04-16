@@ -135,7 +135,7 @@ const Search: React.FC<GenomeSearchProps> = ({
     if (isLoading) return;
     const resultsList = [];
     if (geneData && searchGene) {
-      resultsList.push(...geneResultList(geneData.data.gene, geneLimit || 3));
+      resultsList.push(...geneResultList(geneData, geneLimit || 3));
     }
     if (icreData && searchICRE && inputValue.toLowerCase().startsWith("eh")) {
       resultsList.push(

@@ -1,3 +1,5 @@
+import { GeneResponse } from "./types";
+
 export const SNP_AUTOCOMPLETE_QUERY = `
   query suggestions($assembly: String!, $snpid: String!) { 
       snpAutocompleteQuery(assembly: $assembly, snpid: $snpid) {
@@ -150,7 +152,6 @@ export const getGenes = async (
   limit: number,
   geneVersion: number
 ) => {
-  console.log(geneVersion)
   const response = await fetch("https://screen.api.wenglab.org/graphql", {
     method: "POST",
     body: JSON.stringify({
@@ -164,8 +165,30 @@ export const getGenes = async (
     }),
     headers: { "Content-Type": "application/json" },
   });
-  return response.json();
+  const genes = (await response.json()).data.gene;
+  const out = await Promise.all(genes.map(async (gene: GeneResponse) => {
+    const description = await getDescription(gene.name);
+    return {
+      ...gene,
+      description: toTitleCase(description || gene.name),
+    };
+  }));
+  return out;
 };
+const toTitleCase = (str: string) => str.split(' ')
+  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+  
+async function getDescription(name: string): Promise<string | null> {
+  const response = await fetch(
+    "https://clinicaltables.nlm.nih.gov/api/ncbi_genes/v3/search?authenticity_token=&terms=" +
+      name.toUpperCase()
+  )
+  const data = await response.json()
+  const matches =
+    data[3] && data[3].filter((x: string[]) => x[3] === name.toUpperCase());
+  return matches && matches.length >= 1 ? matches[0][4] : null;
+}
 
 export const getSNPs = async (
   value: string,

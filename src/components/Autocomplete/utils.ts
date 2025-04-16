@@ -77,7 +77,6 @@ function formatResults<
   if (!results) {
     return [];
   }
-
   return results.slice(0, limit).map((result) => ({
     title: options.getTitle(result),
     description: options.getDescription(result),
@@ -106,8 +105,9 @@ export function geneResultList(
 ): Result[] {
   return formatResults(results, limit, {
     getTitle: (result) => result.name,
-    getDescription: (result) =>
-      `${result.id}\n${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`,
+    getDescription: (result) => {
+      return `${result.description}\n${result.id}\n${result.coordinates.chromosome}:${result.coordinates.start}-${result.coordinates.end}`;
+    },
     type: "Gene",
   });
 }

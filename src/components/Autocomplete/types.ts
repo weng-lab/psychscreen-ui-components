@@ -67,6 +67,7 @@ export interface GeneResponse {
         start: number;
         end: number;
     }
+    description: string;
 }
 
 // Response from the ICRE GraphQL query
