@@ -74,20 +74,33 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
 
     useEffect(() => {
         const graphElement = graphRef.current;
-
+    
         const handleWheel = (event: WheelEvent) => {
-            // Prevent default scroll behavior when using the wheel in the graph
-            event.preventDefault();
+            event.preventDefault(); //prevent scrolling using wheel
         };
+    
+        const handleTouchMove = (event: TouchEvent) => {
+            event.preventDefault(); // Prevent scrolling during any touch movement
+        };
+    
+        const handleTouchStart = (event: TouchEvent) => {
+            event.preventDefault(); // Prevent scrolling on touch start
+        };
+    
         if (graphElement) {
             graphElement.addEventListener('wheel', handleWheel, { passive: false });
+            graphElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+            graphElement.addEventListener('touchmove', handleTouchMove, { passive: false });
         }
+    
         return () => {
             if (graphElement) {
                 graphElement.removeEventListener('wheel', handleWheel);
+                graphElement.removeEventListener('touchstart', handleTouchStart);
+                graphElement.removeEventListener('touchmove', handleTouchMove);
             }
         };
-    }, [graphRef]);
+    }, [graphRef]);    
 
     const handleSelectionModeChange = (mode: "select" | "pan" | "none") => {
         setSelectMode(mode);
