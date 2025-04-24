@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { MapProps } from "./types";
 
 const MiniMap = <T,>({
@@ -9,6 +10,27 @@ const MiniMap = <T,>({
     yScale,
     zoom
 }: MapProps<T>) => {
+    //keep track of touch points for moving the minimap window
+    const [lastTouch, setLastTouch] = useState<{ x: number; y: number } | null>(null);
+    const windowRef = useRef<SVGRectElement>(null);
+
+    //prevent scrolling when dragging the window
+    useEffect(() => {
+        const ref = windowRef.current;
+        if (!ref) return;
+
+        const handleTouchMove = (e: TouchEvent) => {
+            e.preventDefault();
+            // custom logic...
+        };
+
+        ref.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+        return () => {
+            ref.removeEventListener("touchmove", handleTouchMove);
+        };
+    }, []);
+
     return (
         <div
             style={{
@@ -44,7 +66,7 @@ const MiniMap = <T,>({
                                 const transformedY = yScale(point.y) * scaleFactor;
                                 context.beginPath();
                                 context.arc(transformedX, transformedY, 3 * scaleFactor, 0, Math.PI * 2);
-                                context.fillStyle = point.color;
+                                context.fillStyle = point.color ? point.color : "black";
                                 context.fill();
                             });
                         }
@@ -61,6 +83,7 @@ const MiniMap = <T,>({
             >
                 <g transform={`scale(0.25)`}>
                     <rect
+                        ref={windowRef}
                         width={width - 100}
                         height={height - 100}
                         fill="#0d0f98"
@@ -70,7 +93,10 @@ const MiniMap = <T,>({
                         rx={8}
                         transform={zoom.toStringInvert()}
                         //drag functionality for window, must invert zoom and take the scale into account
-                        style={{ cursor: zoom.isDragging ? "grabbing" : "grab" }}
+                        style={{
+                            cursor: zoom.isDragging ? "grabbing" : "grab",
+                            touchAction: "none"
+                        }}
                         onMouseDown={zoom.dragStart}
                         onMouseUp={zoom.dragEnd}
                         onMouseMove={(event) => {
@@ -86,19 +112,30 @@ const MiniMap = <T,>({
                             }
                         }}
                         onMouseLeave={zoom.dragEnd}
-                        onTouchStart={zoom.dragStart}
-                        onTouchEnd={zoom.dragEnd}
+                        onTouchStart={(event) => {
+                            zoom.dragStart(event);
+                            const touch = event.touches[0];
+                            setLastTouch({ x: touch.clientX, y: touch.clientY });
+                        }}
+                        onTouchEnd={() => {
+                            zoom.dragEnd();
+                            setLastTouch(null);
+                        }}
                         onTouchMove={(event) => {
-                            if (zoom.isDragging && event.touches.length === 1) {
+                            if (zoom.isDragging && event.touches.length === 1 && lastTouch) {
                                 const touch = event.touches[0];
+                                const deltaX = touch.clientX - lastTouch.x;
+                                const deltaY = touch.clientY - lastTouch.y;
+
                                 zoom.setTransformMatrix({
                                     scaleX: zoom.transformMatrix.scaleX,
                                     scaleY: zoom.transformMatrix.scaleY,
-                                    translateX: zoom.transformMatrix.translateX - touch.clientX / .25,
-                                    translateY: zoom.transformMatrix.translateY - touch.clientY / .25,
+                                    translateX: zoom.transformMatrix.translateX - deltaX / 0.25,
+                                    translateY: zoom.transformMatrix.translateY - deltaY / 0.25,
                                     skewX: zoom.transformMatrix.skewX,
                                     skewY: zoom.transformMatrix.skewY
                                 });
+                                setLastTouch({ x: touch.clientX, y: touch.clientY }); // update for next move
                             }
                         }}
                     />
