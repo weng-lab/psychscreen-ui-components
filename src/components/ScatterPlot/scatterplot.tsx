@@ -54,7 +54,9 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     }
 
     const { parentRef, width: parentWidth, height: parentHeight } = useParentSize();
-    const size = Math.min(parentHeight, parentWidth)
+    const size = parentHeight > 0 && parentWidth > 0
+        ? Math.min(parentHeight, parentWidth)
+        : 0;
 
     const graphRef = useRef<SVGRectElement | null>(null);
 
@@ -67,7 +69,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     const [mouseY, setMouseY] = useState(0);
     const selectable = props.selectable ? props.selectable : false;
     const margin = { top: 20, right: 20, bottom: 70, left: 70 };
-    const boundedWidth = Math.min(size * 0.9, size * 0.9) - margin.left;
+    const boundedWidth = Math.min(size * 0.9, size * 0.9) - margin.left > 0 ? Math.min(size * 0.9, size * 0.9) - margin.left : 0;
     const boundedHeight = boundedWidth;
     const hoveredPoint = tooltipData ? props.pointData.find(point => point.x === tooltipData.x && point.y === tooltipData.y) : null;
     const [previousDisplayedPoints, setPreviousDisplayedPoints] = useState<Point<T>[]>([])
@@ -668,8 +670,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                 showMiniMap && props.miniMap && !props.disableZoom && !props.loading && (
                                     <MiniMap
                                         miniMap={props.miniMap}
-                                        width={size}
-                                        height={size}
+                                        size={size}
                                         pointData={props.pointData}
                                         xScale={xScale}
                                         yScale={yScale}

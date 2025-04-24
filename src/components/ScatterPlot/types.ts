@@ -209,8 +209,7 @@ export type Lines = Line[];
 
 export type MapProps<T> = {
     miniMap: MiniMapProps;
-    width: number;
-    height: number;
+    size: number;
     pointData: Point<T>[];
     xScale: ScaleLinear<number, number, never>;
     yScale: ScaleLinear<number, number, never>;

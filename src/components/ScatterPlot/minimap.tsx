@@ -3,8 +3,7 @@ import { MapProps } from "./types";
 
 const MiniMap = <T,>({
     miniMap,
-    width,
-    height,
+    size,
     pointData,
     xScale,
     yScale,
@@ -13,6 +12,7 @@ const MiniMap = <T,>({
     //keep track of touch points for moving the minimap window
     const [lastTouch, setLastTouch] = useState<{ x: number; y: number } | null>(null);
     const windowRef = useRef<SVGRectElement>(null);
+    const boundedSize = size > 100 ? size : 100
 
     //prevent scrolling when dragging the window
     useEffect(() => {
@@ -21,7 +21,6 @@ const MiniMap = <T,>({
 
         const handleTouchMove = (e: TouchEvent) => {
             e.preventDefault();
-            // custom logic...
         };
 
         ref.addEventListener("touchmove", handleTouchMove, { passive: false });
@@ -41,14 +40,14 @@ const MiniMap = <T,>({
         >
             {/* Canvas for rendering points on minimap */}
             <canvas
-                width={(width - 100) / 4}
-                height={(height - 100) / 4}
+                width={(boundedSize - 100) / 4}
+                height={(boundedSize - 100) / 4}
                 ref={(canvas) => {
                     if (canvas) {
                         const context = canvas.getContext('2d');
                         const scaleFactor = 0.25;
-                        const scaledWidth = (width - 100) * scaleFactor;
-                        const scaledHeight = (height - 100) * scaleFactor;
+                        const scaledWidth = (boundedSize - 100) * scaleFactor;
+                        const scaledHeight = (boundedSize - 100) * scaleFactor;
                         if (context) {
                             // Clear canvas
                             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -77,15 +76,15 @@ const MiniMap = <T,>({
 
             {/* SVG for rendering the zoom window */}
             <svg
-                width={(width - 100) / 4}
-                height={(height - 100) / 4}
+                width={(boundedSize - 100) / 4}
+                height={(boundedSize - 100) / 4}
                 style={{ position: 'absolute', top: 0, left: 0 }}
             >
                 <g transform={`scale(0.25)`}>
                     <rect
                         ref={windowRef}
-                        width={width - 100}
-                        height={height - 100}
+                        width={boundedSize - 100}
+                        height={boundedSize - 100}
                         fill="#0d0f98"
                         fillOpacity={0.2}
                         stroke="#0d0f98"
