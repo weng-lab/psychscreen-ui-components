@@ -1,8 +1,10 @@
-import { Datum, Violin, ViolinBoxPlotProps } from "./types";
+import { Datum, TooltipData, Violin, ViolinBoxPlotProps } from "./types";
 import { useParentSize } from '@visx/responsive';
 import { Group } from "@visx/group";
 import { ViolinPlot, BoxPlot } from "@visx/stats";
 import { scaleBand, scaleLinear } from "@visx/scale";
+import { Tooltip } from "@visx/tooltip";
+import { useCallback, useRef, useState } from "react";
 
 const calculateBoxStats = (data: Datum[]) => {
     const values: number[] = [];
@@ -52,8 +54,37 @@ const calculateBoxStats = (data: Datum[]) => {
 const ViolinBoxPlot = <T extends object>(
     props: ViolinBoxPlotProps<T>
 ) => {
-
     const { parentRef, width: parentWidth, height: parentHeight } = useParentSize();
+
+    const [tooltipData, setTooltipData] = useState<TooltipData | null | T>()
+    const [tooltipOpen, setTooltipOpen] = useState<boolean>(false)
+
+    const [mouseX, setMouseX] = useState(0);
+    const [mouseY, setMouseY] = useState(0);
+
+    const svgRef = useRef<SVGSVGElement>(null);
+
+    const handleMouseMove = useCallback((event: React.MouseEvent<SVGSVGElement>) => {
+        if (!svgRef.current) return;
+        
+        const bounds = svgRef.current.getBoundingClientRect();
+    
+        const x = event.clientX - bounds.left;
+        const y = event.clientY - bounds.top;
+    
+        setMouseX(x);
+        setMouseY(y);
+    }, []);
+
+    const showTooltip = (data: TooltipData | T) => {
+        setTooltipData(data);
+        setTooltipOpen(true);
+    };    
+
+    const hideTooltip = () => {
+        setTooltipOpen(false);
+        setTooltipData(null)
+    };    
 
     // bounds
     const xMax = parentWidth;
@@ -86,7 +117,7 @@ const ViolinBoxPlot = <T extends object>(
 
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
-            <svg width={parentWidth} height={parentHeight}>
+            <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
                 <Group top={40}>
                     {props.violins.map((v: Violin<T>, i) => {
                         //get all the stats for the box plot
@@ -112,18 +143,79 @@ const ViolinBoxPlot = <T extends object>(
                                     thirdQuartile={thirdQuartile}
                                     median={median}
                                     boxWidth={boxWidth}
-                                    fill="#000000"
+                                    fill={props.boxPlotColor ?? "#000000"}
                                     fillOpacity={0.3}
-                                    stroke="#000000"
+                                    stroke={props.boxPlotColor ?? "#000000"}
                                     strokeWidth={2}
                                     valueScale={yScale}
                                     outliers={outliers}
+                                    minProps={{
+                                        onMouseOver: () => {
+                                            showTooltip({label: v.label, min: min})
+                                        },
+                                        onMouseLeave: () => {
+                                            hideTooltip();
+                                        },
+                                    }}
+                                    maxProps={{
+                                        onMouseOver: () => {
+                                            showTooltip({label: v.label, max: max})
+                                        },
+                                        onMouseLeave: () => {
+                                            hideTooltip();
+                                        },
+                                    }}
+                                    boxProps={{
+                                        onMouseOver: () => {
+                                            showTooltip({
+                                                label: v.label, 
+                                                min: min,
+                                                max: max,
+                                                median: median,
+                                                firstQuartile: firstQuartile,
+                                                thirdQuartile: thirdQuartile
+                                            })
+                                        },
+                                        onMouseLeave: () => {
+                                            hideTooltip();
+                                        },
+                                    }}
+                                    medianProps={{
+                                        onMouseOver: () => {
+                                            showTooltip({label: v.label, median: median})
+                                        },
+                                        onMouseLeave: () => {
+                                            hideTooltip();
+                                        },
+                                    }}
+                                    outlierProps={{
+                                        onMouseOver: () => {
+                                            showTooltip({label: v.label, value: outliers[0]})
+                                        },
+                                        onMouseLeave: () => {
+                                            hideTooltip();
+                                        },
+                                    }}
                                 />
                             </g>
                         )
                     })}
                 </Group>
             </svg>
+            {tooltipOpen && tooltipData && (
+                <Tooltip left={(mouseX + 10)} top={(mouseY)}>
+                    {tooltipData && Object.entries(tooltipData).map(([key, value]) => (
+                        <div key={key}>
+                            <strong>{key.charAt(0).toUpperCase() + key.slice(1)}: </strong>
+                            {typeof value === 'string'
+                                ? (value.length > 45
+                                    ? `${value.replace(/_/g, " ").slice(0, 45)}...`
+                                    : value.replace(/_/g, " "))
+                                : String(value)}
+                        </div>
+                    ))}
+                </Tooltip>
+            )}
         </div>
     );
 }
