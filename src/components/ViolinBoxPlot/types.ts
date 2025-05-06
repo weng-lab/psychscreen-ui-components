@@ -16,6 +16,8 @@ export type ViolinBoxPlotProps<T> = {
     loading: boolean;
     leftAxisLabel?: string;
     boxPlotColor?: string;
+    disableBoxPlot?: boolean;
+    disableViolinPlot?: boolean;
 }
 
 export interface TooltipData {

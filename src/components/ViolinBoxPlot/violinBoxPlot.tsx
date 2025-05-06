@@ -4,6 +4,7 @@ import { Group } from "@visx/group";
 import { ViolinPlot, BoxPlot } from "@visx/stats";
 import { scaleBand, scaleLinear } from "@visx/scale";
 import { Tooltip } from "@visx/tooltip";
+import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 
 const calculateBoxStats = (data: Datum[]) => {
@@ -54,6 +55,7 @@ const calculateBoxStats = (data: Datum[]) => {
 const ViolinBoxPlot = <T extends object>(
     props: ViolinBoxPlotProps<T>
 ) => {
+    console.log(props.violins)
     const { parentRef, width: parentWidth, height: parentHeight } = useParentSize();
 
     const [tooltipData, setTooltipData] = useState<TooltipData | null | T>()
@@ -63,6 +65,7 @@ const ViolinBoxPlot = <T extends object>(
     const [mouseY, setMouseY] = useState(0);
 
     const svgRef = useRef<SVGSVGElement>(null);
+    const offset = 40;
 
     const handleMouseMove = useCallback((event: React.MouseEvent<SVGSVGElement>) => {
         if (!svgRef.current) return;
@@ -118,7 +121,32 @@ const ViolinBoxPlot = <T extends object>(
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
             <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
-                <Group top={40}>
+                <AxisLeft
+                    left={offset}
+                    top={offset}
+                    scale={yScale}
+                    stroke="black"
+                    tickStroke="black"
+                    tickLabelProps={() => ({
+                        fill: 'black',
+                        fontSize: 14,
+                        textAnchor: 'end',
+                        dy: '0.33em',
+                    })}
+                />
+                <AxisBottom
+                    left={offset}
+                    top={yMax + offset}
+                    scale={xScale}
+                    stroke="black"
+                    tickStroke="black"
+                    tickLabelProps={() => ({
+                        fill: 'black',
+                        fontSize: 14,
+                        textAnchor: 'middle',
+                    })}
+                />
+                <Group top={offset} left={offset}>
                     {props.violins.map((v: Violin<T>, i) => {
                         //get all the stats for the box plot
                         const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(v.data);
@@ -128,7 +156,7 @@ const ViolinBoxPlot = <T extends object>(
                         return (
                             <g key={i}>
                                 <ViolinPlot
-                                    data={[...filteredData].sort((a, b) => a.value - b.value)}
+                                    data={[...v.data].sort((a, b) => a.value - b.value)}
                                     stroke="black"
                                     left={xScale(xDomain[i]) ?? 0}
                                     width={violinWidth}
