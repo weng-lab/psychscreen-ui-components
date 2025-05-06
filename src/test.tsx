@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { Box } from "@mui/material";
-import { Violin } from "./components/ViolinBoxPlot/types";
+import { Violin, ViolinBoxPlotProps } from "./components/ViolinBoxPlot/types";
 import ViolinBoxPlot from "./components/ViolinBoxPlot/violinBoxPlot";
 import { useRef } from "react";
 import { densityAtPoints } from "./components/ViolinBoxPlot/standardNormalKernel";
@@ -128,6 +128,11 @@ function App() {
   const ref = useRef()
   const data = generateTestData()
 
+  const otherData = {
+    data: [{value: 1, count: 1}, {value: 2, count: 2}, {value: 3, count: 3}, {value: 25, count: 1}],
+    label: "afgaas"
+  }
+
   const input = [0.43, 0.41, 0.13, 0.61, 0.41, 0.91];
   const violinData = densityAtPoints(input, input);
 
@@ -149,6 +154,7 @@ function App() {
         violins={data.violins}
         loading={data.loading}
         leftAxisLabel="aklhsdbgfdabdhf"
+        outliers
       />
     </Box>
   );

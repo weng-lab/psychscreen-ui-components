@@ -8,7 +8,7 @@ import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 import { Text } from '@visx/text';
 
-const calculateBoxStats = (data: Datum[]) => {
+const calculateBoxStats = (data: Datum[], includeOutliers: boolean) => {
     const values: number[] = [];
     data.forEach(d => {
         for (let i = 0; i < d.count; i++) {
@@ -45,8 +45,8 @@ const calculateBoxStats = (data: Datum[]) => {
     // Calculate outliers (values outside of the whiskers)
     const outliers = values.filter(val => val < lowerWhisker || val > upperWhisker);
 
-    // Min and max excluding outliers
-    const filteredValues = values.filter(val => val >= lowerWhisker && val <= upperWhisker);
+    // Min and max
+    const filteredValues = includeOutliers ? values.filter(val => val >= lowerWhisker && val <= upperWhisker) : values;
     const min = filteredValues[0];
     const max = filteredValues[filteredValues.length - 1];
 
@@ -56,7 +56,6 @@ const calculateBoxStats = (data: Datum[]) => {
 const ViolinBoxPlot = <T extends object>(
     props: ViolinBoxPlotProps<T>
 ) => {
-    console.log(props.violins)
     const { parentRef, width: parentWidth, height: parentHeight } = useParentSize();
 
     const [tooltipData, setTooltipData] = useState<TooltipData | null | T>()
@@ -135,7 +134,6 @@ const ViolinBoxPlot = <T extends object>(
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
             <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
-                <Group top={offset} left={offset}>
                     <AxisLeft
                         left={offset}
                         top={offset}
@@ -162,11 +160,11 @@ const ViolinBoxPlot = <T extends object>(
                             textAnchor: 'middle',
                         })}
                     />
-                </Group>
                 <Group top={offset} left={offset}>
+
                     {props.violins.map((v: Violin<T>, i) => {
                         //get all the stats for the box plot
-                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(v.data);
+                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(v.data, props.outliers ?? false);
 
                         //filter out the outliers so they are not included in the violin plot
                         const filteredData = v.data.filter(d => d.value >= min && d.value <= max);
@@ -196,7 +194,7 @@ const ViolinBoxPlot = <T extends object>(
                                         stroke={props.boxPlotColor ?? "#000000"}
                                         strokeWidth={2}
                                         valueScale={yScale}
-                                        outliers={outliers}
+                                        outliers={props.outliers ? outliers : []}
                                         minProps={{
                                             onMouseOver: () => {
                                                 showTooltip({ label: v.label, min: min })

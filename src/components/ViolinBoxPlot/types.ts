@@ -18,6 +18,7 @@ export type ViolinBoxPlotProps<T> = {
     boxPlotColor?: string;
     disableBoxPlot?: boolean;
     disableViolinPlot?: boolean;
+    outliers?: boolean;
 }
 
 export interface TooltipData {
