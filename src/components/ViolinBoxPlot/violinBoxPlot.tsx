@@ -70,12 +70,12 @@ const ViolinBoxPlot = <T extends object>(
 
     const handleMouseMove = useCallback((event: React.MouseEvent<SVGSVGElement>) => {
         if (!svgRef.current) return;
-        
+
         const bounds = svgRef.current.getBoundingClientRect();
-    
+
         const x = event.clientX - bounds.left;
         const y = event.clientY - bounds.top;
-    
+
         setMouseX(x);
         setMouseY(y);
     }, []);
@@ -83,12 +83,12 @@ const ViolinBoxPlot = <T extends object>(
     const showTooltip = (data: TooltipData | T) => {
         setTooltipData(data);
         setTooltipOpen(true);
-    };    
+    };
 
     const hideTooltip = () => {
         setTooltipOpen(false);
         setTooltipData(null)
-    };    
+    };
 
     // bounds
     const xMax = parentWidth;
@@ -136,32 +136,32 @@ const ViolinBoxPlot = <T extends object>(
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
             <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
                 <Group top={offset} left={offset}>
-                <AxisLeft
-                    left={offset}
-                    top={offset}
-                    scale={yScale}
-                    stroke="black"
-                    tickStroke="black"
-                    tickLabelProps={() => ({
-                        fill: 'black',
-                        fontSize: 15,
-                        textAnchor: 'end',
-                        dy: '0.33em',
-                    })}
-                />
-                {axisLeftLabel}
-                <AxisBottom
-                    left={offset}
-                    top={yMax + offset}
-                    scale={xScale}
-                    stroke="black"
-                    tickStroke="black"
-                    tickLabelProps={() => ({
-                        fill: 'black',
-                        fontSize: 15,
-                        textAnchor: 'middle',
-                    })}
-                />
+                    <AxisLeft
+                        left={offset}
+                        top={offset}
+                        scale={yScale}
+                        stroke="black"
+                        tickStroke="black"
+                        tickLabelProps={() => ({
+                            fill: 'black',
+                            fontSize: 15,
+                            textAnchor: 'end',
+                            dy: '0.33em',
+                        })}
+                    />
+                    {axisLeftLabel}
+                    <AxisBottom
+                        left={offset}
+                        top={yMax + offset}
+                        scale={xScale}
+                        stroke="black"
+                        tickStroke="black"
+                        tickLabelProps={() => ({
+                            fill: 'black',
+                            fontSize: 15,
+                            textAnchor: 'middle',
+                        })}
+                    />
                 </Group>
                 <Group top={offset} left={offset}>
                     {props.violins.map((v: Violin<T>, i) => {
@@ -172,76 +172,81 @@ const ViolinBoxPlot = <T extends object>(
                         const filteredData = v.data.filter(d => d.value >= min && d.value <= max);
                         return (
                             <g key={i}>
-                                <ViolinPlot
-                                    data={[...filteredData].sort((a, b) => a.value - b.value)}
-                                    stroke="black"
-                                    left={xScale(xDomain[i]) ?? 0}
-                                    width={violinWidth}
-                                    valueScale={yScale}
-                                    fill={v.color ?? "none"}
-                                />
-                                <BoxPlot
-                                    min={min}
-                                    max={max}
-                                    left={(xScale(xDomain[i]) ?? 0) + (violinWidth - boxWidth) / 2}
-                                    firstQuartile={firstQuartile}
-                                    thirdQuartile={thirdQuartile}
-                                    median={median}
-                                    boxWidth={boxWidth}
-                                    fill={props.boxPlotColor ?? "#000000"}
-                                    fillOpacity={0.3}
-                                    stroke={props.boxPlotColor ?? "#000000"}
-                                    strokeWidth={2}
-                                    valueScale={yScale}
-                                    outliers={outliers}
-                                    minProps={{
-                                        onMouseOver: () => {
-                                            showTooltip({label: v.label, min: min})
-                                        },
-                                        onMouseLeave: () => {
-                                            hideTooltip();
-                                        },
-                                    }}
-                                    maxProps={{
-                                        onMouseOver: () => {
-                                            showTooltip({label: v.label, max: max})
-                                        },
-                                        onMouseLeave: () => {
-                                            hideTooltip();
-                                        },
-                                    }}
-                                    boxProps={{
-                                        onMouseOver: () => {
-                                            showTooltip({
-                                                label: v.label, 
-                                                min: min,
-                                                max: max,
-                                                median: median,
-                                                firstQuartile: firstQuartile,
-                                                thirdQuartile: thirdQuartile
-                                            })
-                                        },
-                                        onMouseLeave: () => {
-                                            hideTooltip();
-                                        },
-                                    }}
-                                    medianProps={{
-                                        onMouseOver: () => {
-                                            showTooltip({label: v.label, median: median})
-                                        },
-                                        onMouseLeave: () => {
-                                            hideTooltip();
-                                        },
-                                    }}
-                                    outlierProps={{
-                                        onMouseOver: () => {
-                                            showTooltip({label: v.label, value: outliers[0]})
-                                        },
-                                        onMouseLeave: () => {
-                                            hideTooltip();
-                                        },
-                                    }}
-                                />
+                                {!props.disableViolinPlot &&
+                                    <ViolinPlot
+                                        data={[...filteredData].sort((a, b) => a.value - b.value)}
+                                        stroke="black"
+                                        left={xScale(xDomain[i]) ?? 0}
+                                        width={violinWidth}
+                                        valueScale={yScale}
+                                        fill={v.color ?? "none"}
+                                    />
+                                }
+                                {!props.disableBoxPlot &&
+                                    <BoxPlot
+                                        min={min}
+                                        max={max}
+                                        left={(xScale(xDomain[i]) ?? 0) + (violinWidth - boxWidth) / 2}
+                                        firstQuartile={firstQuartile}
+                                        thirdQuartile={thirdQuartile}
+                                        median={median}
+                                        boxWidth={boxWidth}
+                                        fill={props.boxPlotColor ?? "#000000"}
+                                        fillOpacity={0.3}
+                                        stroke={props.boxPlotColor ?? "#000000"}
+                                        strokeWidth={2}
+                                        valueScale={yScale}
+                                        outliers={outliers}
+                                        minProps={{
+                                            onMouseOver: () => {
+                                                showTooltip({ label: v.label, min: min })
+                                            },
+                                            onMouseLeave: () => {
+                                                hideTooltip();
+                                            },
+                                        }}
+                                        maxProps={{
+                                            onMouseOver: () => {
+                                                showTooltip({ label: v.label, max: max })
+                                            },
+                                            onMouseLeave: () => {
+                                                hideTooltip();
+                                            },
+                                        }}
+                                        boxProps={{
+                                            onMouseOver: () => {
+                                                showTooltip({
+                                                    label: v.label,
+                                                    min: min,
+                                                    max: max,
+                                                    median: median,
+                                                    firstQuartile: firstQuartile,
+                                                    thirdQuartile: thirdQuartile
+                                                })
+                                            },
+                                            onMouseLeave: () => {
+                                                hideTooltip();
+                                            },
+                                        }}
+                                        medianProps={{
+                                            onMouseOver: () => {
+                                                showTooltip({ label: v.label, median: median })
+                                            },
+                                            onMouseLeave: () => {
+                                                hideTooltip();
+                                            },
+                                        }}
+                                        outlierProps={{
+                                            onMouseOver: () => {
+                                                showTooltip({ label: v.label, value: outliers[0] })
+                                            },
+                                            onMouseLeave: () => {
+                                                hideTooltip();
+                                            },
+                                        }}
+                                    />
+                                }
+
                             </g>
                         )
                     })}
