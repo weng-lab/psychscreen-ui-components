@@ -235,8 +235,11 @@ const ViolinBoxPlot = <T extends object>(
                                             },
                                         }}
                                         outlierProps={{
-                                            onMouseOver: () => {
-                                                showTooltip({ label: v.label, value: outliers[0] })
+                                            onMouseOver: (event) => {
+                                                const target = event.target as SVGElement;
+                                                const index = Array.from(target.parentNode?.children || []).indexOf(target);
+                                                const outlierValue = outliers[index];
+                                                showTooltip({ label: v.label, value: outlierValue });
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();
