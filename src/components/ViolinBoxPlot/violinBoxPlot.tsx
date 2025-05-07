@@ -134,6 +134,7 @@ const ViolinBoxPlot = <T extends object>(
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
             <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
+                <Group top={offset} left={offset}>
                     <AxisLeft
                         left={offset}
                         top={offset}
@@ -160,7 +161,7 @@ const ViolinBoxPlot = <T extends object>(
                             textAnchor: 'middle',
                         })}
                     />
-                <Group top={offset} left={offset}>
+
 
                     {props.violins.map((v: Violin<T>, i) => {
                         //get all the stats for the box plot
@@ -174,7 +175,7 @@ const ViolinBoxPlot = <T extends object>(
                                     <ViolinPlot
                                         data={[...filteredData].sort((a, b) => a.value - b.value)}
                                         stroke="black"
-                                        left={xScale(xDomain[i]) ?? 0}
+                                        left={(xScale(xDomain[i]) ?? 0) + offset}
                                         width={violinWidth}
                                         valueScale={yScale}
                                         fill={v.color ?? "none"}
@@ -184,7 +185,7 @@ const ViolinBoxPlot = <T extends object>(
                                     <BoxPlot
                                         min={min}
                                         max={max}
-                                        left={(xScale(xDomain[i]) ?? 0) + (violinWidth - boxWidth) / 2}
+                                        left={(xScale(xDomain[i]) ?? 0) + (violinWidth - boxWidth) / 2 + offset}
                                         firstQuartile={firstQuartile}
                                         thirdQuartile={thirdQuartile}
                                         median={median}
