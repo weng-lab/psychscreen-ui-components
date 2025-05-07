@@ -112,7 +112,8 @@ const ViolinBoxPlot = <T extends object>(
     const yScale = scaleLinear<number>({
         range: [yMax, 0],
         round: true,
-        domain: [minYValue, maxYValue],
+        //make the bottom most tick 7% of the domain less so that there is room between the lowest plot and the bottom axis
+        domain: [minYValue - (.07 * (maxYValue - minYValue)), maxYValue],
     });
 
     const axisLeftLabel = (
@@ -137,7 +138,6 @@ const ViolinBoxPlot = <T extends object>(
                 <Group top={offset} left={offset}>
                     <AxisLeft
                         left={offset}
-                        top={offset}
                         scale={yScale}
                         stroke="black"
                         tickStroke="black"
@@ -151,7 +151,7 @@ const ViolinBoxPlot = <T extends object>(
                     {axisLeftLabel}
                     <AxisBottom
                         left={offset}
-                        top={yMax + offset}
+                        top={yMax}
                         scale={xScale}
                         stroke="black"
                         tickStroke="black"
@@ -160,9 +160,18 @@ const ViolinBoxPlot = <T extends object>(
                             fontSize: 15,
                             textAnchor: 'middle',
                         })}
+                        tickComponent={({ x, y, formattedValue, ...tickProps }) => (
+                            <text
+                                {...tickProps}
+                                x={x}
+                                y={y}
+                                transform={`rotate(-90, ${x}, ${y})`}
+                                textAnchor="end"
+                            >
+                                {formattedValue}
+                            </text>
+                        )}
                     />
-
-
                     {props.violins.map((v: Violin<T>, i) => {
                         //get all the stats for the box plot
                         const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(v.data, props.outliers ?? false);
@@ -248,7 +257,6 @@ const ViolinBoxPlot = <T extends object>(
                                         }}
                                     />
                                 }
-
                             </g>
                         )
                     })}
