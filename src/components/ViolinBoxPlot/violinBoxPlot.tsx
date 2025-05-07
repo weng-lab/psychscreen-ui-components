@@ -158,19 +158,28 @@ const ViolinBoxPlot = <T extends object>(
                         tickLabelProps={() => ({
                             fill: 'black',
                             fontSize: 15,
-                            textAnchor: 'middle',
+                            textAnchor: props.labelOrientation === "vertical" ? "end" : "middle",
                         })}
-                        tickComponent={({ x, y, formattedValue, ...tickProps }) => (
-                            <text
-                                {...tickProps}
-                                x={x}
-                                y={y}
-                                transform={`rotate(-90, ${x}, ${y})`}
-                                textAnchor="end"
-                            >
-                                {formattedValue}
-                            </text>
-                        )}
+                        tickComponent={({ x, y, formattedValue, ...tickProps }) => {
+                            if (props.labelOrientation === "vertical") {
+                                return (
+                                    <text
+                                        {...tickProps}
+                                        x={x}
+                                        y={y}
+                                        transform={`rotate(-90, ${x}, ${y})`}
+                                        textAnchor="end"
+                                    >
+                                        {formattedValue}
+                                    </text>
+                                );
+                            }
+                            return (
+                                <text {...tickProps} x={x} y={y} textAnchor="middle">
+                                    {formattedValue}
+                                </text>
+                            );
+                        }}
                     />
                     {props.violins.map((v: Violin<T>, i) => {
                         //get all the stats for the box plot

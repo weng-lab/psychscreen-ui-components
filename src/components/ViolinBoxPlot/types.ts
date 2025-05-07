@@ -19,6 +19,7 @@ export type ViolinBoxPlotProps<T> = {
     disableBoxPlot?: boolean;
     disableViolinPlot?: boolean;
     outliers?: boolean;
+    labelOrientation?: "horizontal" | "vertical"
 }
 
 export interface TooltipData {
