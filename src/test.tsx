@@ -6,54 +6,61 @@ import { useRef } from "react";
 import { densityAtPoints } from "./components/ViolinBoxPlot/standardNormalKernel";
 
 function generateTestData(): ViolinBoxPlotProps<{ group: string }> {
+  const generateViolin = (label: string, color: string): Violin<{ group: string }> => {
+    const generateDistribution = (mean: number, stdDev: number, numBins: number, outlierFactor: number = 3) => {
+      const counts: { value: number, count: number }[] = [];
+      const values: number[] = [];
+      const binWidth = stdDev / (numBins / 2);
+      const minCount = 1;
 
-    const generateViolin = (label: string, color: string): Violin<{ group: string }> => {
-      const generateDistribution = (mean: number, stdDev: number, numBins: number, outlierFactor: number = 3) => {
-        const counts: { value: number, count: number }[] = [];
-        const binWidth = stdDev / 2; // Adjust the bin width to fit the distribution
-  
-        // Generate values centered around the mean, with a normal distribution
-        for (let i = 0; i < numBins; i++) {
-          const value = mean + (i - numBins / 2) * binWidth;
-          const count = Math.max(0, Math.round(Math.exp(-Math.pow((value - mean) / stdDev, 2)) * 100)); // Gaussian-like distribution
-          counts.push({ value, count });
-        }
-  
-        // Add outliers to the distribution
-        const numOutliers = Math.floor(Math.random() * 5) + 3; // Randomly decide how many outliers to add (3 to 7 outliers)
-        for (let i = 0; i < numOutliers; i++) {
-          const outlierValue = mean + (Math.random() * 2 - 1) * outlierFactor * stdDev; // Random outlier values
-          const outlierCount = Math.floor(Math.random() * 3) + 1; // Random count for each outlier
-          counts.push({ value: outlierValue, count: outlierCount });
-        }
-  
-        return counts;
-      };
-  
-      // Generating three distributions with different means and stdDev for variety
-      const dataA = generateDistribution(10, 3, 30);
-      const dataB = generateDistribution(15, 4, 30);
-      const dataC = generateDistribution(20, 5, 30);
-  
-      return {
-        data: label === 'Group A' ? dataA : label === 'Group B' ? dataB : dataC,
-        label,
-        color,
-        width: 30,
-        metaData: { group: label },
-      };
+      // Generate values centered around the mean with a Gaussian-like distribution
+      for (let i = 0; i < numBins; i++) {
+        const value = mean + (i - numBins / 2) * binWidth;
+        const distance = (value - mean) / stdDev;
+        const count = Math.max(
+          minCount,
+          Math.round((Math.exp(-0.5 * distance ** 2) + Math.random() * 0.1) * 100)
+        );
+        counts.push({ value, count });
+        values.push(value);
+      }
+
+      // Add outliers to the distribution
+      const numOutliers = Math.floor(Math.random() * 5) + 3;
+      for (let i = 0; i < numOutliers; i++) {
+        const outlierValue = mean + (Math.random() * 2 - 1) * outlierFactor * stdDev;
+        const outlierCount = Math.max(minCount, Math.floor(Math.random() * 3) + 1);
+        counts.push({ value: outlierValue, count: outlierCount });
+        values.push(outlierValue);
+      }
+
+      return { counts, values };
     };
-  
+
+    const dataA = generateDistribution(10, 3, 30);
+    const dataB = generateDistribution(15, 4, 30);
+    const dataC = generateDistribution(20, 5, 30);
+
     return {
-      loading: false,
-      leftAxisLabel: 'Expression Level',
-      violins: [
-        generateViolin('Group A', '#4f46e5'),
-        generateViolin('Group B', '#16a34a'),
-        generateViolin('Group C', '#dc2626'),
-      ],
+      data: label === 'Group A' ? dataA.counts : label === 'Group B' ? dataB.counts : dataC.counts,
+      otherData: label === 'Group A' ? dataA.values : label === 'Group B' ? dataB.values : dataC.values,
+      label,
+      color,
+      width: 30,
+      metaData: { group: label },
     };
-  }
+  };
+
+  return {
+    loading: false,
+    leftAxisLabel: 'Expression Level',
+    violins: [
+      generateViolin('Group A', '#4f46e5'),
+      generateViolin('Group B', '#16a34a'),
+      generateViolin('Group C', '#dc2626'),
+    ],
+  };
+}
 
 
 const testData = (
@@ -153,8 +160,9 @@ function App() {
       <ViolinBoxPlot
         violins={data.violins}
         loading={data.loading}
-        leftAxisLabel="aklhsdbgfdabdhf"
+        leftAxisLabel="Left Axis Label"
         outliers
+        showAllPoints
       />
     </Box>
   );

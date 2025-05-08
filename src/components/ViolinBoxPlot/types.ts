@@ -5,6 +5,7 @@ export type Datum = {
 
 export type Violin<T> = {
     data: Datum[];
+    otherData: number[];
     label: string;
     width?: number;
     color?: string;
@@ -19,6 +20,7 @@ export type ViolinBoxPlotProps<T> = {
     disableBoxPlot?: boolean;
     disableViolinPlot?: boolean;
     outliers?: boolean;
+    showAllPoints?: boolean;
     labelOrientation?: "horizontal" | "vertical"
 }
 

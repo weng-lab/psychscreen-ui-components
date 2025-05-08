@@ -8,7 +8,7 @@ import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 import { Text } from '@visx/text';
 
-const calculateBoxStats = (data: Datum[], includeOutliers: boolean) => {
+const calculateBoxStats = (data: Datum[], includeOutliers: boolean, otherData: number[]) => {
     const values: number[] = [];
     data.forEach(d => {
         for (let i = 0; i < d.count; i++) {
@@ -43,7 +43,7 @@ const calculateBoxStats = (data: Datum[], includeOutliers: boolean) => {
     const upperWhisker = thirdQuartile + 1.5 * iqr;
 
     // Calculate outliers (values outside of the whiskers)
-    const outliers = values.filter(val => val < lowerWhisker || val > upperWhisker);
+    const outliers = otherData.length > 0 ? otherData : values.filter(val => val < lowerWhisker || val > upperWhisker);
 
     // Min and max
     const filteredValues = includeOutliers ? values.filter(val => val >= lowerWhisker && val <= upperWhisker) : values;
@@ -183,7 +183,7 @@ const ViolinBoxPlot = <T extends object>(
                     />
                     {props.violins.map((v: Violin<T>, i) => {
                         //get all the stats for the box plot
-                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(v.data, props.outliers ?? false);
+                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(v.data, props.outliers ?? false, props.showAllPoints ? v.otherData : []);
 
                         //filter out the outliers so they are not included in the violin plot
                         const filteredData = v.data.filter(d => d.value >= min && d.value <= max);
@@ -213,7 +213,7 @@ const ViolinBoxPlot = <T extends object>(
                                         stroke={props.boxPlotColor ?? "#000000"}
                                         strokeWidth={2}
                                         valueScale={yScale}
-                                        outliers={props.outliers ? outliers : []}
+                                        outliers={props.showAllPoints ? v.otherData : props.outliers ? outliers : []}
                                         minProps={{
                                             onMouseOver: () => {
                                                 showTooltip({ label: v.label, min: min })
