@@ -148,6 +148,7 @@ function App() {
         loading={data.loading}
         leftAxisLabel="Left Axis Label"
         outliers
+        labelOrientation="vertical"
       />
     </Box>
   );

@@ -22,6 +22,7 @@ const ViolinBoxPlot = <T extends object>(
 
     const svgRef = useRef<SVGSVGElement>(null);
     const offset = 40;
+    const labelOrientation = props.labelOrientation ?? "horizontal"
 
     const handleMouseMove = useCallback((event: React.MouseEvent<SVGSVGElement>) => {
         if (!svgRef.current) return;
@@ -114,17 +115,21 @@ const ViolinBoxPlot = <T extends object>(
                         tickLabelProps={() => ({
                             fill: 'black',
                             fontSize: 15,
-                            textAnchor: props.labelOrientation === "vertical" ? "end" : "middle",
+                            textAnchor: labelOrientation === "vertical" ? "end" : labelOrientation === "rightDiagonal" ? "start" : "middle",
                         })}
                         tickComponent={({ x, y, formattedValue, ...tickProps }) => {
-                            if (props.labelOrientation === "vertical") {
+                            if (labelOrientation !== "horizontal") {
                                 return (
                                     <text
                                         {...tickProps}
                                         x={x}
                                         y={y}
-                                        transform={`rotate(-90, ${x}, ${y})`}
-                                        textAnchor="end"
+                                        transform={
+                                            labelOrientation === "vertical" ? `rotate(-90, ${x}, ${y})` :
+                                            labelOrientation === "leftDiagonal" ? `rotate(-45, ${x}, ${y})` :
+                                            `rotate(45, ${x}, ${y})`
+                                        }
+                                        textAnchor={labelOrientation === "vertical" ? "end" : labelOrientation === "rightDiagonal" ? "start" : "middle"}
                                     >
                                         {formattedValue}
                                     </text>
