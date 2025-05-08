@@ -3,7 +3,6 @@ import { Box } from "@mui/material";
 import { Distribution, ViolinBoxPlotProps } from "./components/ViolinBoxPlot/types";
 import ViolinBoxPlot from "./components/ViolinBoxPlot/violinBoxPlot";
 import { useRef } from "react";
-import { densityAtPoints } from "./components/ViolinBoxPlot/helpers";
 
 function generateTestData(): ViolinBoxPlotProps<{ group: string }> {
   const generateViolin = (label: string, color: string): Distribution<{ group: string }> => {
@@ -134,19 +133,6 @@ const testData = (
 function App() {
   const ref = useRef()
   const data = generateTestData()
-
-  const otherData = {
-    data: [{value: 1, count: 1}, {value: 2, count: 2}, {value: 3, count: 3}, {value: 25, count: 1}],
-    label: "afgaas"
-  }
-
-  const input = [0.43, 0.41, 0.13, 0.61, 0.41, 0.91];
-  const violinData = densityAtPoints(input, input);
-
-  // const data: Violin<T> = {
-  //   label: "dsjhfv",
-  //   data: violinData
-  // }
 
   return (
     <Box

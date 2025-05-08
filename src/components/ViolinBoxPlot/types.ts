@@ -17,6 +17,12 @@ export type ViolinBoxPlotProps<T> = {
     loading: boolean;
     leftAxisLabel?: string;
     boxPlotColor?: string;
+    boxPlotStroke?: number;
+    violinPlotStroke?: number;
+    outlierColor?: string;
+    medianColor?: string;
+    minColor?: string;
+    maxColor?: string;
     disableBoxPlot?: boolean;
     disableViolinPlot?: boolean;
     outliers?: boolean;
@@ -26,10 +32,10 @@ export type ViolinBoxPlotProps<T> = {
 
 export interface TooltipData {
     label?: string;
-    min?: number;
-    median?: number;
-    max?: number;
-    firstQuartile?: number;
-    thirdQuartile?: number;
-    value?: number;
+    min?: string;
+    median?: string;
+    max?: string;
+    firstQuartile?: string;
+    thirdQuartile?: string;
+    value?: string;
   }

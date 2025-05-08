@@ -149,6 +149,7 @@ const ViolinBoxPlot = <T extends object>(
                                     <ViolinPlot
                                         data={[...filteredData].sort((a, b) => a.value - b.value)}
                                         stroke="black"
+                                        strokeWidth={props.violinPlotStroke ?? 1}
                                         left={(xScale(xDomain[i]) ?? 0) + offset}
                                         width={violinWidth}
                                         valueScale={yScale}
@@ -167,20 +168,22 @@ const ViolinBoxPlot = <T extends object>(
                                         fill={props.boxPlotColor ?? "#000000"}
                                         fillOpacity={0.3}
                                         stroke={props.boxPlotColor ?? "#000000"}
-                                        strokeWidth={2}
+                                        strokeWidth={props.boxPlotStroke ?? 3}
                                         valueScale={yScale}
                                         outliers={props.showAllPoints ? x.otherData : props.outliers ? outliers : []}
                                         minProps={{
+                                            stroke: props.minColor ?? props.boxPlotColor ?? "#000000",
                                             onMouseOver: () => {
-                                                showTooltip({ label: x.label, min: min })
+                                                showTooltip({ label: x.label, min: min.toFixed(2) })
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();
                                             },
                                         }}
                                         maxProps={{
+                                            stroke: props.maxColor ?? props.boxPlotColor ?? "#000000",
                                             onMouseOver: () => {
-                                                showTooltip({ label: x.label, max: max })
+                                                showTooltip({ label: x.label, max: max.toFixed(2) })
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();
@@ -190,11 +193,11 @@ const ViolinBoxPlot = <T extends object>(
                                             onMouseOver: () => {
                                                 showTooltip({
                                                     label: x.label,
-                                                    min: min,
-                                                    max: max,
-                                                    median: median,
-                                                    firstQuartile: firstQuartile,
-                                                    thirdQuartile: thirdQuartile
+                                                    min: min.toFixed(2),
+                                                    max: max.toFixed(2),
+                                                    median: median.toFixed(2),
+                                                    firstQuartile: firstQuartile.toFixed(2),
+                                                    thirdQuartile: thirdQuartile.toFixed(2)
                                                 })
                                             },
                                             onMouseLeave: () => {
@@ -202,19 +205,21 @@ const ViolinBoxPlot = <T extends object>(
                                             },
                                         }}
                                         medianProps={{
+                                            stroke: props.medianColor ?? props.boxPlotColor ?? "#000000",
                                             onMouseOver: () => {
-                                                showTooltip({ label: x.label, median: median })
+                                                showTooltip({ label: x.label, median: median.toFixed(2) })
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();
                                             },
                                         }}
                                         outlierProps={{
+                                            fill: props.outlierColor ?? "#000000",
                                             onMouseOver: (event) => {
                                                 const target = event.target as SVGElement;
                                                 const index = Array.from(target.parentNode?.children || []).indexOf(target);
                                                 const outlierValue = outliers[index];
-                                                showTooltip({ label: x.label, value: outlierValue });
+                                                showTooltip({ label: x.label, value: outlierValue.toFixed(2) });
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();
