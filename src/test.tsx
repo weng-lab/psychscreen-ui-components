@@ -1,12 +1,12 @@
 import { createRoot } from "react-dom/client";
 import { Box } from "@mui/material";
-import { Violin, ViolinBoxPlotProps } from "./components/ViolinBoxPlot/types";
+import { Distribution, ViolinBoxPlotProps } from "./components/ViolinBoxPlot/types";
 import ViolinBoxPlot from "./components/ViolinBoxPlot/violinBoxPlot";
 import { useRef } from "react";
-import { densityAtPoints } from "./components/ViolinBoxPlot/standardNormalKernel";
+import { densityAtPoints } from "./components/ViolinBoxPlot/helpers";
 
 function generateTestData(): ViolinBoxPlotProps<{ group: string }> {
-  const generateViolin = (label: string, color: string): Violin<{ group: string }> => {
+  const generateViolin = (label: string, color: string): Distribution<{ group: string }> => {
     const generateDistribution = (mean: number, stdDev: number, numBins: number, outlierFactor: number = 3) => {
       const counts: { value: number, count: number }[] = [];
       const values: number[] = [];
@@ -54,7 +54,7 @@ function generateTestData(): ViolinBoxPlotProps<{ group: string }> {
   return {
     loading: false,
     leftAxisLabel: 'Expression Level',
-    violins: [
+    distributions: [
       generateViolin('Group A', '#4f46e5'),
       generateViolin('Group B', '#16a34a'),
       generateViolin('Group C', '#dc2626'),
@@ -158,11 +158,10 @@ function App() {
       ref={ref}
     >
       <ViolinBoxPlot
-        violins={data.violins}
+        distributions={data.distributions}
         loading={data.loading}
         leftAxisLabel="Left Axis Label"
         outliers
-        showAllPoints
       />
     </Box>
   );

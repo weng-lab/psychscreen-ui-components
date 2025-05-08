@@ -1,4 +1,4 @@
-import { Datum, TooltipData, Violin, ViolinBoxPlotProps } from "./types";
+import { TooltipData, Distribution, ViolinBoxPlotProps } from "./types";
 import { useParentSize } from '@visx/responsive';
 import { Group } from "@visx/group";
 import { ViolinPlot, BoxPlot } from "@visx/stats";
@@ -7,51 +7,7 @@ import { Tooltip } from "@visx/tooltip";
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 import { Text } from '@visx/text';
-
-const calculateBoxStats = (data: Datum[], includeOutliers: boolean, otherData: number[]) => {
-    const values: number[] = [];
-    data.forEach(d => {
-        for (let i = 0; i < d.count; i++) {
-            values.push(d.value);
-        }
-    });
-
-    values.sort((a, b) => a - b);
-
-    const median = (arr: number[]) => {
-        const mid = Math.floor(arr.length / 2);
-        return arr.length % 2 !== 0 ? arr[mid] : (arr[mid - 1] + arr[mid]) / 2;
-    };
-
-    const getQuartiles = (arr: number[]) => {
-        const mid = Math.floor(arr.length / 2);
-        const lower = arr.slice(0, mid);
-        const upper = arr.slice(arr.length % 2 === 0 ? mid : mid + 1);
-        return {
-            firstQuartile: median(lower),
-            thirdQuartile: median(upper),
-        };
-    };
-
-    // Calculate quartiles
-    const { firstQuartile, thirdQuartile } = getQuartiles(values);
-    const med = median(values);
-
-    // Calculate the IQR and whiskers
-    const iqr = thirdQuartile - firstQuartile;
-    const lowerWhisker = firstQuartile - 1.5 * iqr;
-    const upperWhisker = thirdQuartile + 1.5 * iqr;
-
-    // Calculate outliers (values outside of the whiskers)
-    const outliers = otherData.length > 0 ? otherData : values.filter(val => val < lowerWhisker || val > upperWhisker);
-
-    // Min and max
-    const filteredValues = includeOutliers ? values.filter(val => val >= lowerWhisker && val <= upperWhisker) : values;
-    const min = filteredValues[0];
-    const max = filteredValues[filteredValues.length - 1];
-
-    return { min, max, firstQuartile, thirdQuartile, median: med, outliers };
-};
+import { calculateBoxStats } from "./helpers";
 
 const ViolinBoxPlot = <T extends object>(
     props: ViolinBoxPlotProps<T>
@@ -93,15 +49,15 @@ const ViolinBoxPlot = <T extends object>(
     const xMax = parentWidth;
     const yMax = parentHeight - 120;
 
-    const allValues: number[] = props.violins.flatMap(v =>
-        v.data.flatMap(d => Array(d.count).fill(d.value))
+    const allValues: number[] = props.distributions.flatMap(x =>
+        x.data.flatMap(d => Array(d.count).fill(d.value))
     );
 
     const minYValue = Math.min(...allValues);
     const maxYValue = Math.max(...allValues);
 
     // scales
-    const xDomain = props.violins.map((v, i) => v.label ?? `Group ${i + 1}`);
+    const xDomain = props.distributions.map((x, i) => x.label ?? `Group ${i + 1}`);
     const xScale = scaleBand<string>({
         range: [0, xMax],
         round: true,
@@ -181,12 +137,12 @@ const ViolinBoxPlot = <T extends object>(
                             );
                         }}
                     />
-                    {props.violins.map((v: Violin<T>, i) => {
+                    {props.distributions.map((x: Distribution<T>, i) => {
                         //get all the stats for the box plot
-                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(v.data, props.outliers ?? false, props.showAllPoints ? v.otherData : []);
+                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(x.data, props.outliers ?? false, props.showAllPoints ? x.otherData : []);
 
                         //filter out the outliers so they are not included in the violin plot
-                        const filteredData = v.data.filter(d => d.value >= min && d.value <= max);
+                        const filteredData = x.data.filter(d => d.value >= min && d.value <= max);
                         return (
                             <g key={i}>
                                 {!props.disableViolinPlot &&
@@ -196,7 +152,7 @@ const ViolinBoxPlot = <T extends object>(
                                         left={(xScale(xDomain[i]) ?? 0) + offset}
                                         width={violinWidth}
                                         valueScale={yScale}
-                                        fill={v.color ?? "none"}
+                                        fill={x.color ?? "none"}
                                     />
                                 }
                                 {!props.disableBoxPlot &&
@@ -213,10 +169,10 @@ const ViolinBoxPlot = <T extends object>(
                                         stroke={props.boxPlotColor ?? "#000000"}
                                         strokeWidth={2}
                                         valueScale={yScale}
-                                        outliers={props.showAllPoints ? v.otherData : props.outliers ? outliers : []}
+                                        outliers={props.showAllPoints ? x.otherData : props.outliers ? outliers : []}
                                         minProps={{
                                             onMouseOver: () => {
-                                                showTooltip({ label: v.label, min: min })
+                                                showTooltip({ label: x.label, min: min })
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();
@@ -224,7 +180,7 @@ const ViolinBoxPlot = <T extends object>(
                                         }}
                                         maxProps={{
                                             onMouseOver: () => {
-                                                showTooltip({ label: v.label, max: max })
+                                                showTooltip({ label: x.label, max: max })
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();
@@ -233,7 +189,7 @@ const ViolinBoxPlot = <T extends object>(
                                         boxProps={{
                                             onMouseOver: () => {
                                                 showTooltip({
-                                                    label: v.label,
+                                                    label: x.label,
                                                     min: min,
                                                     max: max,
                                                     median: median,
@@ -247,7 +203,7 @@ const ViolinBoxPlot = <T extends object>(
                                         }}
                                         medianProps={{
                                             onMouseOver: () => {
-                                                showTooltip({ label: v.label, median: median })
+                                                showTooltip({ label: x.label, median: median })
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();
@@ -258,7 +214,7 @@ const ViolinBoxPlot = <T extends object>(
                                                 const target = event.target as SVGElement;
                                                 const index = Array.from(target.parentNode?.children || []).indexOf(target);
                                                 const outlierValue = outliers[index];
-                                                showTooltip({ label: v.label, value: outlierValue });
+                                                showTooltip({ label: x.label, value: outlierValue });
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();

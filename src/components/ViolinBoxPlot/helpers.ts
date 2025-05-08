@@ -1,3 +1,51 @@
+import { Datum } from "./types";
+
+// Get the min, max, quartiles, median, and ouotiers for each data set
+export const calculateBoxStats = (data: Datum[], includeOutliers: boolean, otherData: number[]) => {
+    const values: number[] = [];
+    data.forEach(d => {
+        for (let i = 0; i < d.count; i++) {
+            values.push(d.value);
+        }
+    });
+
+    values.sort((a, b) => a - b);
+
+    const median = (arr: number[]) => {
+        const mid = Math.floor(arr.length / 2);
+        return arr.length % 2 !== 0 ? arr[mid] : (arr[mid - 1] + arr[mid]) / 2;
+    };
+
+    const getQuartiles = (arr: number[]) => {
+        const mid = Math.floor(arr.length / 2);
+        const lower = arr.slice(0, mid);
+        const upper = arr.slice(arr.length % 2 === 0 ? mid : mid + 1);
+        return {
+            firstQuartile: median(lower),
+            thirdQuartile: median(upper),
+        };
+    };
+
+    // Calculate quartiles
+    const { firstQuartile, thirdQuartile } = getQuartiles(values);
+    const med = median(values);
+
+    // Calculate the IQR and whiskers
+    const iqr = thirdQuartile - firstQuartile;
+    const lowerWhisker = firstQuartile - 1.5 * iqr;
+    const upperWhisker = thirdQuartile + 1.5 * iqr;
+
+    // Calculate outliers (values outside of the whiskers)
+    const outliers = otherData.length > 0 ? otherData : values.filter(val => val < lowerWhisker || val > upperWhisker);
+
+    // Min and max
+    const filteredValues = includeOutliers ? values.filter(val => val >= lowerWhisker && val <= upperWhisker) : values;
+    const min = filteredValues[0];
+    const max = filteredValues[filteredValues.length - 1];
+
+    return { min, max, firstQuartile, thirdQuartile, median: med, outliers };
+};
+
 /**
  * Samples a normal distribution at the given positions.
  * @param amplitude the amplitude of the distribution.
@@ -44,26 +92,26 @@ export function densityAtPoints(
     input: number[],
     samplePositions: number[],
     bandWidth: number = -1
-  ): { value: number, count: number }[] {
+): { value: number, count: number }[] {
     const min = Math.min(...input);
     const max = Math.max(...input);
     if (bandWidth === -1) bandWidth = (max - min) / 30;
-  
+
     const retval = samplePositions.map(() => 0);
     input.forEach(x => {
-      const values = gaussian(
-        Math.sqrt(2.0 * Math.PI) * bandWidth,
-        x,
-        bandWidth,
-        samplePositions
-      );
-      values.forEach((v, i) => {
-        retval[i] += v;
-      });
+        const values = gaussian(
+            Math.sqrt(2.0 * Math.PI) * bandWidth,
+            x,
+            bandWidth,
+            samplePositions
+        );
+        values.forEach((v, i) => {
+            retval[i] += v;
+        });
     });
-  
+
     return samplePositions.map((value, i) => ({
-      value,
-      count: Math.round(retval[i] * 100)
+        value,
+        count: Math.round(retval[i] * 100)
     }));
-  }
+}

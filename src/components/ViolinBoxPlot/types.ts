@@ -3,7 +3,7 @@ export type Datum = {
     count: number
 }
 
-export type Violin<T> = {
+export type Distribution<T> = {
     data: Datum[];
     otherData: number[];
     label: string;
@@ -13,7 +13,7 @@ export type Violin<T> = {
 }
 
 export type ViolinBoxPlotProps<T> = {
-    violins: Violin<T>[];
+    distributions: Distribution<T>[];
     loading: boolean;
     leftAxisLabel?: string;
     boxPlotColor?: string;
