@@ -166,7 +166,7 @@ const ViolinBoxPlot = <T extends object>(
                                     <ViolinPlot
                                         data={[...filteredData].sort((a, b) => a.value - b.value)}
                                         stroke="black"
-                                        strokeWidth={props.violinPlotStroke ?? 1}
+                                        strokeWidth={props.violinProps?.stroke ?? 1}
                                         left={(xScale(xDomain[i]) ?? 0) + offset}
                                         width={violinWidth}
                                         valueScale={yScale}
@@ -182,14 +182,14 @@ const ViolinBoxPlot = <T extends object>(
                                         thirdQuartile={thirdQuartile}
                                         median={median}
                                         boxWidth={boxWidth}
-                                        fill={props.boxPlotColor ?? "#000000"}
+                                        fill={props.boxProps?.color ?? "#000000"}
                                         fillOpacity={0.3}
-                                        stroke={props.boxPlotColor ?? "#000000"}
-                                        strokeWidth={props.boxPlotStroke ?? 3}
+                                        stroke={props.boxProps?.color ?? "#000000"}
+                                        strokeWidth={props.boxProps?.stroke ?? 3}
                                         valueScale={yScale}
                                         outliers={props.showAllPoints ? x.otherData : props.outliers ? outliers : []}
                                         minProps={{
-                                            stroke: props.minColor ?? props.boxPlotColor ?? "#000000",
+                                            stroke: props.boxProps?.minColor ?? props.boxProps?.color ?? "#000000",
                                             onMouseOver: () => {
                                                 showTooltip({ label: x.label, min: min.toFixed(2) })
                                             },
@@ -198,7 +198,7 @@ const ViolinBoxPlot = <T extends object>(
                                             },
                                         }}
                                         maxProps={{
-                                            stroke: props.maxColor ?? props.boxPlotColor ?? "#000000",
+                                            stroke: props.boxProps?.maxColor ?? props.boxProps?.color ?? "#000000",
                                             onMouseOver: () => {
                                                 showTooltip({ label: x.label, max: max.toFixed(2) })
                                             },
@@ -222,7 +222,7 @@ const ViolinBoxPlot = <T extends object>(
                                             },
                                         }}
                                         medianProps={{
-                                            stroke: props.medianColor ?? props.boxPlotColor ?? "#000000",
+                                            stroke: props.boxProps?.medianColor ?? props.boxProps?.color ?? "#000000",
                                             onMouseOver: () => {
                                                 showTooltip({ label: x.label, median: median.toFixed(2) })
                                             },
@@ -231,7 +231,7 @@ const ViolinBoxPlot = <T extends object>(
                                             },
                                         }}
                                         outlierProps={{
-                                            fill: props.outlierColor ?? "#000000",
+                                            fill: props.boxProps?.outlierColor ?? "#000000",
                                             onMouseOver: (event) => {
                                                 const target = event.target as SVGElement;
                                                 const index = Array.from(target.parentNode?.children || []).indexOf(target);

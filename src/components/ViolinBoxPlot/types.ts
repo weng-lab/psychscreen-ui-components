@@ -12,19 +12,27 @@ export type Distribution<T> = {
     metaData?: T;
 }
 
-export type ViolinBoxPlotProps<T> = {
-    distributions: Distribution<T>[];
-    loading: boolean;
-    leftAxisLabel?: string;
-    boxPlotColor?: string;
-    boxPlotStroke?: number;
-    violinPlotStroke?: number;
+export type ViolinProps = {
+    stroke?: number;
+}
+
+export type BoxProps = {
+    color?: string;
+    stroke?: number;
     outlierColor?: string;
     medianColor?: string;
     minColor?: string;
     maxColor?: string;
+}
+
+export type ViolinBoxPlotProps<T> = {
+    distributions: Distribution<T>[];
+    loading: boolean;
+    leftAxisLabel?: string;
     disableBoxPlot?: boolean;
     disableViolinPlot?: boolean;
+    boxProps?: BoxProps;
+    violinProps?: ViolinProps;
     outliers?: boolean;
     showAllPoints?: boolean;
     labelOrientation?: "horizontal" | "vertical" | "leftDiagonal" | "rightDiagonal"
