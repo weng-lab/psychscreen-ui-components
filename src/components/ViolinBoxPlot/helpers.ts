@@ -2,7 +2,7 @@ import { Datum } from "./types";
 
 // Helper function to measure the height of the longest tick
 export const getTextHeight = (text: string, fontSize: number, fontFamily: string): number => {
-    const el = document.createElement("div");
+    const el = document.createElement("g");
     el.style.position = "absolute";
     el.style.visibility = "hidden";
     el.style.fontSize = `${fontSize}px`;
@@ -81,24 +81,56 @@ export function gaussian(amplitude: number, mean: number, stdev: number, positio
  * @param bandWidth: the standard deviation of the kernel; defaults to 1/20 of the domain width.
  * @param sampleRate: the rate at which to sample the density; defaults to 1/100 of the domain width.
  */
-// export function standardNormalKernel(
-//     input: number[],
-//     sampleDomain: number[] = [],
-//     bandWidth: number = -1.0,
-//     sampleRate: number = -1.0
-// ): number[] {
-//     const minimum = 2 === sampleDomain.length ? sampleDomain[0] : Math.min(...input);
-//     const maximum = 2 === sampleDomain.length ? sampleDomain[1] : Math.max(...input);
-//     if (-1.0 === bandWidth) bandWidth = (maximum - minimum) / 30.0;
-//     if (-1.0 === sampleRate) sampleRate = (maximum - minimum) / 100.0;
-//     const samplePositions: number[] = [];
-//     for (let i = minimum + sampleRate; i <= maximum; i += sampleRate) samplePositions.push(i);
-//     const retval = samplePositions.map(x => 0.0);
-//     input.forEach(x => {
-//         const values = gaussian(Math.sqrt(2.0 * Math.PI) * bandWidth, x, bandWidth, samplePositions);
-//         values.forEach((x, i) => {
-//             retval[i] += x;
-//         });
-//     });
-//     return retval;
-// }
+export function standardNormalKernel(
+    input: number[],
+    sampleDomain: number[] = [],
+    bandWidth: number = -1.0,
+    sampleCount: number = 100
+): number[] {
+    // Determine the minimum and maximum from the input or sampleDomain
+    const minimum = sampleDomain.length === 2 ? sampleDomain[0] : Math.min(...input);
+    const maximum = sampleDomain.length === 2 ? sampleDomain[1] : Math.max(...input);
+
+    // Set default bandwidth if not provided
+    if (bandWidth === -1.0) bandWidth = (maximum - minimum) / 30.0;
+
+    // Generate exactly 100 sample positions
+    const samplePositions = Array.from(
+        { length: sampleCount },
+        (_, i) => minimum + i * (maximum - minimum) / (sampleCount - 1)
+    );
+
+    // Initialize the density array
+    const densities = new Array(sampleCount).fill(0);
+
+    // Calculate the density for each input value
+    input.forEach(value => {
+        const weights = gaussian(Math.sqrt(2.0 * Math.PI) * bandWidth, value, bandWidth, samplePositions);
+        weights.forEach((weight, i) => {
+            densities[i] += weight;
+        });
+    });
+
+    return densities;
+}
+
+export function binKernelDensity(
+    data: number[],
+    bins: number = 50
+): { value: number, count: number }[] {
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const binWidth = (max - min) / bins;
+    const binnedData: { value: number, count: number }[] = Array.from({ length: bins }, (_, i) => ({
+        value: min + i * binWidth + binWidth / 2,
+        count: 0,
+    }));
+
+    data.forEach(value => {
+        const binIndex = Math.floor((value - min) / binWidth);
+        const clampedIndex = Math.min(binIndex, bins - 1); // Ensure last value fits in the last bin
+        binnedData[clampedIndex].count += 1;
+    });
+
+    return binnedData;
+}

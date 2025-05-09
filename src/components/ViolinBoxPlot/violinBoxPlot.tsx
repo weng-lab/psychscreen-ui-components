@@ -7,7 +7,7 @@ import { Tooltip } from "@visx/tooltip";
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 import { Text } from '@visx/text';
-import { calculateBoxStats, getTextHeight } from "./helpers";
+import { binKernelDensity, calculateBoxStats, getTextHeight, standardNormalKernel } from "./helpers";
 
 const ViolinBoxPlot = <T extends object>(
     props: ViolinBoxPlotProps<T>
@@ -65,6 +65,12 @@ const ViolinBoxPlot = <T extends object>(
     const allValues: number[] = props.distributions.flatMap(x =>
         x.data.flatMap(d => Array(d.count).fill(d.value))
     );
+
+    const test = standardNormalKernel(allValues, [Math.min(...allValues), Math.max(...allValues)]);
+    const ashg = binKernelDensity(test)
+    // console.log(test)
+    // console.log(ashg)
+    console.log(allValues)
 
     const minYValue = Math.min(...allValues);
     const maxYValue = Math.max(...allValues);
@@ -236,7 +242,7 @@ const ViolinBoxPlot = <T extends object>(
                                                 const target = event.target as SVGElement;
                                                 const index = Array.from(target.parentNode?.children || []).indexOf(target);
                                                 const outlierValue = outliers[index];
-                                                showTooltip({ label: x.label, value: outlierValue.toFixed(2) });
+                                                showTooltip({ label: x.label, outlier: outlierValue.toFixed(2) });
                                             },
                                             onMouseLeave: () => {
                                                 hideTooltip();

@@ -45,5 +45,5 @@ export interface TooltipData {
     max?: string;
     firstQuartile?: string;
     thirdQuartile?: string;
-    value?: string;
+    outlier?: string;
   }

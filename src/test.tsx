@@ -135,6 +135,12 @@ function App() {
   const ref = useRef()
   const data = generateTestData()
 
+  const shjdb = [{data: [{value: 5, count: 1},{value: 4, count: 1},], label: "group1", color: "red", otherData: []},
+  {data: [{value: 5, count: 1},{value: 4, count: 2},{value: 3, count: 1},{value: 6, count: 0}], label: "group2", color: "red", otherData: []},
+  {data: [{value: 5, count: 1},{value: 4, count: 2},{value: 3, count: 1},{value: 6, count: 0}], label: "group3", color: "red", otherData: []},
+  {data: [{value: 5, count: 1},{value: 4, count: 2},{value: 3, count: 1},{value: 6, count: 0}], label: "group4", color: "red", otherData: []}
+  ]
+
   return (
     <Box
       padding={1}
@@ -149,7 +155,7 @@ function App() {
         loading={data.loading}
         leftAxisLabel="Left Axis Label"
         outliers
-        labelOrientation="horizontal"
+        labelOrientation="leftDiagonal"
       />
     </Box>
   );
