@@ -7,7 +7,7 @@ import { Tooltip } from "@visx/tooltip";
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 import { Text } from '@visx/text';
-import { calculateBoxStats } from "./helpers";
+import { calculateBoxStats, getTextHeight } from "./helpers";
 
 const ViolinBoxPlot = <T extends object>(
     props: ViolinBoxPlotProps<T>
@@ -20,9 +20,20 @@ const ViolinBoxPlot = <T extends object>(
     const [mouseX, setMouseX] = useState(0);
     const [mouseY, setMouseY] = useState(0);
 
+    //ref for listening to mouse movements
     const svgRef = useRef<SVGSVGElement>(null);
+
+    //Array of labels
+    const xDomain = props.distributions.map((x, i) => x.label ?? `Group ${i + 1}`);
+    
     const offset = 40;
     const labelOrientation = props.labelOrientation ?? "horizontal"
+    const fontSize = 15;
+
+    //If the label orientation is anything but horizontal, find the max height of the elements, otherwise set to fontsize
+    const maxLabelHeight = labelOrientation === "horizontal" ? fontSize : Math.max(
+        ...xDomain.map(label => getTextHeight(label, fontSize, "Arial"))
+    ) / (labelOrientation !== "vertical" ? 1.5 : 1);
 
     const handleMouseMove = useCallback((event: React.MouseEvent<SVGSVGElement>) => {
         if (!svgRef.current) return;
@@ -48,8 +59,9 @@ const ViolinBoxPlot = <T extends object>(
 
     // bounds
     const xMax = parentWidth;
-    const yMax = parentHeight - 120;
+    const yMax = parentHeight - maxLabelHeight - 2 * offset;
 
+    //all values from data spread out based on count
     const allValues: number[] = props.distributions.flatMap(x =>
         x.data.flatMap(d => Array(d.count).fill(d.value))
     );
@@ -58,7 +70,6 @@ const ViolinBoxPlot = <T extends object>(
     const maxYValue = Math.max(...allValues);
 
     // scales
-    const xDomain = props.distributions.map((x, i) => x.label ?? `Group ${i + 1}`);
     const xScale = scaleBand<string>({
         range: [0, xMax],
         round: true,
@@ -78,8 +89,8 @@ const ViolinBoxPlot = <T extends object>(
             textAnchor="middle"
             verticalAnchor="end"
             angle={-90}
-            fontSize={15}
-            y={parentHeight / 2}
+            fontSize={fontSize}
+            y={yMax / 2}
             x={0}
         >
             {props.leftAxisLabel}
@@ -91,6 +102,7 @@ const ViolinBoxPlot = <T extends object>(
 
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
+            <div style={{ position: "absolute", visibility: "hidden", width: 0, height: 0, overflow: "hidden" }} />
             <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
                 <Group top={offset} left={offset}>
                     <AxisLeft
@@ -100,7 +112,7 @@ const ViolinBoxPlot = <T extends object>(
                         tickStroke="black"
                         tickLabelProps={() => ({
                             fill: 'black',
-                            fontSize: 15,
+                            fontSize: fontSize,
                             textAnchor: 'end',
                             dy: '0.33em',
                         })}
@@ -114,8 +126,8 @@ const ViolinBoxPlot = <T extends object>(
                         tickStroke="black"
                         tickLabelProps={() => ({
                             fill: 'black',
-                            fontSize: 15,
-                            textAnchor: labelOrientation === "vertical" ? "end" : labelOrientation === "rightDiagonal" ? "start" : "middle",
+                            fontSize: fontSize,
+                            textAnchor: labelOrientation === "vertical" || labelOrientation === "leftDiagonal" ? "end" : labelOrientation === "rightDiagonal" ? "start" : "middle",
                         })}
                         tickComponent={({ x, y, formattedValue, ...tickProps }) => {
                             if (labelOrientation !== "horizontal") {
@@ -129,7 +141,7 @@ const ViolinBoxPlot = <T extends object>(
                                             labelOrientation === "leftDiagonal" ? `rotate(-45, ${x}, ${y})` :
                                             `rotate(45, ${x}, ${y})`
                                         }
-                                        textAnchor={labelOrientation === "vertical" ? "end" : labelOrientation === "rightDiagonal" ? "start" : "middle"}
+                                        textAnchor={labelOrientation === "vertical" || labelOrientation === "leftDiagonal" ? "end" : labelOrientation === "rightDiagonal" ? "start" : "middle"}
                                     >
                                         {formattedValue}
                                     </text>

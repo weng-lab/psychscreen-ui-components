@@ -1,5 +1,20 @@
 import { Datum } from "./types";
 
+// Helper function to measure the height of the longest tick
+export const getTextHeight = (text: string, fontSize: number, fontFamily: string): number => {
+    const el = document.createElement("div");
+    el.style.position = "absolute";
+    el.style.visibility = "hidden";
+    el.style.fontSize = `${fontSize}px`;
+    el.style.fontFamily = fontFamily;
+    el.style.whiteSpace = "nowrap"; // Prevents wrapping
+    el.textContent = text;
+    document.body.appendChild(el);
+    const width = el.getBoundingClientRect().width;
+    document.body.removeChild(el);
+    return width;
+};
+
 // Get the min, max, quartiles, median, and ouotiers for each data set
 export const calculateBoxStats = (data: Datum[], includeOutliers: boolean, otherData: number[]) => {
     const values: number[] = [];
@@ -66,52 +81,24 @@ export function gaussian(amplitude: number, mean: number, stdev: number, positio
  * @param bandWidth: the standard deviation of the kernel; defaults to 1/20 of the domain width.
  * @param sampleRate: the rate at which to sample the density; defaults to 1/100 of the domain width.
  */
-export function standardNormalKernel(
-    input: number[],
-    sampleDomain: number[] = [],
-    bandWidth: number = -1.0,
-    sampleRate: number = -1.0
-): number[] {
-    const minimum = 2 === sampleDomain.length ? sampleDomain[0] : Math.min(...input);
-    const maximum = 2 === sampleDomain.length ? sampleDomain[1] : Math.max(...input);
-    if (-1.0 === bandWidth) bandWidth = (maximum - minimum) / 30.0;
-    if (-1.0 === sampleRate) sampleRate = (maximum - minimum) / 100.0;
-    const samplePositions: number[] = [];
-    for (let i = minimum + sampleRate; i <= maximum; i += sampleRate) samplePositions.push(i);
-    const retval = samplePositions.map(x => 0.0);
-    input.forEach(x => {
-        const values = gaussian(Math.sqrt(2.0 * Math.PI) * bandWidth, x, bandWidth, samplePositions);
-        values.forEach((x, i) => {
-            retval[i] += x;
-        });
-    });
-    return retval;
-}
-
-export function densityAtPoints(
-    input: number[],
-    samplePositions: number[],
-    bandWidth: number = -1
-): { value: number, count: number }[] {
-    const min = Math.min(...input);
-    const max = Math.max(...input);
-    if (bandWidth === -1) bandWidth = (max - min) / 30;
-
-    const retval = samplePositions.map(() => 0);
-    input.forEach(x => {
-        const values = gaussian(
-            Math.sqrt(2.0 * Math.PI) * bandWidth,
-            x,
-            bandWidth,
-            samplePositions
-        );
-        values.forEach((v, i) => {
-            retval[i] += v;
-        });
-    });
-
-    return samplePositions.map((value, i) => ({
-        value,
-        count: Math.round(retval[i] * 100)
-    }));
-}
+// export function standardNormalKernel(
+//     input: number[],
+//     sampleDomain: number[] = [],
+//     bandWidth: number = -1.0,
+//     sampleRate: number = -1.0
+// ): number[] {
+//     const minimum = 2 === sampleDomain.length ? sampleDomain[0] : Math.min(...input);
+//     const maximum = 2 === sampleDomain.length ? sampleDomain[1] : Math.max(...input);
+//     if (-1.0 === bandWidth) bandWidth = (maximum - minimum) / 30.0;
+//     if (-1.0 === sampleRate) sampleRate = (maximum - minimum) / 100.0;
+//     const samplePositions: number[] = [];
+//     for (let i = minimum + sampleRate; i <= maximum; i += sampleRate) samplePositions.push(i);
+//     const retval = samplePositions.map(x => 0.0);
+//     input.forEach(x => {
+//         const values = gaussian(Math.sqrt(2.0 * Math.PI) * bandWidth, x, bandWidth, samplePositions);
+//         values.forEach((x, i) => {
+//             retval[i] += x;
+//         });
+//     });
+//     return retval;
+// }

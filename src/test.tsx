@@ -54,9 +54,10 @@ function generateTestData(): ViolinBoxPlotProps<{ group: string }> {
     loading: false,
     leftAxisLabel: 'Expression Level',
     distributions: [
-      generateViolin('Group A', '#4f46e5'),
-      generateViolin('Group B', '#16a34a'),
-      generateViolin('Group C', '#dc2626'),
+      generateViolin('Short', '#4f46e5'),
+      generateViolin('Medium Label', '#16a34a'),
+      generateViolin('VeryVeryLongLabelWithoutAnySpaces', '#dc2626'),
+      generateViolin('A label with multiple lines of text that should wrap', '#FFA500'),
     ],
   };
 }
@@ -148,7 +149,7 @@ function App() {
         loading={data.loading}
         leftAxisLabel="Left Axis Label"
         outliers
-        labelOrientation="vertical"
+        labelOrientation="horizontal"
       />
     </Box>
   );
