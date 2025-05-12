@@ -4,10 +4,8 @@ export type Datum = {
 }
 
 export type Distribution<T> = {
-    data: Datum[];
-    otherData: number[];
+    data: number[];
     label: string;
-    width?: number;
     color?: string;
     metaData?: T;
 }

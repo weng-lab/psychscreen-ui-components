@@ -1,144 +1,43 @@
 import { createRoot } from "react-dom/client";
 import { Box } from "@mui/material";
-import { Distribution, ViolinBoxPlotProps } from "./components/ViolinBoxPlot/types";
 import ViolinBoxPlot from "./components/ViolinBoxPlot/violinBoxPlot";
 import { useRef } from "react";
 
-function generateTestData(): ViolinBoxPlotProps<{ group: string }> {
-  const generateViolin = (label: string, color: string): Distribution<{ group: string }> => {
-    const generateDistribution = (mean: number, stdDev: number, numBins: number, outlierFactor: number = 3) => {
-      const counts: { value: number, count: number }[] = [];
-      const values: number[] = [];
-      const binWidth = stdDev / (numBins / 2);
-      const minCount = 1;
-
-      // Generate values centered around the mean with a Gaussian-like distribution
-      for (let i = 0; i < numBins; i++) {
-        const value = mean + (i - numBins / 2) * binWidth;
-        const distance = (value - mean) / stdDev;
-        const count = Math.max(
-          minCount,
-          Math.round((Math.exp(-0.5 * distance ** 2) + Math.random() * 0.1) * 100)
-        );
-        counts.push({ value, count });
-        values.push(value);
-      }
-
-      // Add outliers to the distribution
-      const numOutliers = Math.floor(Math.random() * 5) + 3;
-      for (let i = 0; i < numOutliers; i++) {
-        const outlierValue = mean + (Math.random() * 2 - 1) * outlierFactor * stdDev;
-        const outlierCount = Math.max(minCount, Math.floor(Math.random() * 3) + 1);
-        counts.push({ value: outlierValue, count: outlierCount });
-        values.push(outlierValue);
-      }
-
-      return { counts, values };
-    };
-
-    const dataA = generateDistribution(10, 3, 30);
-    const dataB = generateDistribution(15, 4, 30);
-    const dataC = generateDistribution(20, 5, 30);
-
-    return {
-      data: label === 'Group A' ? dataA.counts : label === 'Group B' ? dataB.counts : dataC.counts,
-      otherData: label === 'Group A' ? dataA.values : label === 'Group B' ? dataB.values : dataC.values,
-      label,
-      color,
-      width: 30,
-      metaData: { group: label },
-    };
-  };
-
-  return {
-    loading: false,
-    leftAxisLabel: 'Expression Level',
-    distributions: [
-      generateViolin('Short', '#4f46e5'),
-      generateViolin('Medium Label', '#16a34a'),
-      generateViolin('VeryVeryLongLabelWithoutAnySpaces', '#dc2626'),
-      generateViolin('A label with multiple lines of text that should wrap', '#FFA500'),
-    ],
-  };
-}
-
-
-const testData = (
-  [{
-      label: "adipose",
-      data: [
-        0.436162647040756, 
-        0.4183012913197454, 
-        0.13353890837021754, 
-        0.6106601630898799, 
-        0.4116197059632301, 
-        0.9116901587538612,
-      ]
-    },{
-      label: "adrenal gland",
-      data: [
-        0.9585638832219674, 
-        0.9885589568786155, 
-        0.3944516808262163, 
-        0.5037906830571811, 
-        0.3263358609287514, 
-        0.9786369483844743, 
-        0.9479236198317263, 
-        1.0546130545568877, 
-        0.877371345869774,
-      ]
-    },{
-      label: "blood vessel",
-      data: [
-        0.7767011839884108, 
-        1.0784568180532925, 
-        0.9439888750737718, 
-        0.5786392099680723, 
-        0.5693739096150459, 
-        0.5611013836490559, 
-        0.23299611039215382,
-      ]
-    },{
-      label: "brain",
-      data: [
-        1.0584260244570054, 
-        1.0301947853567512, 
-        1.0441476208787228, 
-        1.1058506743851435, 
-        1.0599418880619547, 
-        1.0261245167454502, 
-        1.184975190698261, 
-        1.1439511164239635, 
-        1.1649473726218416, 
-        1.0930713063760635, 
-        1.0199466816788423, 
-        1.0273496077747566, 
-        1.0318122713303703, 
-        1.055378331375, 
-        1.0969100130080565, 
-        1.1287222843384268, 
-        1.048053173115609, 
-        1.1199154102579911, 
-        1.065206128054312, 
-        1.0685568950723632, 
-        1.1319392952104246, 
-        1.0021660617565076, 
-        1.044539760392411, 
-        1.080987046910887, 
-        1.1737688231366499,
-      ]
-    },
-  ]
-);
-
 function App() {
   const ref = useRef()
-  const data = generateTestData()
 
-  const shjdb = [{data: [{value: 5, count: 1},{value: 4, count: 1},], label: "group1", color: "red", otherData: []},
-  {data: [{value: 5, count: 1},{value: 4, count: 2},{value: 3, count: 1},{value: 6, count: 0}], label: "group2", color: "red", otherData: []},
-  {data: [{value: 5, count: 1},{value: 4, count: 2},{value: 3, count: 1},{value: 6, count: 0}], label: "group3", color: "red", otherData: []},
-  {data: [{value: 5, count: 1},{value: 4, count: 2},{value: 3, count: 1},{value: 6, count: 0}], label: "group4", color: "red", otherData: []}
+  const data = [5, 4, 4, 3, 2, 1, 1, 1]
+  const data2 = [7, 2, 6, 7, 7, 7, 7, 8 ,8 ,8 ,8 ,9, 9, 2, 3, 3, 3, 2, 1, 1, 1, 1, 4, 4, 5, 5 ,6, 6, 6, 7, 5, 4, 2,  9, 8, 10, 18]
+  const data3 = [
+    11.44, 6.88, 17.83, 4.46, 8.68, 8.95, 8.11, 13.21, 0.56, 18.11,
+    15.63, 14.69, 2.53, 14.61, 5.69, 17.72, 18.54, 15.96, 14.77, 12.49,
+    13.20, 17.28, 1.59, 15.83, 15.59, 2.08, 5.68, 14.84, 3.47, 18.93,
+    12.98, 10.97, 15.81, 12.22, 2.85, 16.55, 5.97, 15.92, 16.36, 5.86,
+    10.42, 19.95, 12.81, 7.42, 17.02, 17.77, 7.03, 8.06, 16.68, 16.72,
+    16.55, 15.90, 13.78, 2.16, 11.13, 10.40, 2.83, 19.01, 9.25, 4.09,
+    2.22, 5.28, 4.05, 1.72, 13.25, 13.52, 19.66, 6.94, 12.70, 11.65,
+    11.30, 11.82, 4.06, 12.37, 19.93, 12.85, 14.34, 0.03, 11.00, 18.61,
+    11.31, 10.84, 18.05, 12.83, 14.60, 6.44, 18.25, 13.02, 14.31, 15.14,
+    3.26, 3.26, 0.77, 12.23, 3.49, 16.00, 12.70, 14.30, 8.82, 15.62
+  ]
+  const data4 = [4, 2]
+  
+  const distributions = [
+    {
+      data: data4,
+      label: "test 1",
+      color: "red"
+    },
+    {
+      data: data2,
+      label: "test 2",
+      color: "blue"
+    },
+    {
+      data: data3,
+      label: "test 3",
+      color: "yellow"
+    }
   ]
 
   return (
@@ -151,8 +50,8 @@ function App() {
       ref={ref}
     >
       <ViolinBoxPlot
-        distributions={data.distributions}
-        loading={data.loading}
+        distributions={distributions}
+        loading={false}
         leftAxisLabel="Left Axis Label"
         outliers
         labelOrientation="leftDiagonal"

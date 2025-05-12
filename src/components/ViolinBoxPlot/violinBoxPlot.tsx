@@ -7,7 +7,8 @@ import { Tooltip } from "@visx/tooltip";
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 import { Text } from '@visx/text';
-import { binKernelDensity, calculateBoxStats, getTextHeight, standardNormalKernel } from "./helpers";
+import { calculateBoxStats, epanechnikov, getTextHeight, kernelDensityEstimator } from "./helpers";
+import * as d3 from "d3";
 
 const ViolinBoxPlot = <T extends object>(
     props: ViolinBoxPlotProps<T>
@@ -63,14 +64,8 @@ const ViolinBoxPlot = <T extends object>(
 
     //all values from data spread out based on count
     const allValues: number[] = props.distributions.flatMap(x =>
-        x.data.flatMap(d => Array(d.count).fill(d.value))
+        x.data.flatMap(d => d)
     );
-
-    const test = standardNormalKernel(allValues, [Math.min(...allValues), Math.max(...allValues)]);
-    const ashg = binKernelDensity(test)
-    // console.log(test)
-    // console.log(ashg)
-    console.log(allValues)
 
     const minYValue = Math.min(...allValues);
     const maxYValue = Math.max(...allValues);
@@ -89,6 +84,10 @@ const ViolinBoxPlot = <T extends object>(
         //make the bottom most tick 7% of the domain less so that there is room between the lowest plot and the bottom axis
         domain: [minYValue - (.07 * (maxYValue - minYValue)), maxYValue],
     });
+
+    const yTicks = d3.range(minYValue, maxYValue, 0.1);
+    const bandwidth = 2;
+    const kde = kernelDensityEstimator(epanechnikov(bandwidth), yTicks);
 
     const axisLeftLabel = (
         <Text
@@ -162,15 +161,21 @@ const ViolinBoxPlot = <T extends object>(
                     />
                     {props.distributions.map((x: Distribution<T>, i) => {
                         //get all the stats for the box plot
-                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(x.data, props.outliers ?? false, props.showAllPoints ? x.otherData : []);
+                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(x.data, props.outliers ?? false);
 
                         //filter out the outliers so they are not included in the violin plot
-                        const filteredData = x.data.filter(d => d.value >= min && d.value <= max);
+                        const filteredData = x.data.filter(d => d >= min && d <= max);
+
+                        const densityData = kde(filteredData)
+                        console.log(densityData)
+
+                        const violinData = densityData.filter(d => d.value >= min && d.value <= max);
+
                         return (
                             <g key={i}>
                                 {!props.disableViolinPlot &&
                                     <ViolinPlot
-                                        data={[...filteredData].sort((a, b) => a.value - b.value)}
+                                        data={[...violinData].sort((a, b) => a.value - b.value)}
                                         stroke="black"
                                         strokeWidth={props.violinProps?.stroke ?? 1}
                                         left={(xScale(xDomain[i]) ?? 0) + offset}
@@ -193,7 +198,7 @@ const ViolinBoxPlot = <T extends object>(
                                         stroke={props.boxProps?.color ?? "#000000"}
                                         strokeWidth={props.boxProps?.stroke ?? 3}
                                         valueScale={yScale}
-                                        outliers={props.showAllPoints ? x.otherData : props.outliers ? outliers : []}
+                                        outliers={props.showAllPoints ? x.data : props.outliers ? outliers : []}
                                         minProps={{
                                             stroke: props.boxProps?.minColor ?? props.boxProps?.color ?? "#000000",
                                             onMouseOver: () => {
