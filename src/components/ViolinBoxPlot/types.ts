@@ -1,7 +1,7 @@
 export type Datum = {
     value: number;
     count: number
-}
+}[]
 
 export type Distribution<T> = {
     data: number[];
