@@ -37,6 +37,11 @@ function App() {
       data: data3,
       label: "test 3",
       color: "yellow"
+    },
+    {
+      data: data,
+      label: "test 4",
+      color: "orange"
     }
   ]
 

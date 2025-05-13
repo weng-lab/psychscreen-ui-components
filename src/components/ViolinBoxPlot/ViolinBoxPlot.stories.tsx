@@ -125,3 +125,16 @@ export const Coloring: Story = {
         }
     },
 };
+
+// Domain Change
+export const Domain: Story = {
+    args: {
+        distributions: distributions,
+        loading: false,
+        leftAxisLabel: "Left Axis Label",
+        outliers: true,
+        violinProps: {
+            bandwidth: .5,
+        }
+    },
+};

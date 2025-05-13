@@ -86,7 +86,7 @@ const ViolinBoxPlot = <T extends object>(
     });
 
     const yTicks = d3.range(minYValue, maxYValue, 0.1);
-    const bandwidth = 2;
+    const bandwidth = props.violinProps?.bandwidth ?? 2;
     const kde = kernelDensityEstimator(epanechnikov(bandwidth), yTicks);
 
     const axisLeftLabel = (
