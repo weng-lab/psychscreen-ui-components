@@ -40,17 +40,17 @@ const data3 = [
 const distributions = [
     {
         data: data2,
-        label: "test 1",
+        label: "Group 1",
         color: "blue"
     },
     {
         data: data3,
-        label: "test 2",
+        label: "Group 2",
         color: "yellow"
     },
     {
         data: data,
-        label: "test 3",
+        label: "Group 3",
         color: "orange"
     }
 ]
@@ -122,19 +122,6 @@ export const Coloring: Story = {
         },
         violinProps: {
             stroke: 3
-        }
-    },
-};
-
-// Domain Change
-export const Domain: Story = {
-    args: {
-        distributions: distributions,
-        loading: false,
-        leftAxisLabel: "Left Axis Label",
-        outliers: true,
-        violinProps: {
-            bandwidth: .5,
         }
     },
 };

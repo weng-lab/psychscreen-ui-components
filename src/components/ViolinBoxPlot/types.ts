@@ -5,13 +5,12 @@ export type Datum = {
 
 export type Distribution<T> = {
     data: number[];
-    label: string;
+    label?: string;
     color?: string;
     metaData?: T;
 }
 
 export type ViolinProps = {
-    bandwidth?: number;
     stroke?: number;
 }
 

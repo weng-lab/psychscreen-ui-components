@@ -61,30 +61,27 @@ export function kernelDensityEstimator(
     X: number[]
 ): (data: number[]) => { value: number, count: number }[] {
     return (data: number[]) => {
-        // Calculate the raw count (density) for each tick
-        const rawCount = X.map((x) => ({
+        return X.map((x) => ({
             value: x,
             count: d3.mean(data, (v) => kernel(x - v)) || 0,
         }));
-
-        // Scale the counts to taper to zero at the min and max
-        const min = Math.min(...data);
-        const max = Math.max(...data);
-
-        // Apply the scaling to count values
-        return rawCount.map(point => {
-            const taperFactor = (point.value - min) * (max - point.value);
-            return {
-                value: point.value,
-                count: taperFactor > 0 ? point.count * taperFactor : 0,
-            };
-        });
     };
 }
 
-
-export function epanechnikov(bandwidth: number){
-    return (x: number) => Math.abs(x /= bandwidth) <= 1 ? 0.75 * (1 - x * x) / bandwidth : 0;
+export function gaussian(bandwidth: number): (x: number) => number {
+    const normalizationFactor = 1 / (bandwidth * Math.sqrt(2 * Math.PI));
+    return (x) => normalizationFactor * Math.exp(-0.5 * Math.pow(x / bandwidth, 2));
 }
 
-
+export function scottRule(data: number[]) {
+    const n = data.length;
+    if (n === 0) {
+      return 0;
+    }
+  
+    const mean = data.reduce((a, b) => a + b, 0) / n;
+    const variance = data.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / data.length;
+    const stdDev = Math.sqrt(variance)
+    const binWidth = 3.5 * stdDev / Math.pow(n, 1/3);
+    return binWidth;
+  }

@@ -7,7 +7,7 @@ import { Tooltip } from "@visx/tooltip";
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 import { Text } from '@visx/text';
-import { calculateBoxStats, epanechnikov, getTextHeight, kernelDensityEstimator } from "./helpers";
+import { calculateBoxStats, gaussian, getTextHeight, kernelDensityEstimator, scottRule } from "./helpers";
 import * as d3 from "d3";
 
 const ViolinBoxPlot = <T extends object>(
@@ -85,10 +85,6 @@ const ViolinBoxPlot = <T extends object>(
         domain: [minYValue - (.07 * (maxYValue - minYValue)), maxYValue],
     });
 
-    const yTicks = d3.range(minYValue, maxYValue, 0.1);
-    const bandwidth = props.violinProps?.bandwidth ?? 2;
-    const kde = kernelDensityEstimator(epanechnikov(bandwidth), yTicks);
-
     const axisLeftLabel = (
         <Text
             textAnchor="middle"
@@ -107,7 +103,6 @@ const ViolinBoxPlot = <T extends object>(
 
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
-            <div style={{ position: "absolute", visibility: "hidden", width: 0, height: 0, overflow: "hidden" }} />
             <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
                 <Group top={offset} left={offset}>
                     <AxisLeft
@@ -164,10 +159,13 @@ const ViolinBoxPlot = <T extends object>(
                         const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(x.data, props.outliers ?? false);
 
                         //filter out the outliers so they are not included in the violin plot
+
                         const filteredData = x.data.filter(d => d >= min && d <= max);
+                        const yTicks = d3.range(minYValue, maxYValue, 0.1);
+                        const bandwidth = scottRule(filteredData);
+                        const kde = kernelDensityEstimator(gaussian(bandwidth), yTicks);
 
                         const densityData = kde(filteredData)
-                        console.log(densityData)
 
                         const violinData = densityData.filter(d => d.value >= min && d.value <= max);
 
