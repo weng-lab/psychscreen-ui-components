@@ -14,7 +14,7 @@ export type ViolinProps = {
     stroke?: number;
 }
 
-export type BoxProps = {
+export type CrossProps = {
     color?: string;
     stroke?: number;
     outlierColor?: string;
@@ -23,18 +23,33 @@ export type BoxProps = {
     maxColor?: string;
 }
 
-export type ViolinBoxPlotProps<T> = {
+export type ViolinPlotProps<T> = {
     distributions: Distribution<T>[];
     loading: boolean;
     leftAxisLabel?: string;
     disableBoxPlot?: boolean;
     disableViolinPlot?: boolean;
-    boxProps?: BoxProps;
+    boxProps?: CrossProps;
     violinProps?: ViolinProps;
     outliers?: boolean;
     showAllPoints?: boolean;
     labelOrientation?: "horizontal" | "vertical" | "leftDiagonal" | "rightDiagonal"
 }
+
+export interface CrossPlotProps {
+    crossProps?: CrossProps;
+    left: number;
+    median: number;
+    firstQuartile: number;
+    thirdQuartile: number;
+    outliers: number[];
+    yScale: (value: number) => number;
+    showTooltip: (data: Record<string, string | number>) => void;
+    hideTooltip: () => void;
+    medianWidth: number;
+    label: string;
+}
+
 
 export interface TooltipData {
     label?: string;
@@ -44,4 +59,11 @@ export interface TooltipData {
     firstQuartile?: string;
     thirdQuartile?: string;
     outlier?: string;
-  }
+}
+
+export interface TooltipProps {
+    mouseX: number;
+    mouseY: number;
+    data: TooltipData;
+    open: boolean;
+}

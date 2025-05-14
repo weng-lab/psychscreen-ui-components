@@ -16,7 +16,7 @@ export const getTextHeight = (text: string, fontSize: number, fontFamily: string
 };
 
 // Get the min, max, quartiles, median, and ouotiers for each data set
-export const calculateBoxStats = (data: number[], includeOutliers: boolean) => {
+export const calculateBoxStats = (data: number[]) => {
 
     data.sort((a, b) => a - b);
 
@@ -48,9 +48,8 @@ export const calculateBoxStats = (data: number[], includeOutliers: boolean) => {
     const outliers = data.filter(val => val < lowerWhisker || val > upperWhisker);
 
     // Min and max
-    const filteredValues = includeOutliers ? data.filter(val => val >= lowerWhisker && val <= upperWhisker) : data;
-    const min = filteredValues[0];
-    const max = filteredValues[filteredValues.length - 1];
+    const min = data[0];
+    const max = data[data.length - 1];
 
     return { min, max, firstQuartile, thirdQuartile, median: med, outliers };
     

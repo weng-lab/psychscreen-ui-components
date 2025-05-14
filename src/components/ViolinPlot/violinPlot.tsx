@@ -1,18 +1,20 @@
-import { TooltipData, Distribution, ViolinBoxPlotProps } from "./types";
+import { TooltipData, Distribution, ViolinPlotProps } from "./types";
 import { useParentSize } from '@visx/responsive';
 import { Group } from "@visx/group";
-import { ViolinPlot, BoxPlot } from "@visx/stats";
+import { ViolinPlot as VisxViolinPlot } from "@visx/stats";
 import { scaleBand, scaleLinear } from "@visx/scale";
-import { Tooltip } from "@visx/tooltip";
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 import { Text } from '@visx/text';
 import { calculateBoxStats, gaussian, getTextHeight, kernelDensityEstimator, scottRule } from "./helpers";
 import * as d3 from "d3";
+import ViolinTooltip from "./violinTooltip";
+import CrossPlot from "./crossPlot";
 
-const ViolinBoxPlot = <T extends object>(
-    props: ViolinBoxPlotProps<T>
+const ViolinPlot = <T extends object>(
+    props: ViolinPlotProps<T>
 ) => {
+    console.log("sdjhfg")
     const { parentRef, width: parentWidth, height: parentHeight } = useParentSize();
 
     const [tooltipData, setTooltipData] = useState<TooltipData | null | T>()
@@ -26,7 +28,7 @@ const ViolinBoxPlot = <T extends object>(
 
     //Array of labels
     const xDomain = props.distributions.map((x, i) => x.label ?? `Group ${i + 1}`);
-    
+
     const offset = 40;
     const labelOrientation = props.labelOrientation ?? "horizontal"
     const fontSize = 15;
@@ -138,8 +140,8 @@ const ViolinBoxPlot = <T extends object>(
                                         y={y}
                                         transform={
                                             labelOrientation === "vertical" ? `rotate(-90, ${x}, ${y})` :
-                                            labelOrientation === "leftDiagonal" ? `rotate(-45, ${x}, ${y})` :
-                                            `rotate(45, ${x}, ${y})`
+                                                labelOrientation === "leftDiagonal" ? `rotate(-45, ${x}, ${y})` :
+                                                    `rotate(45, ${x}, ${y})`
                                         }
                                         textAnchor={labelOrientation === "vertical" || labelOrientation === "leftDiagonal" ? "end" : labelOrientation === "rightDiagonal" ? "start" : "middle"}
                                     >
@@ -156,24 +158,19 @@ const ViolinBoxPlot = <T extends object>(
                     />
                     {props.distributions.map((x: Distribution<T>, i) => {
                         //get all the stats for the box plot
-                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(x.data, props.outliers ?? false);
+                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(x.data);
 
-                        //filter out the outliers so they are not included in the violin plot
-
-                        const filteredData = x.data.filter(d => d >= min && d <= max);
-                        const yTicks = d3.range(minYValue, maxYValue, 0.1);
-                        const bandwidth = scottRule(filteredData);
+                        const yTicks = d3.range(min, max, 0.1);
+                        const bandwidth = scottRule(x.data);
                         const kde = kernelDensityEstimator(gaussian(bandwidth), yTicks);
 
-                        const densityData = kde(filteredData)
-
-                        const violinData = densityData.filter(d => d.value >= min && d.value <= max);
+                        const densityData = kde(x.data)
 
                         return (
                             <g key={i}>
                                 {!props.disableViolinPlot &&
-                                    <ViolinPlot
-                                        data={[...violinData].sort((a, b) => a.value - b.value)}
+                                    <VisxViolinPlot
+                                        data={[...densityData].sort((a, b) => a.value - b.value)}
                                         stroke="black"
                                         strokeWidth={props.violinProps?.stroke ?? 1}
                                         left={(xScale(xDomain[i]) ?? 0) + offset}
@@ -183,74 +180,18 @@ const ViolinBoxPlot = <T extends object>(
                                     />
                                 }
                                 {!props.disableBoxPlot &&
-                                    <BoxPlot
-                                        min={min}
-                                        max={max}
-                                        left={(xScale(xDomain[i]) ?? 0) + (violinWidth - boxWidth) / 2 + offset}
+                                    <CrossPlot
+                                        crossProps={props.boxProps}
+                                        left={(xScale(xDomain[i]) ?? 0) + offset + violinWidth / 2}
+                                        median={median}
                                         firstQuartile={firstQuartile}
                                         thirdQuartile={thirdQuartile}
-                                        median={median}
-                                        boxWidth={boxWidth}
-                                        fill={props.boxProps?.color ?? "#000000"}
-                                        fillOpacity={0.3}
-                                        stroke={props.boxProps?.color ?? "#000000"}
-                                        strokeWidth={props.boxProps?.stroke ?? 3}
-                                        valueScale={yScale}
-                                        outliers={props.showAllPoints ? x.data : props.outliers ? outliers : []}
-                                        minProps={{
-                                            stroke: props.boxProps?.minColor ?? props.boxProps?.color ?? "#000000",
-                                            onMouseOver: () => {
-                                                showTooltip({ label: x.label, min: min.toFixed(2) })
-                                            },
-                                            onMouseLeave: () => {
-                                                hideTooltip();
-                                            },
-                                        }}
-                                        maxProps={{
-                                            stroke: props.boxProps?.maxColor ?? props.boxProps?.color ?? "#000000",
-                                            onMouseOver: () => {
-                                                showTooltip({ label: x.label, max: max.toFixed(2) })
-                                            },
-                                            onMouseLeave: () => {
-                                                hideTooltip();
-                                            },
-                                        }}
-                                        boxProps={{
-                                            onMouseOver: () => {
-                                                showTooltip({
-                                                    label: x.label,
-                                                    min: min.toFixed(2),
-                                                    max: max.toFixed(2),
-                                                    median: median.toFixed(2),
-                                                    firstQuartile: firstQuartile.toFixed(2),
-                                                    thirdQuartile: thirdQuartile.toFixed(2)
-                                                })
-                                            },
-                                            onMouseLeave: () => {
-                                                hideTooltip();
-                                            },
-                                        }}
-                                        medianProps={{
-                                            stroke: props.boxProps?.medianColor ?? props.boxProps?.color ?? "#000000",
-                                            onMouseOver: () => {
-                                                showTooltip({ label: x.label, median: median.toFixed(2) })
-                                            },
-                                            onMouseLeave: () => {
-                                                hideTooltip();
-                                            },
-                                        }}
-                                        outlierProps={{
-                                            fill: props.boxProps?.outlierColor ?? "#000000",
-                                            onMouseOver: (event) => {
-                                                const target = event.target as SVGElement;
-                                                const index = Array.from(target.parentNode?.children || []).indexOf(target);
-                                                const outlierValue = outliers[index];
-                                                showTooltip({ label: x.label, outlier: outlierValue.toFixed(2) });
-                                            },
-                                            onMouseLeave: () => {
-                                                hideTooltip();
-                                            },
-                                        }}
+                                        outliers={props.outliers ? outliers : []}
+                                        yScale={yScale}
+                                        showTooltip={showTooltip}
+                                        hideTooltip={hideTooltip}
+                                        medianWidth={boxWidth}
+                                        label={x.label ?? `Group ${i + 1}`}
                                     />
                                 }
                             </g>
@@ -259,21 +200,10 @@ const ViolinBoxPlot = <T extends object>(
                 </Group>
             </svg>
             {tooltipOpen && tooltipData && (
-                <Tooltip left={(mouseX + 10)} top={(mouseY)}>
-                    {tooltipData && Object.entries(tooltipData).map(([key, value]) => (
-                        <div key={key}>
-                            <strong>{key.charAt(0).toUpperCase() + key.slice(1)}: </strong>
-                            {typeof value === 'string'
-                                ? (value.length > 45
-                                    ? `${value.replace(/_/g, " ").slice(0, 45)}...`
-                                    : value.replace(/_/g, " "))
-                                : String(value)}
-                        </div>
-                    ))}
-                </Tooltip>
+                <ViolinTooltip mouseX={mouseX} mouseY={mouseY} data={tooltipData} open={tooltipOpen} />
             )}
         </div>
     );
 }
 
-export default ViolinBoxPlot
+export default ViolinPlot

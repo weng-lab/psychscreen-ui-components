@@ -1,9 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react';
-import ViolinBoxPlot from './violinBoxPlot';
+import ViolinPlot from './violinPlot';
 
 const meta = {
-    title: 'ViolinBoxPlot',
-    component: ViolinBoxPlot,
+    title: 'ViolinPlot',
+    component: ViolinPlot,
     tags: ['autodocs'],
     argTypes: {
     },
@@ -17,7 +17,7 @@ const meta = {
           </div>
         ),
       ],
-} satisfies Meta<typeof ViolinBoxPlot>;
+} satisfies Meta<typeof ViolinPlot>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
