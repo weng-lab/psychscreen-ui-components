@@ -84,3 +84,23 @@ export function scottRule(data: number[]) {
     const binWidth = 3.5 * stdDev / Math.pow(n, 1/3);
     return binWidth;
   }
+
+  export function silvermanRule(data: number[]) {
+    const n = data.length;
+    if (n === 0) return 0;
+
+    const mean = data.reduce((a, b) => a + b, 0) / n;
+    const variance = data.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / n;
+    const stdDev = Math.sqrt(variance);
+
+    //calc iqr
+    const sortedData = data.slice().sort((a, b) => a - b);
+    const q1 = sortedData[Math.floor((n - 1) * 0.25)];
+    const q3 = sortedData[Math.floor((n - 1) * 0.75)];
+    const iqr = q3 - q1;
+
+    const bandwidth = 0.9 * Math.min(stdDev, iqr / 1.34) * Math.pow(n, -1 / 5);
+    
+    //ensure a positive result even if quartiles coincide
+    return Math.max(bandwidth, 1e-10);
+}

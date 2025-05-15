@@ -6,7 +6,7 @@ import { scaleBand, scaleLinear } from "@visx/scale";
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { useCallback, useRef, useState } from "react";
 import { Text } from '@visx/text';
-import { calculateBoxStats, gaussian, getTextHeight, kernelDensityEstimator, scottRule } from "./helpers";
+import { calculateBoxStats, gaussian, getTextHeight, kernelDensityEstimator, scottRule, silvermanRule } from "./helpers";
 import * as d3 from "d3";
 import ViolinTooltip from "./violinTooltip";
 import CrossPlot from "./crossPlot";
@@ -61,7 +61,7 @@ const ViolinPlot = <T extends object>(
     };
 
     // bounds
-    const xMax = parentWidth;
+    const xMax = parentWidth - 2 * offset;
     const yMax = parentHeight - maxLabelHeight - 2 * offset;
 
     //all values from data spread out based on count
@@ -105,7 +105,7 @@ const ViolinPlot = <T extends object>(
 
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
-            <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
+            <svg width={parentWidth - offset} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
                 <Group top={offset} left={offset}>
                     <AxisLeft
                         left={offset}
@@ -161,7 +161,14 @@ const ViolinPlot = <T extends object>(
                         const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(x.data);
 
                         const yTicks = d3.range(min, max, 0.1);
-                        const bandwidth = scottRule(x.data);
+
+                        //bandwidth / binwidth for smoothing, based on user input
+                        const bandwidth = typeof props.violinProps?.bandwidth === "number" 
+                        ? props.violinProps?.bandwidth 
+                        : props.violinProps?.bandwidth === "scott" 
+                        ? scottRule(x.data) 
+                        : silvermanRule(x.data);
+
                         const kde = kernelDensityEstimator(gaussian(bandwidth), yTicks);
 
                         const densityData = kde(x.data)

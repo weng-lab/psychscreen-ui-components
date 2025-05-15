@@ -11,6 +11,7 @@ export type Distribution<T> = {
 }
 
 export type ViolinProps = {
+    bandwidth?: number | "scott" | "silverman";
     stroke?: number;
 }
 
