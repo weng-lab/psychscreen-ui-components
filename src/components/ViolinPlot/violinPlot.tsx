@@ -164,7 +164,7 @@ const ViolinPlot = <T extends object>(
                     />
                     {props.distributions.map((x: Distribution<T>, i) => {
                         //get all the stats for the box plot
-                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(x.data);
+                        const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(x.data, props.crossProps?.outliers ?? "all");
 
                         const yTicks = d3.range(min, max, 0.1);
 
@@ -209,14 +209,14 @@ const ViolinPlot = <T extends object>(
                                         }}
                                     />
                                 }
-                                {!props.disableBoxPlot &&
+                                {!props.disableCrossPlot &&
                                     <CrossPlot
-                                        crossProps={props.boxProps}
+                                        crossProps={props.crossProps}
                                         left={(xScale(xDomain[i]) ?? 0) + offset + violinWidth / 2}
                                         median={median}
                                         firstQuartile={firstQuartile}
                                         thirdQuartile={thirdQuartile}
-                                        outliers={props.outliers ? outliers : []}
+                                        outliers={outliers}
                                         yScale={yScale}
                                         showTooltip={showTooltip}
                                         hideTooltip={hideTooltip}

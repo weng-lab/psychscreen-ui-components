@@ -85,9 +85,11 @@ function App() {
           loading={false}
           leftAxisLabel="Left Axis Label"
           labelOrientation="rightDiagonal"
-          outliers
           violinProps={{
               bandwidth: "scott"
+          }}
+          crossProps={{
+            outliers: "all"
           }}
         />
       </Box>

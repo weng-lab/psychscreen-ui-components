@@ -1,3 +1,5 @@
+type Outliers = "all" | "top" | "bottom" | "none"
+
 export type Datum = {
     value: number;
     count: number
@@ -22,17 +24,17 @@ export type CrossProps = {
     medianColor?: string;
     minColor?: string;
     maxColor?: string;
+    outliers?: Outliers;
 }
 
 export type ViolinPlotProps<T> = {
     distributions: Distribution<T>[];
     loading: boolean;
     leftAxisLabel?: string;
-    disableBoxPlot?: boolean;
+    disableCrossPlot?: boolean;
     disableViolinPlot?: boolean;
-    boxProps?: CrossProps;
+    crossProps?: CrossProps;
     violinProps?: ViolinProps;
-    outliers?: boolean;
     showAllPoints?: boolean;
     labelOrientation?: "horizontal" | "vertical" | "leftDiagonal" | "rightDiagonal"
 }
