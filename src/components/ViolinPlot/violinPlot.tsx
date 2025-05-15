@@ -126,6 +126,7 @@ const ViolinPlot = <T extends object>(
                         scale={xScale}
                         stroke="black"
                         tickStroke="black"
+                        tickValues={xDomain}
                         tickLabelProps={() => ({
                             fill: 'black',
                             fontSize: fontSize,
