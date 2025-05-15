@@ -19,6 +19,7 @@ const ViolinPlot = <T extends object>(
 
     const [tooltipData, setTooltipData] = useState<TooltipData | null | T>()
     const [tooltipOpen, setTooltipOpen] = useState<boolean>(false)
+    const [hovered, setHovered] = useState<string>("")
 
     const [mouseX, setMouseX] = useState(0);
     const [mouseY, setMouseY] = useState(0);
@@ -58,6 +59,10 @@ const ViolinPlot = <T extends object>(
     const hideTooltip = () => {
         setTooltipOpen(false);
         setTooltipData(null)
+    };
+
+    const handleHover = (label: string) => {
+        setHovered(label);
     };
 
     // bounds
@@ -105,7 +110,7 @@ const ViolinPlot = <T extends object>(
 
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
-            <svg width={parentWidth - offset} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
+            <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
                 <Group top={offset} left={offset}>
                     <AxisLeft
                         left={offset}
@@ -164,11 +169,14 @@ const ViolinPlot = <T extends object>(
                         const yTicks = d3.range(min, max, 0.1);
 
                         //bandwidth / binwidth for smoothing, based on user input
-                        const bandwidth = typeof props.violinProps?.bandwidth === "number" 
-                        ? props.violinProps?.bandwidth 
-                        : props.violinProps?.bandwidth === "scott" 
-                        ? scottRule(x.data) 
-                        : silvermanRule(x.data);
+                        const bandwidth = typeof props.violinProps?.bandwidth === "number"
+                            ? props.violinProps.bandwidth
+                            : typeof props.violinProps?.bandwidth === "function"
+                                ? props.violinProps.bandwidth(x.data)
+                                : props.violinProps?.bandwidth === "scott"
+                                    ? scottRule(x.data)
+                                    : silvermanRule(x.data);
+
 
                         const kde = kernelDensityEstimator(gaussian(bandwidth), yTicks);
 
@@ -179,12 +187,26 @@ const ViolinPlot = <T extends object>(
                                 {!props.disableViolinPlot &&
                                     <VisxViolinPlot
                                         data={[...densityData].sort((a, b) => a.value - b.value)}
-                                        stroke="black"
-                                        strokeWidth={props.violinProps?.stroke ?? 1}
+                                        stroke={x.color ?? "black"}
+                                        strokeWidth={
+                                            xDomain[i] === hovered
+                                                ? (props.violinProps?.stroke ?? 1) + 1
+                                                : props.violinProps?.stroke ?? 1
+                                        }
                                         left={(xScale(xDomain[i]) ?? 0) + offset}
                                         width={violinWidth}
                                         valueScale={yScale}
                                         fill={x.color ?? "none"}
+                                        fillOpacity={0.3}
+                                        pointerEvents="all"
+                                        onMouseOver={() => {
+                                            showTooltip({ label: x.label, sampleSize: x.data.length });
+                                            handleHover(xDomain[i]);
+                                        }}
+                                        onMouseLeave={() => {
+                                            hideTooltip();
+                                            handleHover("")
+                                        }}
                                     />
                                 }
                                 {!props.disableBoxPlot &&

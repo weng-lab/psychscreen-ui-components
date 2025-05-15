@@ -11,7 +11,7 @@ export type Distribution<T> = {
 }
 
 export type ViolinProps = {
-    bandwidth?: number | "scott" | "silverman";
+    bandwidth?: number | "scott" | "silverman" | ((data: number[]) => number);
     stroke?: number;
 }
 
@@ -60,6 +60,7 @@ export interface TooltipData {
     firstQuartile?: string;
     thirdQuartile?: string;
     outlier?: string;
+    sampleSize?: number;
 }
 
 export interface TooltipProps {

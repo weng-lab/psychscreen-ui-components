@@ -11,7 +11,7 @@ function App() {
   const distributions = [
     {
       data: sp1AdiposeSub,
-      label: "Adipose - Subcutaneous"
+      label: "Adipose - Subcutaneous",
     },
     {
       data: sp1AdiposeVisceral,
@@ -70,7 +70,6 @@ function App() {
       label: "Whole Blood3"
     },
   ]
-
   return (
     <Stack>
       <Box
