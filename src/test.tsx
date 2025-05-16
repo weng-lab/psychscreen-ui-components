@@ -29,46 +29,6 @@ function App() {
       data: wholeBlood,
       label: "Whole Blood"
     },
-    {
-      data: sp1AdiposeSub,
-      label: "Adipose - Subcutaneous2"
-    },
-    {
-      data: sp1AdiposeVisceral,
-      label: "Adipose - Visceral (Omentum)2"
-    },
-    {
-      data: sp1KidneyMedulla,
-      label: "Kidney - Medulla2"
-    },
-    {
-      data: sp1EsophagusMucosa,
-      label: "Esophagus - Mucosa2"
-    },
-    {
-      data: wholeBlood,
-      label: "Whole Blood2"
-    },
-    {
-      data: sp1AdiposeSub,
-      label: "Adipose - Subcutaneous3"
-    },
-    {
-      data: sp1AdiposeVisceral,
-      label: "Adipose - Visceral (Omentum)3"
-    },
-    {
-      data: sp1KidneyMedulla,
-      label: "Kidney - Medulla3"
-    },
-    {
-      data: sp1EsophagusMucosa,
-      label: "Esophagus - Mucosa3"
-    },
-    {
-      data: wholeBlood,
-      label: "Whole Blood3"
-    },
   ]
   return (
     <Stack>
@@ -83,7 +43,28 @@ function App() {
         <ViolinBoxPlot
           distributions={sp1Screen}
           loading={false}
-          leftAxisLabel="Left Axis Label"
+          leftAxisLabel="SCREEN Gene Expression (SP1)"
+          labelOrientation="rightDiagonal"
+          violinProps={{
+              bandwidth: "silverman",
+          }}
+          crossProps={{
+            outliers: "all"
+          }}
+        />
+      </Box>
+      <Box
+        padding={1}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "1600px", height: "800px" }}
+        mt={2}
+        mb={2}
+        ml={10}
+        ref={ref}
+      >
+        <ViolinBoxPlot
+          distributions={distributions}
+          loading={false}
+          leftAxisLabel="GTEX Gene Expression (SP1)"
           labelOrientation="rightDiagonal"
           violinProps={{
               bandwidth: "scott"

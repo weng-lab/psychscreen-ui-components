@@ -10,11 +10,12 @@ import { calculateBoxStats, gaussian, getTextHeight, kernelDensityEstimator, sco
 import * as d3 from "d3";
 import ViolinTooltip from "./violinTooltip";
 import CrossPlot from "./crossPlot";
+import React from "react";
 
 const ViolinPlot = <T extends object>(
     props: ViolinPlotProps<T>
 ) => {
-    console.log("sdjhfg")
+    console.log("shdgf")
     const { parentRef, width: parentWidth, height: parentHeight } = useParentSize();
 
     const [tooltipData, setTooltipData] = useState<TooltipData | null | T>()
@@ -24,7 +25,7 @@ const ViolinPlot = <T extends object>(
     const [mouseX, setMouseX] = useState(0);
     const [mouseY, setMouseY] = useState(0);
 
-    //ref for listening to mouse movements
+    //ref for entire svg component
     const svgRef = useRef<SVGSVGElement>(null);
 
     //Array of labels
@@ -110,9 +111,10 @@ const ViolinPlot = <T extends object>(
 
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }} ref={parentRef}>
-            <svg width={parentWidth} height={parentHeight} onMouseMove={handleMouseMove} ref={svgRef}>
+            <svg width={parentWidth} height={parentHeight} ref={svgRef}>
                 <Group top={offset} left={offset}>
                     <AxisLeft
+                        key={"axisLeft"}
                         left={offset}
                         scale={yScale}
                         stroke="black"
@@ -126,6 +128,7 @@ const ViolinPlot = <T extends object>(
                     />
                     {axisLeftLabel}
                     <AxisBottom
+                        key={"axisBottom"}
                         left={offset}
                         top={yMax}
                         scale={xScale}
@@ -183,48 +186,86 @@ const ViolinPlot = <T extends object>(
                         const densityData = kde(x.data)
 
                         return (
-                            <g key={i}>
-                                {!props.disableViolinPlot &&
-                                    <VisxViolinPlot
-                                        data={[...densityData].sort((a, b) => a.value - b.value)}
-                                        stroke={x.color ?? "black"}
-                                        strokeWidth={
-                                            xDomain[i] === hovered
-                                                ? (props.violinProps?.stroke ?? 1) + 1
-                                                : props.violinProps?.stroke ?? 1
+                            <React.Fragment key={x.label ?? `group-${i}`}>
+                                {
+                                    //display plots if enough data provided
+                                    <g
+                                        key={x.label ?? `group-${i}`}
+                                        onMouseMove={handleMouseMove}
+                                    >
+                                        {x.data.length >= (props.violinProps?.pointDisplayThreshold ?? 3) && !props.disableViolinPlot &&
+                                            <VisxViolinPlot
+                                                data={[...densityData].sort((a, b) => a.value - b.value)}
+                                                stroke={x.color ?? "black"}
+                                                strokeWidth={
+                                                    xDomain[i] === hovered
+                                                        ? (props.violinProps?.stroke ?? 1) + 1
+                                                        : props.violinProps?.stroke ?? 1
+                                                }
+                                                left={(xScale(xDomain[i]) ?? 0) + offset}
+                                                width={violinWidth}
+                                                valueScale={yScale}
+                                                fill={x.color ?? "none"}
+                                                fillOpacity={0.3}
+                                                pointerEvents="all"
+                                                onMouseOver={() => {
+                                                    showTooltip({ label: x.label, sampleSize: x.data.length });
+                                                    handleHover(xDomain[i]);
+                                                }}
+                                                onMouseLeave={() => {
+                                                    hideTooltip();
+                                                    handleHover("")
+                                                }}
+                                            />
                                         }
-                                        left={(xScale(xDomain[i]) ?? 0) + offset}
-                                        width={violinWidth}
-                                        valueScale={yScale}
-                                        fill={x.color ?? "none"}
-                                        fillOpacity={0.3}
-                                        pointerEvents="all"
-                                        onMouseOver={() => {
-                                            showTooltip({ label: x.label, sampleSize: x.data.length });
-                                            handleHover(xDomain[i]);
-                                        }}
-                                        onMouseLeave={() => {
-                                            hideTooltip();
-                                            handleHover("")
-                                        }}
-                                    />
+                                        {x.data.length >= (props.violinProps?.pointDisplayThreshold ?? 3) && !props.disableCrossPlot &&
+                                            <CrossPlot
+                                                crossProps={props.crossProps}
+                                                left={(xScale(xDomain[i]) ?? 0) + offset + violinWidth / 2}
+                                                median={median}
+                                                firstQuartile={firstQuartile}
+                                                thirdQuartile={thirdQuartile}
+                                                outliers={outliers}
+                                                yScale={yScale}
+                                                showTooltip={showTooltip}
+                                                hideTooltip={hideTooltip}
+                                                medianWidth={boxWidth}
+                                                label={x.label ?? `Group ${i + 1}`}
+                                                hovered={hovered}
+                                                handleHover={handleHover}
+                                            />
+                                        }
+                                        {/* display points if data points are less than threshold (3) */}
+                                        {x.data.length < (props.violinProps?.pointDisplayThreshold ?? 3) &&
+                                            x.data.map((point, index) => (
+                                                <circle
+                                                    key={index}
+                                                    cx={(xScale(xDomain[i]) ?? 0) + offset + violinWidth / 2}
+                                                    cy={yScale(point)}
+                                                    r={props.violinProps?.pointRadius ?? 4}
+                                                    stroke={x.color ?? "black"}
+                                                    strokeWidth={
+                                                        xDomain[i] === hovered
+                                                            ? (props.violinProps?.stroke ?? 1) + 1
+                                                            : props.violinProps?.stroke ?? 1
+                                                    }
+                                                    fill={x.color ?? "none"}
+                                                    fillOpacity={0.3}
+                                                    pointerEvents="all"
+                                                    onMouseOver={() => {
+                                                        showTooltip({ label: x.label, value: x.data[index].toFixed(2) });
+                                                        handleHover(xDomain[i]);
+                                                    }}
+                                                    onMouseLeave={() => {
+                                                        hideTooltip();
+                                                        handleHover("")
+                                                    }}
+                                                />
+                                            ))
+                                        }
+                                    </g>
                                 }
-                                {!props.disableCrossPlot &&
-                                    <CrossPlot
-                                        crossProps={props.crossProps}
-                                        left={(xScale(xDomain[i]) ?? 0) + offset + violinWidth / 2}
-                                        median={median}
-                                        firstQuartile={firstQuartile}
-                                        thirdQuartile={thirdQuartile}
-                                        outliers={outliers}
-                                        yScale={yScale}
-                                        showTooltip={showTooltip}
-                                        hideTooltip={hideTooltip}
-                                        medianWidth={boxWidth}
-                                        label={x.label ?? `Group ${i + 1}`}
-                                    />
-                                }
-                            </g>
+                            </React.Fragment>
                         )
                     })}
                 </Group>

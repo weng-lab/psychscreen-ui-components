@@ -15,6 +15,8 @@ export type Distribution<T> = {
 export type ViolinProps = {
     bandwidth?: number | "scott" | "silverman" | ((data: number[]) => number);
     stroke?: number;
+    pointRadius?: number;
+    pointDisplayThreshold?: number;
 }
 
 export type CrossProps = {
@@ -25,6 +27,7 @@ export type CrossProps = {
     minColor?: string;
     maxColor?: string;
     outliers?: Outliers;
+    outlierRadius?: number;
 }
 
 export type ViolinPlotProps<T> = {
@@ -51,6 +54,8 @@ export interface CrossPlotProps {
     hideTooltip: () => void;
     medianWidth: number;
     label: string;
+    hovered: string;
+    handleHover: (label: string) => void;
 }
 
 
@@ -63,6 +68,7 @@ export interface TooltipData {
     thirdQuartile?: string;
     outlier?: string;
     sampleSize?: number;
+    value?: string;
 }
 
 export interface TooltipProps {

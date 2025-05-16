@@ -3,7 +3,9 @@ import { Group } from "@visx/group";
 import { Line } from '@visx/shape';
 
 
-const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, outliers, yScale, showTooltip, hideTooltip, medianWidth, label }: CrossPlotProps) => {
+const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, outliers, yScale, showTooltip, hideTooltip, medianWidth, label, hovered, handleHover }: CrossPlotProps) => {
+
+    const outlierLabel = label + "outlier"
 
     return (
         <Group left={left}>
@@ -21,15 +23,29 @@ const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, out
                 stroke={crossProps?.medianColor ?? "#000000"}
                 strokeWidth={crossProps?.stroke ?? 1}
             />
+            {/* Outliers */}
             {outliers.map((outlier, index) => (
                 <circle
                     key={index}
                     cx={0}
                     cy={yScale(outlier)}
-                    r={4}
+                    r={crossProps?.outlierRadius ?? 4}
+                    stroke={crossProps?.outlierColor ?? "#000000"}
+                    strokeWidth={
+                        outlierLabel === hovered
+                            ? (crossProps?.stroke ?? 1) + 1
+                            : crossProps?.stroke ?? 1
+                    }
                     fill={crossProps?.outlierColor ?? "#000000"}
-                    onMouseOver={() => showTooltip({ label: label, outlier: outlier.toFixed(2) })}
-                    onMouseLeave={hideTooltip}
+                    pointerEvents="all"
+                    onMouseOver={() => {
+                        showTooltip({ label: label, outlier: outlier.toFixed(2) });
+                        handleHover(outlierLabel)
+                    }}
+                    onMouseLeave={() => {
+                        hideTooltip();
+                        handleHover("")
+                    }}
                 />
             ))}
         </Group>
