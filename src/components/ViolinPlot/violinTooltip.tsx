@@ -1,11 +1,11 @@
 import { Tooltip } from "@visx/tooltip";
 import { TooltipProps } from "./types";
 
-const ViolinTooltip = ({ mouseX, mouseY, data, open }: TooltipProps) => {
+const ViolinTooltip = ({ left, top, data, open }: TooltipProps) => {
     if (!open || !data) return null;
-
+    
     return (
-        <Tooltip left={mouseX + 10} top={mouseY}>
+        <Tooltip left={left + 10} top={top}>
             {Object.entries(data).map(([key, value]) => (
                 <div key={key}>
                     <strong>{key.charAt(0).toUpperCase() + key.slice(1)}: </strong>

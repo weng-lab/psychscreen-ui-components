@@ -1,3 +1,5 @@
+import { ScaleBand, ScaleLinear } from "d3";
+
 type Outliers = "all" | "top" | "bottom" | "none"
 
 export type Datum = {
@@ -51,12 +53,7 @@ export interface CrossPlotProps {
     thirdQuartile: number;
     outliers: number[];
     yScale: (value: number) => number;
-    showTooltip: (data: Record<string, string | number>) => void;
-    hideTooltip: () => void;
     medianWidth: number;
-    label: string;
-    hovered: string;
-    handleHover: (label: string) => void;
 }
 
 
@@ -73,8 +70,21 @@ export interface TooltipData {
 }
 
 export interface TooltipProps {
-    mouseX: number;
-    mouseY: number;
+    left: number;
+    top: number;
     data: TooltipData;
     open: boolean;
+}
+
+export interface SingleViolinProps {
+    distribution: Distribution;
+    distIndex: number;
+    violinProps: ViolinProps | undefined;
+    crossProps: CrossProps | undefined;
+    xScale: ScaleBand<string>;
+    yScale: ScaleLinear<number, number, never>;
+    offset: number;
+    xDomain: string[];
+    disableViolinPlot: boolean;
+    disableCrossPlot: boolean;
 }
