@@ -17,6 +17,8 @@ export type ViolinProps = {
     stroke?: number;
     pointRadius?: number;
     pointDisplayThreshold?: number;
+    showAllPoints?: boolean;
+    jitter?: number;
 }
 
 export type CrossProps = {
@@ -38,7 +40,6 @@ export type ViolinPlotProps<T> = {
     disableViolinPlot?: boolean;
     crossProps?: CrossProps;
     violinProps?: ViolinProps;
-    showAllPoints?: boolean;
     labelOrientation?: "horizontal" | "vertical" | "leftDiagonal" | "rightDiagonal"
 }
 

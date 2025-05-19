@@ -235,6 +235,35 @@ const ViolinPlot = <T extends object>(
                                                 handleHover={handleHover}
                                             />
                                         }
+                                        {x.data.length >= (props.violinProps?.pointDisplayThreshold ?? 3) && props.violinProps?.showAllPoints &&
+                                            <path
+                                                d={x.data.map((point) => {
+                                                    const baseX = (xScale(xDomain[i]) ?? 0) + offset + violinWidth / 2;
+                                                    const jitterAmount = props.violinProps?.jitter ?? 0;
+                                                    const jitterX = jitterAmount > 0 ? (Math.random() - 0.5) * 2 * jitterAmount : 0;
+                                                    const cx = baseX + jitterX;
+                                                    const cy = yScale(point);
+                                                    return `M ${cx},${cy} m -${props.violinProps?.pointRadius ?? 4},0 a ${props.violinProps?.pointRadius ?? 4},${props.violinProps?.pointRadius ?? 4} 0 1,0 ${2 * (props.violinProps?.pointRadius ?? 4)},0 a ${props.violinProps?.pointRadius ?? 4},${props.violinProps?.pointRadius ?? 4} 0 1,0 -${2 * (props.violinProps?.pointRadius ?? 4)},0`;
+                                                }).join(" ")}
+                                                stroke={x.color ?? "black"}
+                                                strokeWidth={
+                                                    xDomain[i] === hovered
+                                                        ? (props.violinProps?.stroke ?? 1) + 1
+                                                        : props.violinProps?.stroke ?? 1
+                                                }
+                                                fill={x.color ?? "none"}
+                                                fillOpacity={0.3}
+                                                pointerEvents="all"
+                                                onMouseOver={() => {
+                                                    showTooltip({ label: x.label, value: x.data[i].toFixed(2) });
+                                                    handleHover(xDomain[i]);
+                                                }}
+                                                onMouseLeave={() => {
+                                                    hideTooltip();
+                                                    handleHover("");
+                                                }}
+                                            />
+                                        }
                                         {/* display points if data points are less than threshold (3) */}
                                         {x.data.length < (props.violinProps?.pointDisplayThreshold ?? 3) &&
                                             x.data.map((point, index) => (

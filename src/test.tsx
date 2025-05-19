@@ -47,6 +47,8 @@ function App() {
           labelOrientation="rightDiagonal"
           violinProps={{
               bandwidth: "silverman",
+              showAllPoints: true,
+              jitter: 10,
           }}
           crossProps={{
             outliers: "all"
@@ -67,7 +69,7 @@ function App() {
           leftAxisLabel="GTEX Gene Expression (SP1)"
           labelOrientation="rightDiagonal"
           violinProps={{
-              bandwidth: "scott"
+              bandwidth: "scott",
           }}
           crossProps={{
             outliers: "all"
