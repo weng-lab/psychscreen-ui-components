@@ -1,13 +1,13 @@
 import * as d3 from "d3";
 
-// Helper function to measure the height of the longest tick
+//measure the height of the longest tick
 export const getTextHeight = (text: string, fontSize: number, fontFamily: string): number => {
     const el = document.createElement("g");
     el.style.position = "absolute";
     el.style.visibility = "hidden";
     el.style.fontSize = `${fontSize}px`;
     el.style.fontFamily = fontFamily;
-    el.style.whiteSpace = "nowrap"; // Prevents wrapping
+    el.style.whiteSpace = "nowrap";
     el.textContent = text;
     document.body.appendChild(el);
     const width = el.getBoundingClientRect().width;
@@ -110,3 +110,14 @@ export function scottRule(data: number[]) {
     //ensure a positive result even if quartiles coincide
     return Math.max(bandwidth, 1e-10);
 }
+
+//randomly generate jitter based on seed to keep jitter consisten across page loads
+export function seededRandom(seed: string): number {
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = (hash << 5) - hash + seed.charCodeAt(i);
+      hash |= 0; // Convert to 32bit integer
+    }
+    const x = Math.sin(hash) * 10000;
+    return x - Math.floor(x); // returns [0, 1)
+  }

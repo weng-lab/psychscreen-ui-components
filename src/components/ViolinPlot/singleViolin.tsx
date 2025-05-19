@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import React, { useCallback, useMemo } from "react";
 import CrossPlot from "./crossPlot";
-import { calculateBoxStats, scottRule, silvermanRule, kernelDensityEstimator, gaussian } from "./helpers";
+import { calculateBoxStats, scottRule, silvermanRule, kernelDensityEstimator, gaussian, seededRandom } from "./helpers";
 import { SingleViolinProps, TooltipData } from "./types";
 import { ViolinPlot as VisxViolinPlot } from "@visx/stats";
 import ViolinTooltip from "./violinTooltip";
@@ -92,8 +92,13 @@ const SingleViolin = ({ distribution, distIndex, violinProps, crossProps, xScale
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && violinProps?.showAllPoints &&
                         distribution.data.map((point: number, index: number) => {
                             const baseX = (xScale(xDomain[distIndex]) ?? 0) + offset + violinWidth / 2;
+                            
                             const jitterAmount = violinProps?.jitter ?? 0;
-                            const jitterX = jitterAmount > 0 ? (Math.random() - 0.5) * 2 * jitterAmount : 0;
+                            const seed = `${distribution.label}-${point}-${index}`;
+                            const jitterX = jitterAmount > 0
+                                ? (seededRandom(seed) - 0.5) * 2 * jitterAmount
+                                : 0;
+
                             const cx = baseX + jitterX;
                             const cy = yScale(point);
                             const radius = violinProps?.pointRadius ?? 4;
