@@ -18,6 +18,7 @@ function App() {
         onSearchSubmit={(result) => {
           console.log(result);
         }}
+        geneVersion={40}
         sx={{ width: "400px" }}
       />
     </Box>

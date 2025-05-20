@@ -94,7 +94,7 @@ const Search: React.FC<GenomeSearchProps> = ({
         inputValue,
         assembly,
         geneLimit || 3,
-        geneVersion || assembly === "GRCh38" ? 29 : 25
+        geneVersion ? geneVersion : assembly === "GRCh38" ? 29 : 25
       ),
     enabled: false,
   });

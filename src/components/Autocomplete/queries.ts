@@ -26,6 +26,7 @@ export const GENE_AUTOCOMPLETE_QUERY = `
       $name_prefix: [String!]
       $limit: Int
       $assembly: String!
+      $version: Int
   ) {
       gene(
           id: $id
@@ -40,6 +41,7 @@ export const GENE_AUTOCOMPLETE_QUERY = `
           limit: $limit
           assembly: $assembly
           orderby: "name"
+          version: $version
       ) {
           id
           name
