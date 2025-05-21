@@ -120,4 +120,4 @@ export function seededRandom(seed: string): number {
     }
     const x = Math.sin(hash) * 10000;
     return x - Math.floor(x); // returns [0, 1)
-  }
+}

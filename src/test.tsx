@@ -46,6 +46,27 @@ function App() {
           leftAxisLabel="SCREEN Gene Expression (SP1)"
           labelOrientation="rightDiagonal"
           violinProps={{
+              bandwidth: "scott",
+          }}
+          crossProps={{
+            outliers: "all"
+          }}
+        />
+      </Box>
+      <Box
+        padding={1}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "1600px", height: "800px" }}
+        mt={2}
+        mb={2}
+        ml={10}
+        ref={ref}
+      >
+        <ViolinBoxPlot
+          distributions={sp1Screen}
+          loading={false}
+          leftAxisLabel="SCREEN Gene Expression (SP1)"
+          labelOrientation="rightDiagonal"
+          violinProps={{
               bandwidth: "silverman",
               showAllPoints: true,
               jitter: 10,
@@ -70,6 +91,27 @@ function App() {
           labelOrientation="rightDiagonal"
           violinProps={{
               bandwidth: "scott",
+          }}
+          crossProps={{
+            outliers: "all"
+          }}
+        />
+      </Box>
+      <Box
+        padding={1}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "1600px", height: "800px" }}
+        mt={2}
+        mb={2}
+        ml={10}
+        ref={ref}
+      >
+        <ViolinBoxPlot
+          distributions={distributions}
+          loading={false}
+          leftAxisLabel="GTEX Gene Expression (SP1)"
+          labelOrientation="rightDiagonal"
+          violinProps={{
+              bandwidth: "silverman",
           }}
           crossProps={{
             outliers: "all"

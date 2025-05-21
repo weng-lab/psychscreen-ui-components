@@ -3,7 +3,7 @@ import { Group } from "@visx/group";
 import { Line } from '@visx/shape';
 
 
-const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, outliers, yScale, medianWidth, }: CrossPlotProps) => {
+const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, outliers, yScale, medianWidth, label, tooltipData, handleMouseMove }: CrossPlotProps) => {
 
     return (
         <Group left={left}>
@@ -22,17 +22,32 @@ const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, out
                 strokeWidth={crossProps?.stroke ?? 1}
             />
             {/* Outliers */}
-            {outliers.map((outlier, index) => (
-                <circle
-                    key={index}
-                    cx={0}
-                    cy={yScale(outlier)}
-                    r={crossProps?.outlierRadius ?? 4}
-                    stroke={crossProps?.outlierColor ?? "#000000"}
-                    fill={crossProps?.outlierColor ?? "#000000"}
-                    pointerEvents="all"
-                />
-            ))}
+            {outliers.map((outlier, index) => {
+                const pointTooltip = {
+                    outlier: true,
+                    label: label,
+                    value: outlier.toFixed(2),
+                };
+
+                const isHighlighted =
+                    tooltipData &&
+                    tooltipData.label === pointTooltip.label &&
+                    tooltipData.value === pointTooltip.value
+
+                return (
+                    <circle
+                        key={index}
+                        cx={0}
+                        cy={yScale(outlier)}
+                        r={crossProps?.outlierRadius ?? 4}
+                        stroke={crossProps?.outlierColor ?? "#000000"}
+                        strokeWidth={(crossProps?.stroke ?? 1) + (isHighlighted ? 1 : 0)}
+                        fill={crossProps?.outlierColor ?? "#000000"}
+                        pointerEvents="all"
+                        onMouseMove={(e) => handleMouseMove(e, pointTooltip)}
+                    />
+                )
+            })}
         </Group>
     );
 };

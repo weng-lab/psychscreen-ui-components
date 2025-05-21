@@ -26,11 +26,11 @@ export type ViolinProps = {
 export type CrossProps = {
     color?: string;
     stroke?: number;
+    outliers?: Outliers;
     outlierColor?: string;
     medianColor?: string;
     minColor?: string;
     maxColor?: string;
-    outliers?: Outliers;
     outlierRadius?: number;
 }
 
@@ -54,6 +54,9 @@ export interface CrossPlotProps {
     outliers: number[];
     yScale: (value: number) => number;
     medianWidth: number;
+    label: string;
+    tooltipData: TooltipData;
+    handleMouseMove: (event: React.MouseEvent<SVGPathElement>, data: TooltipData) => void;
 }
 
 
@@ -64,7 +67,7 @@ export interface TooltipData {
     max?: string;
     firstQuartile?: string;
     thirdQuartile?: string;
-    outlier?: string;
+    outlier?: boolean;
     sampleSize?: number;
     value?: string;
 }
