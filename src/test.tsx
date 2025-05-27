@@ -85,6 +85,7 @@ function App() {
           onPointClicked={(point) => {
             console.log("Clicked point:", point);
           }}
+          disableCrossPlot
         />
       </Box>
       <Box

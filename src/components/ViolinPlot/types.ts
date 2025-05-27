@@ -19,6 +19,7 @@ export type Distribution<T> = {
     data: Point<T>[];
     label?: string;
     violinColor?: string;
+    opacity?: number;
 }
 
 export type ViolinProps = {
@@ -50,21 +51,17 @@ export type ViolinPlotProps<T> = {
     onPointClicked?: (point: Point<T>) => void;
 }
 
-export interface CrossPlotProps<T> {
+export interface CrossPlotProps {
     crossProps?: CrossProps;
     left: number;
     median: number;
     firstQuartile: number;
     thirdQuartile: number;
-    outliers: Point<T>[];
     yScale: (value: number) => number;
     medianWidth: number;
-    label: string;
     tooltipData: TooltipData;
     handleMouseMove: (event: React.MouseEvent<SVGPathElement>, data: TooltipData) => void;
-    handlePointClick: (point: Point<T>) => void;
     handleCrossClick: () => void;
-    violinColor: string | undefined;
     disableViolinPlot: boolean;
     tooltip: TooltipData;
 }
