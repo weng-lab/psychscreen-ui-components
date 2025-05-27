@@ -7,17 +7,23 @@ export type Datum = {
     count: number
 }[]
 
-export type Distribution<T> = {
-    data: number[];
-    label?: string;
+export type Point<T> = {
+    value: number;
     color?: string;
+    radius?: number;
+    opacity?: number;
     metaData?: T;
+}
+
+export type Distribution<T> = {
+    data: Point<T>[];
+    label?: string;
+    violinColor?: string;
 }
 
 export type ViolinProps = {
     bandwidth?: number | "scott" | "silverman" | ((data: number[]) => number);
     stroke?: number;
-    pointRadius?: number;
     pointDisplayThreshold?: number;
     showAllPoints?: boolean;
     jitter?: number;
@@ -27,11 +33,7 @@ export type CrossProps = {
     color?: string;
     stroke?: number;
     outliers?: Outliers;
-    outlierColor?: string;
     medianColor?: string;
-    minColor?: string;
-    maxColor?: string;
-    outlierRadius?: number;
 }
 
 export type ViolinPlotProps<T> = {
@@ -42,22 +44,26 @@ export type ViolinPlotProps<T> = {
     disableViolinPlot?: boolean;
     crossProps?: CrossProps;
     violinProps?: ViolinProps;
+    orientation?: "vertical" | "horizontal";
     labelOrientation?: "horizontal" | "vertical" | "leftDiagonal" | "rightDiagonal"
     onViolinClicked?: (distribution: Distribution<T>) => void;
+    onPointClicked?: (point: Point<T>) => void;
 }
 
-export interface CrossPlotProps {
+export interface CrossPlotProps<T> {
     crossProps?: CrossProps;
     left: number;
     median: number;
     firstQuartile: number;
     thirdQuartile: number;
-    outliers: number[];
+    outliers: Point<T>[];
     yScale: (value: number) => number;
     medianWidth: number;
     label: string;
     tooltipData: TooltipData;
     handleMouseMove: (event: React.MouseEvent<SVGPathElement>, data: TooltipData) => void;
+    handlePointClick: (point: Point<T>) => void;
+    violinColor: string | undefined;
 }
 
 
@@ -92,4 +98,5 @@ export interface SingleViolinProps<T> {
     disableViolinPlot: boolean;
     disableCrossPlot: boolean;
     onViolinClicked?: (distribution: Distribution<T>) => void | undefined;
+    onPointClicked?: (point: Point<T>) => void | undefined;
 }

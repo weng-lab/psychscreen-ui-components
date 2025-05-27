@@ -33,7 +33,7 @@ const ViolinPlot = <T extends object>(
 
     //all values from data spread out based on count
     const allValues: number[] = props.distributions.flatMap(x =>
-        x.data.flatMap(d => d)
+        x.data.flatMap(d => d.value)
     );
 
     const minYValue = Math.min(...allValues);
@@ -141,6 +141,7 @@ const ViolinPlot = <T extends object>(
                                 disableCrossPlot={props.disableCrossPlot ?? false}
                                 disableViolinPlot={props.disableViolinPlot ?? false}
                                 onViolinClicked={props.onViolinClicked}
+                                onPointClicked={props.onPointClicked}
                             />
                         )
                     })}

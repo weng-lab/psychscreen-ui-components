@@ -3,7 +3,7 @@ import { Group } from "@visx/group";
 import { Line } from '@visx/shape';
 
 
-const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, outliers, yScale, medianWidth, label, tooltipData, handleMouseMove }: CrossPlotProps) => {
+const CrossPlot = <T,>({ crossProps, left, median, firstQuartile, thirdQuartile, outliers, yScale, medianWidth, label, tooltipData, handleMouseMove, handlePointClick, violinColor }: CrossPlotProps<T>) => {
 
     return (
         <Group left={left}>
@@ -11,14 +11,14 @@ const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, out
             <Line
                 from={{ x: 0, y: yScale(thirdQuartile) }}
                 to={{ x: 0, y: yScale(firstQuartile) }}
-                stroke={crossProps?.maxColor ?? "#000000"}
+                stroke={crossProps?.color ?? "#000000"}
                 strokeWidth={crossProps?.stroke ?? 1}
             />
             {/* Horizontal line at median */}
             <Line
                 from={{ x: -medianWidth / 2, y: yScale(median) }}
                 to={{ x: medianWidth / 2, y: yScale(median) }}
-                stroke={crossProps?.medianColor ?? "#000000"}
+                stroke={crossProps?.medianColor ?? crossProps?.color ?? "#000000"}
                 strokeWidth={crossProps?.stroke ?? 1}
             />
             {/* Outliers */}
@@ -26,7 +26,7 @@ const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, out
                 const pointTooltip = {
                     outlier: true,
                     label: label,
-                    value: outlier.toFixed(2),
+                    value: outlier.value.toFixed(2),
                 };
 
                 const isHighlighted =
@@ -38,13 +38,15 @@ const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, out
                     <circle
                         key={index}
                         cx={0}
-                        cy={yScale(outlier)}
-                        r={crossProps?.outlierRadius ?? 4}
-                        stroke={crossProps?.outlierColor ?? "#000000"}
+                        cy={yScale(outlier.value)}
+                        r={outlier.radius ?? 4}
+                        stroke={outlier.color ?? violinColor ?? "#000000"}
                         strokeWidth={(crossProps?.stroke ?? 1) + (isHighlighted ? 1 : 0)}
-                        fill={crossProps?.outlierColor ?? "#000000"}
+                        fill={outlier.color ?? violinColor ?? "#000000"}
+                        opacity={outlier.opacity ?? 1}
                         pointerEvents="all"
                         onMouseMove={(e) => handleMouseMove(e, pointTooltip)}
+                        onClick={() => handlePointClick(outlier)}
                     />
                 )
             })}

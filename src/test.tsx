@@ -10,26 +10,27 @@ function App() {
   
   const distributions = [
     {
-      data: sp1AdiposeSub,
+      data: sp1AdiposeSub.map(value => ({ value })),
       label: "Adipose - Subcutaneous",
     },
     {
-      data: sp1AdiposeVisceral,
+      data: sp1AdiposeVisceral.map(value => ({ value })),
       label: "Adipose - Visceral (Omentum)"
     },
     {
-      data: sp1KidneyMedulla,
+      data: sp1KidneyMedulla.map(value => ({ value })),
       label: "Kidney - Medulla"
     },
     {
-      data: sp1EsophagusMucosa,
+      data: sp1EsophagusMucosa.map(value => ({ value })),
       label: "Esophagus - Mucosa"
     },
     {
-      data: wholeBlood,
+      data: wholeBlood.map(value => ({ value })),
       label: "Whole Blood"
     },
   ]
+
   return (
     <Stack>
       <Box
@@ -76,6 +77,9 @@ function App() {
           }}
           onViolinClicked={(distribution) => {
             console.log("Clicked distribution:", distribution);
+          }}
+          onPointClicked={(point) => {
+            console.log("Clicked point:", point);
           }}
         />
       </Box>

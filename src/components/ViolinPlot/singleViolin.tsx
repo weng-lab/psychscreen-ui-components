@@ -2,12 +2,12 @@ import * as d3 from "d3";
 import React, { useCallback, useMemo } from "react";
 import CrossPlot from "./crossPlot";
 import { calculateBoxStats, scottRule, silvermanRule, kernelDensityEstimator, gaussian, seededRandom } from "./helpers";
-import { SingleViolinProps, TooltipData } from "./types";
+import { Point, SingleViolinProps, TooltipData } from "./types";
 import { ViolinPlot as VisxViolinPlot } from "@visx/stats";
 import ViolinTooltip from "./violinTooltip";
 import { Portal, useTooltip } from "@visx/tooltip";
 
-const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xScale, yScale, offset, xDomain, disableCrossPlot, disableViolinPlot, onViolinClicked }: SingleViolinProps<T>) => {
+const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xScale, yScale, offset, xDomain, disableCrossPlot, disableViolinPlot, onViolinClicked, onPointClicked }: SingleViolinProps<T>) => {
 
     const {
         tooltipData,
@@ -18,27 +18,33 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
         hideTooltip,
     } = useTooltip<TooltipData>();
 
-    //get all the stats for the box plot
-    const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(distribution.data, crossProps?.outliers ?? "all");
+    const data = distribution.data.flatMap(d => d.value)
 
-    const data = useMemo(() => {
+    //get all the stats for the box plot
+    const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(data, crossProps?.outliers ?? "all");
+
+    const outlierPoints: Point<T>[] = distribution.data.filter(d => outliers.includes(d.value))
+
+    const pointsNoOutliers: Point<T>[] = distribution.data.filter(d => !outliers.includes(d.value))
+
+    const violinData = useMemo(() => {
         const yTicks = d3.range(min, max, 0.1);
 
         //bandwidth / binwidth for smoothing, based on user input
         const bandwidth = typeof violinProps?.bandwidth === "number"
             ? violinProps.bandwidth
             : typeof violinProps?.bandwidth === "function"
-                ? violinProps.bandwidth(distribution.data)
+                ? violinProps.bandwidth(data)
                 : violinProps?.bandwidth === "scott"
-                    ? scottRule(distribution.data)
-                    : silvermanRule(distribution.data);
+                    ? scottRule(data)
+                    : silvermanRule(data);
 
         const kde = kernelDensityEstimator(gaussian(bandwidth), yTicks);
 
-        const densityData = kde(distribution.data)
+        const densityData = kde(data)
 
         return [...densityData].sort((a, b) => a.value - b.value)
-    }, [distribution.data, max, min, violinProps])
+    }, [data, max, min, violinProps])
 
     const violinWidth = xScale.bandwidth();
     const boxWidth = violinWidth * .25;
@@ -59,7 +65,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
         });
     }, [showTooltip]);
 
-    const handleClick = () => {
+    const handleViolinClick = () => {
         if (!onViolinClicked || !tooltipData) return;
 
         if (tooltipData) {
@@ -67,7 +73,13 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
         }
     };
 
-    const pointsNoOutliers: number[] = distribution.data.filter(d => !outliers.includes(d))
+    const handlePointClick = (point: Point<T>) => {
+        if (!onPointClicked || !tooltipData) return;
+
+        if (tooltipData) {
+            onPointClicked(point);
+        }
+    };
 
     return (
         <React.Fragment key={distribution.label ?? `group-${distIndex}`}>
@@ -79,8 +91,8 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                 >
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && !disableViolinPlot &&
                         <VisxViolinPlot
-                            data={data}
-                            stroke={distribution.color ?? "black"}
+                            data={violinData}
+                            stroke={distribution.violinColor ?? "black"}
                             strokeWidth={
                                 tooltipData === violinTooltip
                                     ? (violinProps?.stroke ?? 1) + 1
@@ -89,11 +101,11 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                             left={(xScale(xDomain[distIndex]) ?? 0) + offset}
                             width={violinWidth}
                             valueScale={yScale}
-                            fill={distribution.color ?? "none"}
+                            fill={distribution.violinColor ?? "none"}
                             fillOpacity={0.3}
                             pointerEvents="all"
                             onMouseMove={(e) => handleMouseMove(e, violinTooltip)}
-                            onClick={handleClick}
+                            onClick={handleViolinClick}
                         />
                     }
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && !disableCrossPlot &&
@@ -103,17 +115,19 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                             median={median}
                             firstQuartile={firstQuartile}
                             thirdQuartile={thirdQuartile}
-                            outliers={outliers}
+                            outliers={outlierPoints}
                             yScale={yScale}
                             medianWidth={boxWidth}
                             label={distribution.label ?? ""}
                             tooltipData={tooltipData ?? {}}
                             handleMouseMove={handleMouseMove}
+                            handlePointClick={handlePointClick}
+                            violinColor={distribution.violinColor}
                         />
                     }
                     {/* show all poionts for each distribution */}
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && violinProps?.showAllPoints &&
-                        pointsNoOutliers.map((point: number, index: number) => {
+                        pointsNoOutliers.map((point: Point<T>, index: number) => {
 
                             const baseX = (xScale(xDomain[distIndex]) ?? 0) + offset + violinWidth / 2;
 
@@ -124,12 +138,12 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                                 : 0;
 
                             const cx = baseX + jitterX;
-                            const cy = yScale(point);
-                            const radius = violinProps?.pointRadius ?? 2;
+                            const cy = yScale(point.value);
+                            const radius = point.radius ?? 2;
 
                             const pointTooltip = {
                                 label: distribution.label,
-                                value: point.toFixed(2),
+                                value: point.value.toFixed(2),
                             };
 
                             const isHighlighted =
@@ -141,24 +155,26 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                                 <path
                                     key={`${distribution.label ?? distIndex}-point-${index}`}
                                     d={`M ${cx},${cy} m -${radius},0 a ${radius},${radius} 0 1,0 ${2 * radius},0 a ${radius},${radius} 0 1,0 -${2 * radius},0`}
-                                    stroke={distribution.color ?? "black"}
+                                    stroke={point.color ?? distribution.violinColor ?? "black"}
                                     strokeWidth={(violinProps?.stroke ?? 1) + (isHighlighted ? 1 : 0)}
-                                    fill={distribution.color ?? "black"}
+                                    fill={point.color ?? distribution.violinColor ?? "black"}
+                                    opacity={point.opacity ?? 1}
                                     pointerEvents="all"
                                     onMouseMove={(e) => handleMouseMove(e, pointTooltip)}
+                                    onClick={() => handlePointClick(point)}
                                 />
                             );
                         })
                     }
                     {/* display points if data points are less than threshold (3) */}
                     {distribution.data.length < (violinProps?.pointDisplayThreshold ?? 3) &&
-                        distribution.data.map((point: number, index: number) => {
+                        distribution.data.map((point: Point<T>, index: number) => {
                             const cx = (xScale(xDomain[distIndex]) ?? 0) + offset + violinWidth / 2;
-                            const cy = yScale(point);
-                            const radius = violinProps?.pointRadius ?? 4;
+                            const cy = yScale(point.value);
+                            const radius = point.radius ?? 2;
                             const pointTooltip = {
                                 label: distribution.label,
-                                value: point.toFixed(2),
+                                value: point.value.toFixed(2),
                             };
 
                             const isHighlighted =
@@ -172,12 +188,13 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                                     cx={cx}
                                     cy={cy}
                                     r={radius}
-                                    stroke={distribution.color ?? "black"}
+                                    stroke={point.color ?? distribution.violinColor ?? "black"}
                                     strokeWidth={(violinProps?.stroke ?? 1) + (isHighlighted ? 1 : 0)}
-                                    fill={distribution.color ?? "none"}
-                                    fillOpacity={0.3}
+                                    fill={point.color ?? distribution.violinColor ?? "black"}
+                                    opacity={point.opacity ?? 1}
                                     pointerEvents="all"
                                     onMouseMove={(e) => handleMouseMove(e, pointTooltip)}
+                                    onClick={() => handlePointClick(point)}
                                 />
                             );
                         })}
