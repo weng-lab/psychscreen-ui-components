@@ -49,7 +49,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
     const violinWidth = xScale.bandwidth();
     const boxWidth = violinWidth * .25;
 
-    const violinTooltip = useMemo(() => ({
+    const violinTooltip: TooltipData = useMemo(() => ({
         label: distribution.label,
         sampleSize: distribution.data.length,
         median: median.toFixed(2),
@@ -122,7 +122,10 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                             tooltipData={tooltipData ?? {}}
                             handleMouseMove={handleMouseMove}
                             handlePointClick={handlePointClick}
+                            handleCrossClick={handleViolinClick}
                             violinColor={distribution.violinColor}
+                            disableViolinPlot={disableViolinPlot}
+                            tooltip={violinTooltip}
                         />
                     }
                     {/* show all poionts for each distribution */}

@@ -3,7 +3,7 @@ import { Group } from "@visx/group";
 import { Line } from '@visx/shape';
 
 
-const CrossPlot = <T,>({ crossProps, left, median, firstQuartile, thirdQuartile, outliers, yScale, medianWidth, label, tooltipData, handleMouseMove, handlePointClick, violinColor }: CrossPlotProps<T>) => {
+const CrossPlot = <T,>({ crossProps, left, median, firstQuartile, thirdQuartile, outliers, yScale, medianWidth, label, tooltipData, handleMouseMove, handlePointClick, handleCrossClick, violinColor, disableViolinPlot, tooltip }: CrossPlotProps<T>) => {
 
     return (
         <Group left={left}>
@@ -12,14 +12,26 @@ const CrossPlot = <T,>({ crossProps, left, median, firstQuartile, thirdQuartile,
                 from={{ x: 0, y: yScale(thirdQuartile) }}
                 to={{ x: 0, y: yScale(firstQuartile) }}
                 stroke={crossProps?.color ?? "#000000"}
-                strokeWidth={crossProps?.stroke ?? 1}
+                strokeWidth={
+                    tooltipData === tooltip && disableViolinPlot
+                        ? (crossProps?.stroke ?? 1) + 1
+                        : crossProps?.stroke ?? 1
+                }
+                onMouseMove={disableViolinPlot ? (e) => handleMouseMove(e, tooltip) : undefined}
+                onClick={handleCrossClick}
             />
             {/* Horizontal line at median */}
             <Line
                 from={{ x: -medianWidth / 2, y: yScale(median) }}
                 to={{ x: medianWidth / 2, y: yScale(median) }}
                 stroke={crossProps?.medianColor ?? crossProps?.color ?? "#000000"}
-                strokeWidth={crossProps?.stroke ?? 1}
+                strokeWidth={
+                    tooltipData === tooltip && disableViolinPlot
+                        ? (crossProps?.stroke ?? 1) + 1
+                        : crossProps?.stroke ?? 1
+                }
+                onMouseMove={disableViolinPlot ? (e) => handleMouseMove(e, tooltip) : undefined}
+                onClick={handleCrossClick}
             />
             {/* Outliers */}
             {outliers.map((outlier, index) => {

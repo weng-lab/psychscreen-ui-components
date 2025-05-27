@@ -46,11 +46,15 @@ function App() {
           loading={false}
           leftAxisLabel="SCREEN Gene Expression (SP1)"
           labelOrientation="rightDiagonal"
+          disableViolinPlot
           violinProps={{
               bandwidth: "scott",
           }}
           crossProps={{
             outliers: "all"
+          }}
+          onViolinClicked={(distribution) => {
+            console.log("Clicked distribution:", distribution);
           }}
         />
       </Box>

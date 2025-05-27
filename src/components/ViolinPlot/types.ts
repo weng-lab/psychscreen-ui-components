@@ -63,7 +63,10 @@ export interface CrossPlotProps<T> {
     tooltipData: TooltipData;
     handleMouseMove: (event: React.MouseEvent<SVGPathElement>, data: TooltipData) => void;
     handlePointClick: (point: Point<T>) => void;
+    handleCrossClick: () => void;
     violinColor: string | undefined;
+    disableViolinPlot: boolean;
+    tooltip: TooltipData;
 }
 
 
