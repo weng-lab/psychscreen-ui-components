@@ -140,6 +140,7 @@ const ViolinPlot = <T extends object>(
                                 xDomain={xDomain}
                                 disableCrossPlot={props.disableCrossPlot ?? false}
                                 disableViolinPlot={props.disableViolinPlot ?? false}
+                                onViolinClicked={props.onViolinClicked}
                             />
                         )
                     })}

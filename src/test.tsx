@@ -74,6 +74,9 @@ function App() {
           crossProps={{
             outliers: "all"
           }}
+          onViolinClicked={(distribution) => {
+            console.log("Clicked distribution:", distribution);
+          }}
         />
       </Box>
       <Box

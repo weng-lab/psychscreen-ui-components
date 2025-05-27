@@ -43,6 +43,7 @@ export type ViolinPlotProps<T> = {
     crossProps?: CrossProps;
     violinProps?: ViolinProps;
     labelOrientation?: "horizontal" | "vertical" | "leftDiagonal" | "rightDiagonal"
+    onViolinClicked?: (distribution: Distribution<T>) => void;
 }
 
 export interface CrossPlotProps {
@@ -79,8 +80,8 @@ export interface TooltipProps {
     open: boolean;
 }
 
-export interface SingleViolinProps {
-    distribution: Distribution;
+export interface SingleViolinProps<T> {
+    distribution: Distribution<T>;
     distIndex: number;
     violinProps: ViolinProps | undefined;
     crossProps: CrossProps | undefined;
@@ -90,4 +91,5 @@ export interface SingleViolinProps {
     xDomain: string[];
     disableViolinPlot: boolean;
     disableCrossPlot: boolean;
+    onViolinClicked?: (distribution: Distribution<T>) => void | undefined;
 }

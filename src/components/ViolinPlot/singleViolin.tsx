@@ -7,7 +7,7 @@ import { ViolinPlot as VisxViolinPlot } from "@visx/stats";
 import ViolinTooltip from "./violinTooltip";
 import { Portal, useTooltip } from "@visx/tooltip";
 
-const SingleViolin = ({ distribution, distIndex, violinProps, crossProps, xScale, yScale, offset, xDomain, disableCrossPlot, disableViolinPlot }: SingleViolinProps) => {
+const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xScale, yScale, offset, xDomain, disableCrossPlot, disableViolinPlot, onViolinClicked }: SingleViolinProps<T>) => {
 
     const {
         tooltipData,
@@ -59,6 +59,14 @@ const SingleViolin = ({ distribution, distIndex, violinProps, crossProps, xScale
         });
     }, [showTooltip]);
 
+    const handleClick = () => {
+        if (!onViolinClicked || !tooltipData) return;
+
+        if (tooltipData) {
+            onViolinClicked(distribution);
+        }
+    };
+
     const pointsNoOutliers: number[] = distribution.data.filter(d => !outliers.includes(d))
 
     return (
@@ -85,6 +93,7 @@ const SingleViolin = ({ distribution, distIndex, violinProps, crossProps, xScale
                             fillOpacity={0.3}
                             pointerEvents="all"
                             onMouseMove={(e) => handleMouseMove(e, violinTooltip)}
+                            onClick={handleClick}
                         />
                     }
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && !disableCrossPlot &&
@@ -97,7 +106,7 @@ const SingleViolin = ({ distribution, distIndex, violinProps, crossProps, xScale
                             outliers={outliers}
                             yScale={yScale}
                             medianWidth={boxWidth}
-                            label={distribution.label}
+                            label={distribution.label ?? ""}
                             tooltipData={tooltipData ?? {}}
                             handleMouseMove={handleMouseMove}
                         />
