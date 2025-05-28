@@ -7,7 +7,7 @@ import { sp1AdiposeSub, sp1AdiposeVisceral, sp1EsophagusMucosa, sp1KidneyMedulla
 function App() {
 
   const ref = useRef()
-  
+
   const distributions = [
     {
       data: sp1AdiposeSub.map(value => ({ value })),
@@ -35,7 +35,7 @@ function App() {
     <Stack>
       <Box
         padding={1}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "1600px", height: "800px" }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "800px", height: "1000px" }}
         mt={2}
         mb={2}
         ml={10}
@@ -44,37 +44,13 @@ function App() {
         <ViolinBoxPlot
           distributions={sp1Screen}
           loading={false}
-          leftAxisLabel="SCREEN Gene Expression (SP1)"
-          labelOrientation="rightDiagonal"
-          disableViolinPlot
+          axisLabel="SCREEN Gene Expression (SP1)"
+          labelOrientation="horizontal"
+          horizontal
           violinProps={{
-              bandwidth: "scott",
-          }}
-          crossProps={{
-            outliers: "all"
-          }}
-          onViolinClicked={(distribution) => {
-            console.log("Clicked distribution:", distribution);
-          }}
-        />
-      </Box>
-      <Box
-        padding={1}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "1600px", height: "800px" }}
-        mt={2}
-        mb={2}
-        ml={10}
-        ref={ref}
-      >
-        <ViolinBoxPlot
-          distributions={sp1Screen}
-          loading={false}
-          leftAxisLabel="SCREEN Gene Expression (SP1)"
-          labelOrientation="rightDiagonal"
-          violinProps={{
-              bandwidth: "silverman",
-              showAllPoints: true,
-              jitter: 10,
+            bandwidth: "silverman",
+            showAllPoints: true,
+            jitter: 10,
           }}
           crossProps={{
             outliers: "all"
@@ -85,7 +61,6 @@ function App() {
           onPointClicked={(point) => {
             console.log("Clicked point:", point);
           }}
-          disableCrossPlot
         />
       </Box>
       <Box
@@ -99,31 +74,10 @@ function App() {
         <ViolinBoxPlot
           distributions={distributions}
           loading={false}
-          leftAxisLabel="GTEX Gene Expression (SP1)"
+          axisLabel="GTEX Gene Expression (SP1)"
           labelOrientation="rightDiagonal"
           violinProps={{
-              bandwidth: "scott",
-          }}
-          crossProps={{
-            outliers: "all"
-          }}
-        />
-      </Box>
-      <Box
-        padding={1}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "1600px", height: "800px" }}
-        mt={2}
-        mb={2}
-        ml={10}
-        ref={ref}
-      >
-        <ViolinBoxPlot
-          distributions={distributions}
-          loading={false}
-          leftAxisLabel="GTEX Gene Expression (SP1)"
-          labelOrientation="rightDiagonal"
-          violinProps={{
-              bandwidth: "silverman",
+            bandwidth: "scott",
           }}
           crossProps={{
             outliers: "all"

@@ -7,7 +7,7 @@ import { ViolinPlot as VisxViolinPlot } from "@visx/stats";
 import ViolinTooltip from "./violinTooltip";
 import { Portal, useTooltip } from "@visx/tooltip";
 
-const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xScale, yScale, offset, xDomain, disableCrossPlot, disableViolinPlot, onViolinClicked, onPointClicked }: SingleViolinProps<T>) => {
+const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, valueScale, labelScale, offset, labels, disableCrossPlot, disableViolinPlot, horizontal, onViolinClicked, onPointClicked }: SingleViolinProps<T>) => {
 
     const {
         tooltipData,
@@ -46,7 +46,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
         return [...densityData].sort((a, b) => a.value - b.value)
     }, [data, max, min, violinProps])
 
-    const violinWidth = xScale.bandwidth();
+    const violinWidth = labelScale.bandwidth();
     const boxWidth = violinWidth * .25;
 
     const violinTooltip: TooltipData = useMemo(() => ({
@@ -88,6 +88,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                 <g
                     key={distribution.label ?? `group-${distIndex}`}
                     onMouseLeave={hideTooltip}
+                    transform={horizontal ? `translate(${offset}, 0)` : undefined}
                 >
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && !disableViolinPlot &&
                         <VisxViolinPlot
@@ -98,35 +99,47 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                                     ? (violinProps?.stroke ?? 1) + 1
                                     : violinProps?.stroke ?? 1
                             }
-                            left={(xScale(xDomain[distIndex]) ?? 0) + offset}
+                            //when horizontal is true, left prop is ignored hence the conditional translate in the g tag above
+                            left={(labelScale(labels[distIndex]) ?? 0) + offset}
+                            top={(labelScale(labels[distIndex]) ?? 0)}
                             width={violinWidth}
-                            valueScale={yScale}
+                            valueScale={valueScale}
                             fill={distribution.violinColor ?? "none"}
                             fillOpacity={distribution.opacity ?? 0.3}
                             strokeOpacity={distribution.opacity ?? 1}
                             pointerEvents="all"
                             onMouseMove={(e) => handleMouseMove(e, violinTooltip)}
                             onClick={handleViolinClick}
+                            horizontal={horizontal}
                         />
                     }
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && !disableCrossPlot &&
                         <CrossPlot
                             crossProps={crossProps}
-                            left={(xScale(xDomain[distIndex]) ?? 0) + offset + violinWidth / 2}
+                            left={horizontal ? 0 : (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2}
+                            top={horizontal ? (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2 : 0}
                             median={median}
                             firstQuartile={firstQuartile}
                             thirdQuartile={thirdQuartile}
-                            yScale={yScale}
+                            valueScale={valueScale}
                             medianWidth={boxWidth}
                             tooltipData={tooltipData ?? {}}
                             handleMouseMove={handleMouseMove}
                             handleCrossClick={handleViolinClick}
                             disableViolinPlot={disableViolinPlot}
                             tooltip={violinTooltip}
+                            horizontal={horizontal}
                         />
                     }
                     {/* Outliers */}
                     {outlierPoints.map((outlier, index) => {
+                        const vertcx = (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2;
+                        const vertcy = valueScale(outlier.value);
+                        const horizoncx = valueScale(outlier.value)
+                        const horizoncy = (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2;
+                        const cx = horizontal ? horizoncx : vertcx
+                        const cy = horizontal ? horizoncy : vertcy
+
                         const pointTooltip = {
                             outlier: true,
                             label: distribution.label,
@@ -141,8 +154,8 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                         return (
                             <circle
                                 key={index}
-                                cx={(xScale(xDomain[distIndex]) ?? 0) + offset + violinWidth / 2}
-                                cy={yScale(outlier.value)}
+                                cx={cx}
+                                cy={cy}
                                 r={outlier.radius ?? 4}
                                 stroke={outlier.color ?? distribution.violinColor ?? "#000000"}
                                 strokeWidth={(crossProps?.stroke ?? 1) + (isHighlighted ? 1 : 0)}
@@ -158,7 +171,10 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && violinProps?.showAllPoints &&
                         pointsNoOutliers.map((point: Point<T>, index: number) => {
 
-                            const baseX = (xScale(xDomain[distIndex]) ?? 0) + offset + violinWidth / 2;
+                            const vertcx = (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2;
+                            const vertcy = valueScale(point.value);
+                            const horizoncx = valueScale(point.value)
+                            const horizoncy = (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2;
 
                             const jitterAmount = violinProps?.jitter ?? 0;
                             const seed = `${distribution.label}-${point}-${index}`;
@@ -166,8 +182,8 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                                 ? (seededRandom(seed) - 0.5) * 2 * jitterAmount
                                 : 0;
 
-                            const cx = baseX + jitterX;
-                            const cy = yScale(point.value);
+                            const cx = horizontal ? horizoncx : vertcx + jitterX;
+                            const cy = horizontal ? horizoncy + jitterX : vertcy
                             const radius = point.radius ?? 2;
 
                             const pointTooltip = {
@@ -198,8 +214,12 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, xS
                     {/* display points if data points are less than threshold (3) */}
                     {distribution.data.length < (violinProps?.pointDisplayThreshold ?? 3) &&
                         distribution.data.map((point: Point<T>, index: number) => {
-                            const cx = (xScale(xDomain[distIndex]) ?? 0) + offset + violinWidth / 2;
-                            const cy = yScale(point.value);
+                            const vertcx = (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2;
+                            const vertcy = valueScale(point.value);
+                            const horizoncx = valueScale(point.value)
+                            const horizoncy = (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2;
+                            const cx = horizontal ? horizoncx : vertcx
+                            const cy = horizontal ? horizoncy : vertcy
                             const radius = point.radius ?? 2;
                             const pointTooltip = {
                                 label: distribution.label,

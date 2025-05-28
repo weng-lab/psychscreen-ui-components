@@ -3,14 +3,14 @@ import { Group } from "@visx/group";
 import { Line } from '@visx/shape';
 
 
-const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, yScale, medianWidth, tooltipData, handleMouseMove, handleCrossClick, disableViolinPlot, tooltip }: CrossPlotProps) => {
+const CrossPlot = ({ crossProps, left, top, median, firstQuartile, thirdQuartile, valueScale, medianWidth, tooltipData, handleMouseMove, handleCrossClick, disableViolinPlot, tooltip, horizontal }: CrossPlotProps) => {
 
     return (
-        <Group left={left}>
+        <Group left={left} top={top}>
             {/* Vertical line from min to max */}
             <Line
-                from={{ x: 0, y: yScale(thirdQuartile) }}
-                to={{ x: 0, y: yScale(firstQuartile) }}
+                from={{ x: horizontal ? valueScale(thirdQuartile) : 0, y: horizontal ? 0 : valueScale(thirdQuartile) }}
+                to={{ x: horizontal ? valueScale(firstQuartile): 0, y: horizontal ? 0: valueScale(firstQuartile) }}
                 stroke={crossProps?.color ?? "#000000"}
                 strokeWidth={
                     tooltipData === tooltip && disableViolinPlot
@@ -22,8 +22,8 @@ const CrossPlot = ({ crossProps, left, median, firstQuartile, thirdQuartile, ySc
             />
             {/* Horizontal line at median */}
             <Line
-                from={{ x: -medianWidth / 2, y: yScale(median) }}
-                to={{ x: medianWidth / 2, y: yScale(median) }}
+                from={{ x: horizontal ? valueScale(median) : -medianWidth / 2, y: horizontal ? -medianWidth / 2 : valueScale(median) }}
+                to={{ x: horizontal ? valueScale(median) : medianWidth / 2, y: horizontal ? medianWidth / 2 : valueScale(median) }}
                 stroke={crossProps?.medianColor ?? crossProps?.color ?? "#000000"}
                 strokeWidth={
                     tooltipData === tooltip && disableViolinPlot

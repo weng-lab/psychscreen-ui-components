@@ -40,12 +40,12 @@ export type CrossProps = {
 export type ViolinPlotProps<T> = {
     distributions: Distribution<T>[];
     loading: boolean;
-    leftAxisLabel?: string;
+    axisLabel?: string;
     disableCrossPlot?: boolean;
     disableViolinPlot?: boolean;
     crossProps?: CrossProps;
     violinProps?: ViolinProps;
-    orientation?: "vertical" | "horizontal";
+    horizontal?: boolean;
     labelOrientation?: "horizontal" | "vertical" | "leftDiagonal" | "rightDiagonal"
     onViolinClicked?: (distribution: Distribution<T>) => void;
     onPointClicked?: (point: Point<T>) => void;
@@ -54,16 +54,18 @@ export type ViolinPlotProps<T> = {
 export interface CrossPlotProps {
     crossProps?: CrossProps;
     left: number;
+    top: number;
     median: number;
     firstQuartile: number;
     thirdQuartile: number;
-    yScale: (value: number) => number;
+    valueScale: (value: number) => number;
     medianWidth: number;
     tooltipData: TooltipData;
     handleMouseMove: (event: React.MouseEvent<SVGPathElement>, data: TooltipData) => void;
     handleCrossClick: () => void;
     disableViolinPlot: boolean;
     tooltip: TooltipData;
+    horizontal: boolean;
 }
 
 
@@ -91,12 +93,13 @@ export interface SingleViolinProps<T> {
     distIndex: number;
     violinProps: ViolinProps | undefined;
     crossProps: CrossProps | undefined;
-    xScale: ScaleBand<string>;
-    yScale: ScaleLinear<number, number, never>;
+    valueScale: ScaleLinear<number, number, never>;
+    labelScale: ScaleBand<string>;
     offset: number;
-    xDomain: string[];
+    labels: string[];
     disableViolinPlot: boolean;
     disableCrossPlot: boolean;
+    horizontal: boolean;
     onViolinClicked?: (distribution: Distribution<T>) => void | undefined;
     onPointClicked?: (point: Point<T>) => void | undefined;
 }
