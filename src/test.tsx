@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import ViolinBoxPlot from "./components/ViolinPlot/violinPlot";
 import { useRef } from "react";
 import { sp1AdiposeSub, sp1AdiposeVisceral, sp1EsophagusMucosa, sp1KidneyMedulla, wholeBlood, sp1Screen } from "./components/ViolinPlot/testData";
@@ -35,7 +35,7 @@ function App() {
     <Stack>
       <Box
         padding={1}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "800px", height: "1000px" }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "50vw", height: "100vh" }}
         mt={2}
         mb={2}
         ml={10}
@@ -48,7 +48,7 @@ function App() {
           labelOrientation="horizontal"
           horizontal
           violinProps={{
-            bandwidth: "silverman",
+            bandwidth: "scott",
             showAllPoints: true,
             jitter: 10,
           }}
@@ -61,6 +61,13 @@ function App() {
           onPointClicked={(point) => {
             console.log("Clicked point:", point);
           }}
+          pointTooltipBody={(point) => {
+            return (
+                <Box sx={{ textAlign: "center", p: 1 }}>
+                  <Typography>{point.value}</Typography>
+                </Box>
+            );
+        }}
         />
       </Box>
       <Box

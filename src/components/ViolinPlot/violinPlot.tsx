@@ -243,6 +243,7 @@ const ViolinPlot = <T extends object>(
                                 disableCrossPlot={props.disableCrossPlot ?? false}
                                 disableViolinPlot={props.disableViolinPlot ?? false}
                                 horizontal={props.horizontal ?? false}
+                                pointTooltipBody={props.pointTooltipBody}
                                 onViolinClicked={props.onViolinClicked}
                                 onPointClicked={props.onPointClicked}
                             />

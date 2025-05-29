@@ -7,7 +7,22 @@ import { ViolinPlot as VisxViolinPlot } from "@visx/stats";
 import ViolinTooltip from "./violinTooltip";
 import { Portal, useTooltip } from "@visx/tooltip";
 
-const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, valueScale, labelScale, offset, labels, disableCrossPlot, disableViolinPlot, horizontal, onViolinClicked, onPointClicked }: SingleViolinProps<T>) => {
+const SingleViolin = <T,>({
+    distribution,
+    distIndex,
+    violinProps,
+    crossProps,
+    valueScale,
+    labelScale,
+    offset,
+    labels,
+    disableCrossPlot,
+    disableViolinPlot,
+    horizontal,
+    pointTooltipBody,
+    onViolinClicked,
+    onPointClicked
+}: SingleViolinProps<T>) => {
 
     const {
         tooltipData,
@@ -16,7 +31,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
         tooltipOpen,
         showTooltip,
         hideTooltip,
-    } = useTooltip<TooltipData>();
+    } = useTooltip<TooltipData | JSX.Element>();
 
     const data = distribution.data.flatMap(d => d.value)
 
@@ -24,11 +39,10 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
     const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(data, crossProps?.outliers ?? "all");
 
     const outlierPoints: Point<T>[] = distribution.data.filter(d => outliers.includes(d.value))
-
     const pointsNoOutliers: Point<T>[] = distribution.data.filter(d => !outliers.includes(d.value))
 
     const violinData = useMemo(() => {
-        const yTicks = d3.range(min, max, 0.1);
+        const ticks = d3.range(min, max, .1);
 
         //bandwidth / binwidth for smoothing, based on user input
         const bandwidth = typeof violinProps?.bandwidth === "number"
@@ -39,7 +53,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
                     ? scottRule(data)
                     : silvermanRule(data);
 
-        const kde = kernelDensityEstimator(gaussian(bandwidth), yTicks);
+        const kde = kernelDensityEstimator(gaussian(bandwidth), ticks);
 
         const densityData = kde(data)
 
@@ -57,13 +71,13 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
         thirdQuartile: thirdQuartile.toFixed(2)
     }), [distribution.label, distribution.data.length, median, firstQuartile, thirdQuartile]);
 
-    const handleMouseMove = useCallback((event: React.MouseEvent<SVGPathElement>, data: TooltipData) => {
+    const handleMouseMove = useCallback((event: React.MouseEvent<SVGPathElement>, data: TooltipData, point?: Point<T>) => {
         showTooltip({
-            tooltipData: data,
+            tooltipData: point && pointTooltipBody ? pointTooltipBody(point) : data,
             tooltipLeft: event.pageX,
             tooltipTop: event.pageY,
         });
-    }, [showTooltip]);
+    }, [pointTooltipBody, showTooltip]);
 
     const handleViolinClick = () => {
         if (!onViolinClicked || !tooltipData) return;
@@ -79,6 +93,15 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
         if (tooltipData) {
             onPointClicked(point);
         }
+    };
+
+    const isTooltipData = (data: unknown): data is TooltipData => {
+        return (
+            typeof data === 'object' &&
+            data !== null &&
+            'label' in data &&
+            'value' in data
+        );
     };
 
     return (
@@ -123,7 +146,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
                             thirdQuartile={thirdQuartile}
                             valueScale={valueScale}
                             medianWidth={boxWidth}
-                            tooltipData={tooltipData ?? {}}
+                            tooltipData={isTooltipData(tooltipData) ? tooltipData ?? {} : {}}
                             handleMouseMove={handleMouseMove}
                             handleCrossClick={handleViolinClick}
                             disableViolinPlot={disableViolinPlot}
@@ -147,9 +170,9 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
                         };
 
                         const isHighlighted =
-                            tooltipData &&
+                            isTooltipData(tooltipData) &&
                             tooltipData.label === pointTooltip.label &&
-                            tooltipData.value === pointTooltip.value
+                            tooltipData.value === pointTooltip.value;
 
                         return (
                             <circle
@@ -162,7 +185,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
                                 fill={outlier.color ?? distribution.violinColor ?? "#000000"}
                                 opacity={outlier.opacity ?? distribution.opacity ?? 1}
                                 pointerEvents="all"
-                                onMouseMove={(e) => handleMouseMove(e, pointTooltip)}
+                                onMouseMove={(e) => handleMouseMove(e, pointTooltip, outlier)}
                                 onClick={() => handlePointClick(outlier)}
                             />
                         )
@@ -192,9 +215,9 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
                             };
 
                             const isHighlighted =
-                                tooltipData &&
+                                isTooltipData(tooltipData) &&
                                 tooltipData.label === pointTooltip.label &&
-                                tooltipData.value === pointTooltip.value
+                                tooltipData.value === pointTooltip.value;
 
                             return (
                                 <path
@@ -205,7 +228,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
                                     fill={point.color ?? distribution.violinColor ?? "black"}
                                     opacity={point.opacity ?? distribution.opacity ?? 1}
                                     pointerEvents="all"
-                                    onMouseMove={(e) => handleMouseMove(e, pointTooltip)}
+                                    onMouseMove={(e) => handleMouseMove(e, pointTooltip, point)}
                                     onClick={() => handlePointClick(point)}
                                 />
                             );
@@ -221,15 +244,16 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
                             const cx = horizontal ? horizoncx : vertcx
                             const cy = horizontal ? horizoncy : vertcy
                             const radius = point.radius ?? 2;
+
                             const pointTooltip = {
                                 label: distribution.label,
                                 value: point.value.toFixed(2),
                             };
 
                             const isHighlighted =
-                                tooltipData &&
+                                isTooltipData(tooltipData) &&
                                 tooltipData.label === pointTooltip.label &&
-                                tooltipData.value === pointTooltip.value
+                                tooltipData.value === pointTooltip.value;
 
                             return (
                                 <circle
@@ -242,7 +266,7 @@ const SingleViolin = <T,>({ distribution, distIndex, violinProps, crossProps, va
                                     fill={point.color ?? distribution.violinColor ?? "black"}
                                     opacity={point.opacity ?? distribution.opacity ?? 1}
                                     pointerEvents="all"
-                                    onMouseMove={(e) => handleMouseMove(e, pointTooltip)}
+                                    onMouseMove={(e) => handleMouseMove(e, pointTooltip, point)}
                                     onClick={() => handlePointClick(point)}
                                 />
                             );

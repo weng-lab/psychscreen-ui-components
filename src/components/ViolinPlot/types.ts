@@ -49,6 +49,7 @@ export type ViolinPlotProps<T> = {
     labelOrientation?: "horizontal" | "vertical" | "leftDiagonal" | "rightDiagonal"
     onViolinClicked?: (distribution: Distribution<T>) => void;
     onPointClicked?: (point: Point<T>) => void;
+    pointTooltipBody?: (point: Point<T>) => JSX.Element;
 }
 
 export interface CrossPlotProps {
@@ -84,7 +85,7 @@ export interface TooltipData {
 export interface TooltipProps {
     left: number;
     top: number;
-    data: TooltipData;
+    data: TooltipData | JSX.Element;
     open: boolean;
 }
 
@@ -100,6 +101,7 @@ export interface SingleViolinProps<T> {
     disableViolinPlot: boolean;
     disableCrossPlot: boolean;
     horizontal: boolean;
+    pointTooltipBody?: (point: Point<T>) => JSX.Element;
     onViolinClicked?: (distribution: Distribution<T>) => void | undefined;
     onPointClicked?: (point: Point<T>) => void | undefined;
 }
