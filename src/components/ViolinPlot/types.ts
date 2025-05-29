@@ -52,7 +52,7 @@ export type ViolinPlotProps<T> = {
     pointTooltipBody?: (point: Point<T>) => JSX.Element;
 }
 
-export interface CrossPlotProps {
+export interface CrossPlotProps<T> {
     crossProps?: CrossProps;
     left: number;
     top: number;
@@ -61,16 +61,17 @@ export interface CrossPlotProps {
     thirdQuartile: number;
     valueScale: (value: number) => number;
     medianWidth: number;
-    tooltipData: TooltipData;
-    handleMouseMove: (event: React.MouseEvent<SVGPathElement>, data: TooltipData) => void;
+    tooltipData: TooltipData<T>;
+    handleMouseMove: (event: React.MouseEvent<SVGPathElement>, data: TooltipData<T>) => void;
     handleCrossClick: () => void;
     disableViolinPlot: boolean;
-    tooltip: TooltipData;
+    tooltip: TooltipData<T>;
     horizontal: boolean;
 }
 
 
-export interface TooltipData {
+export interface TooltipData<T> {
+    point?: Point<T>;
     label?: string;
     min?: string;
     median?: string;
@@ -82,11 +83,12 @@ export interface TooltipData {
     value?: string;
 }
 
-export interface TooltipProps {
+export interface TooltipProps<T> {
     left: number;
     top: number;
-    data: TooltipData | JSX.Element;
+    data: TooltipData<T>;
     open: boolean;
+    pointTooltipBody?: (point: Point<T>) => JSX.Element;
 }
 
 export interface SingleViolinProps<T> {

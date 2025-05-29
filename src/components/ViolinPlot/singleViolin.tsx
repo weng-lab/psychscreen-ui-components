@@ -31,7 +31,7 @@ const SingleViolin = <T,>({
         tooltipOpen,
         showTooltip,
         hideTooltip,
-    } = useTooltip<TooltipData | JSX.Element>();
+    } = useTooltip<TooltipData<T>>();
 
     const data = distribution.data.flatMap(d => d.value)
 
@@ -63,7 +63,7 @@ const SingleViolin = <T,>({
     const violinWidth = labelScale.bandwidth();
     const boxWidth = violinWidth * .25;
 
-    const violinTooltip: TooltipData = useMemo(() => ({
+    const violinTooltip: TooltipData<T> = useMemo(() => ({
         label: distribution.label,
         sampleSize: distribution.data.length,
         median: median.toFixed(2),
@@ -71,9 +71,9 @@ const SingleViolin = <T,>({
         thirdQuartile: thirdQuartile.toFixed(2)
     }), [distribution.label, distribution.data.length, median, firstQuartile, thirdQuartile]);
 
-    const handleMouseMove = useCallback((event: React.MouseEvent<SVGPathElement>, data: TooltipData, point?: Point<T>) => {
+    const handleMouseMove = useCallback((event: React.MouseEvent<SVGPathElement>, data: TooltipData<T>, point?: Point<T>) => {
         showTooltip({
-            tooltipData: point && pointTooltipBody ? pointTooltipBody(point) : data,
+            tooltipData: point && pointTooltipBody ? { point: point } : data,
             tooltipLeft: event.pageX,
             tooltipTop: event.pageY,
         });
@@ -93,15 +93,6 @@ const SingleViolin = <T,>({
         if (tooltipData) {
             onPointClicked(point);
         }
-    };
-
-    const isTooltipData = (data: unknown): data is TooltipData => {
-        return (
-            typeof data === 'object' &&
-            data !== null &&
-            'label' in data &&
-            'value' in data
-        );
     };
 
     return (
@@ -146,7 +137,7 @@ const SingleViolin = <T,>({
                             thirdQuartile={thirdQuartile}
                             valueScale={valueScale}
                             medianWidth={boxWidth}
-                            tooltipData={isTooltipData(tooltipData) ? tooltipData ?? {} : {}}
+                            tooltipData={tooltipData ?? {}}
                             handleMouseMove={handleMouseMove}
                             handleCrossClick={handleViolinClick}
                             disableViolinPlot={disableViolinPlot}
@@ -169,19 +160,20 @@ const SingleViolin = <T,>({
                             value: outlier.value.toFixed(2),
                         };
 
-                        const isHighlighted =
-                            isTooltipData(tooltipData) &&
-                            tooltipData.label === pointTooltip.label &&
-                            tooltipData.value === pointTooltip.value;
+                        const isHighlighted = pointTooltipBody
+                            ? tooltipData?.point === outlier :
+                            tooltipData?.label === pointTooltip.label &&
+                            tooltipData?.value === pointTooltip.value;
+
+                        const radius = outlier.radius ?? 4
 
                         return (
                             <circle
                                 key={index}
                                 cx={cx}
                                 cy={cy}
-                                r={outlier.radius ?? 4}
-                                stroke={outlier.color ?? distribution.violinColor ?? "#000000"}
-                                strokeWidth={(crossProps?.stroke ?? 1) + (isHighlighted ? 1 : 0)}
+                                r={isHighlighted ? radius + 1 : radius}
+                                stroke={isHighlighted ? "#000000" : "none"}
                                 fill={outlier.color ?? distribution.violinColor ?? "#000000"}
                                 opacity={outlier.opacity ?? distribution.opacity ?? 1}
                                 pointerEvents="all"
@@ -207,24 +199,25 @@ const SingleViolin = <T,>({
 
                             const cx = horizontal ? horizoncx : vertcx + jitterX;
                             const cy = horizontal ? horizoncy + jitterX : vertcy
-                            const radius = point.radius ?? 2;
 
                             const pointTooltip = {
                                 label: distribution.label,
                                 value: point.value.toFixed(2),
                             };
 
-                            const isHighlighted =
-                                isTooltipData(tooltipData) &&
-                                tooltipData.label === pointTooltip.label &&
-                                tooltipData.value === pointTooltip.value;
+                            const isHighlighted = pointTooltipBody
+                                ? tooltipData?.point === point :
+                                tooltipData?.label === pointTooltip.label &&
+                                tooltipData?.value === pointTooltip.value;
+
+                            const r = point.radius ?? 2
+                            const radius = isHighlighted ? r + 1 : r;
 
                             return (
                                 <path
                                     key={`${distribution.label ?? distIndex}-point-${index}`}
                                     d={`M ${cx},${cy} m -${radius},0 a ${radius},${radius} 0 1,0 ${2 * radius},0 a ${radius},${radius} 0 1,0 -${2 * radius},0`}
-                                    stroke={point.color ?? distribution.violinColor ?? "black"}
-                                    strokeWidth={(violinProps?.stroke ?? 1) + (isHighlighted ? 1 : 0)}
+                                    stroke={isHighlighted ? "black" : "none"}
                                     fill={point.color ?? distribution.violinColor ?? "black"}
                                     opacity={point.opacity ?? distribution.opacity ?? 1}
                                     pointerEvents="all"
@@ -250,19 +243,18 @@ const SingleViolin = <T,>({
                                 value: point.value.toFixed(2),
                             };
 
-                            const isHighlighted =
-                                isTooltipData(tooltipData) &&
-                                tooltipData.label === pointTooltip.label &&
-                                tooltipData.value === pointTooltip.value;
+                            const isHighlighted = pointTooltipBody
+                                ? tooltipData?.point === point :
+                                tooltipData?.label === pointTooltip.label &&
+                                tooltipData?.value === pointTooltip.value;
 
                             return (
                                 <circle
                                     key={index}
                                     cx={cx}
                                     cy={cy}
-                                    r={radius}
-                                    stroke={point.color ?? distribution.violinColor ?? "black"}
-                                    strokeWidth={(violinProps?.stroke ?? 1) + (isHighlighted ? 1 : 0)}
+                                    r={isHighlighted ? radius + 1 : radius}
+                                    stroke={isHighlighted ? "black" : "none"}
                                     fill={point.color ?? distribution.violinColor ?? "black"}
                                     opacity={point.opacity ?? distribution.opacity ?? 1}
                                     pointerEvents="all"
@@ -282,6 +274,7 @@ const SingleViolin = <T,>({
                         data={tooltipData}
                         open={tooltipOpen}
                         key={`${tooltipLeft}-${tooltipTop}`}
+                        pointTooltipBody={pointTooltipBody}
                     />
                 </Portal>
             )}

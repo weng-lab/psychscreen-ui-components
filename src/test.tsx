@@ -83,6 +83,7 @@ function App() {
           loading={false}
           axisLabel="GTEX Gene Expression (SP1)"
           labelOrientation="rightDiagonal"
+          disableViolinPlot
           violinProps={{
             bandwidth: "scott",
           }}

@@ -3,7 +3,7 @@ import { Group } from "@visx/group";
 import { Line } from '@visx/shape';
 
 
-const CrossPlot = ({ crossProps, left, top, median, firstQuartile, thirdQuartile, valueScale, medianWidth, tooltipData, handleMouseMove, handleCrossClick, disableViolinPlot, tooltip, horizontal }: CrossPlotProps) => {
+const CrossPlot = <T,>({ crossProps, left, top, median, firstQuartile, thirdQuartile, valueScale, medianWidth, tooltipData, handleMouseMove, handleCrossClick, disableViolinPlot, tooltip, horizontal }: CrossPlotProps<T>) => {
 
     return (
         <Group left={left} top={top}>

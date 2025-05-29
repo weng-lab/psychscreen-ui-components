@@ -1,18 +1,13 @@
 import { Tooltip } from "@visx/tooltip";
 import { TooltipProps } from "./types";
-import React from "react";
 
-const ViolinTooltip = ({ left, top, data, open }: TooltipProps) => {
+const ViolinTooltip = <T,>({ left, top, data, open, pointTooltipBody }: TooltipProps<T>) => {
     if (!open || !data) return null;
-
-    const isReactElement = (value: unknown): value is JSX.Element => {
-        return React.isValidElement(value);
-    };
 
     return (
         <Tooltip left={left + 10} top={top}>
-            {isReactElement(data) ? (
-                data
+            {pointTooltipBody && data.point ? (
+                pointTooltipBody(data.point)
             ) : (
                 Object.entries(data as Record<string, unknown>).map(([key, value]) => {
                     const formattedKey = key
