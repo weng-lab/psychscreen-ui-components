@@ -55,13 +55,13 @@ const SingleViolin = <T,>({
 
         const kde = kernelDensityEstimator(gaussian(bandwidth), ticks);
 
-        const densityData = kde(data)
+        const densityData = kde(data);
 
         return [...densityData].sort((a, b) => a.value - b.value)
     }, [data, max, min, violinProps])
 
     const violinWidth = labelScale.bandwidth();
-    const boxWidth = violinWidth * .25;
+    const boxWidth = crossProps?.medianWidth ?? violinWidth * .25;
 
     const violinTooltip: TooltipData<T> = useMemo(() => ({
         label: distribution.label,

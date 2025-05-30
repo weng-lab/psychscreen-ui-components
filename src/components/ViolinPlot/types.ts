@@ -35,6 +35,7 @@ export type CrossProps = {
     stroke?: number;
     outliers?: Outliers;
     medianColor?: string;
+    medianWidth?: number;
 }
 
 export type ViolinPlotProps<T> = {
