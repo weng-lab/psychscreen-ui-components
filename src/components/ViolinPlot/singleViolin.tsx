@@ -3,7 +3,6 @@ import React, { useCallback, useMemo } from "react";
 import CrossPlot from "./crossPlot";
 import { calculateBoxStats, scottRule, silvermanRule, kernelDensityEstimator, gaussian, seededRandom } from "./helpers";
 import { Point, SingleViolinProps, TooltipData } from "./types";
-import { ViolinPlot as VisxViolinPlot } from "@visx/stats";
 import ViolinTooltip from "./violinTooltip";
 import { Portal, useTooltip } from "@visx/tooltip";
 
@@ -95,6 +94,34 @@ const SingleViolin = <T,>({
         }
     };
 
+    //center of each Violin
+    const violinCenter = horizontal ? (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2 : (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2;
+    const widthScale = d3.scaleLinear()
+        .domain([0, d3.max(violinData, d => Math.abs(d.count)) || 1])
+        .range([0, violinWidth / 2]);
+
+    //filter out nan values if any
+    const filteredData = violinData.filter(d => d && d.count != null && d.value != null);
+
+    //mirror the data so that both sides are drawn
+    const points = [
+        ...filteredData.map(d => ({
+            x: violinCenter + widthScale(d.count),
+            y: valueScale(d.value),
+        })),
+        ...filteredData.slice().reverse().map(d => ({
+            x: violinCenter - widthScale(d.count),
+            y: valueScale(d.value),
+        }))
+    ];
+
+    if (points.length > 0) points.push(points[0]); // Close the path
+
+    const violinPath = d3.line<{ x: number; y: number }>()
+        .x(d => horizontal ? d.y : d.x)
+        .y(d => horizontal ? d.x : d.y)
+        .curve(d3.curveBasis)(points) ?? null;
+
     return (
         <React.Fragment key={distribution.label ?? `group-${distIndex}`}>
             {
@@ -104,34 +131,29 @@ const SingleViolin = <T,>({
                     onMouseLeave={hideTooltip}
                     transform={horizontal ? `translate(${offset}, 0)` : undefined}
                 >
-                    {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && !disableViolinPlot &&
-                        <VisxViolinPlot
-                            data={violinData}
-                            stroke={distribution.violinColor ?? "black"}
+                    {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && !disableViolinPlot && violinPath && (
+                        <path
+                            d={violinPath}
+                            fill={distribution.violinColor ?? 'none'}
+                            fillOpacity={distribution.opacity ?? 0.3}
+                            stroke={distribution.violinColor ?? 'black'}
+                            strokeOpacity={distribution.opacity ?? 1}
                             strokeWidth={
                                 tooltipData === violinTooltip
                                     ? (violinProps?.stroke ?? 1) + 1
                                     : violinProps?.stroke ?? 1
                             }
-                            //when horizontal is true, left prop is ignored hence the conditional translate in the g tag above
-                            left={(labelScale(labels[distIndex]) ?? 0) + offset}
-                            top={(labelScale(labels[distIndex]) ?? 0)}
-                            width={violinWidth}
-                            valueScale={valueScale}
-                            fill={distribution.violinColor ?? "none"}
-                            fillOpacity={distribution.opacity ?? 0.3}
-                            strokeOpacity={distribution.opacity ?? 1}
                             pointerEvents="all"
                             onMouseMove={(e) => handleMouseMove(e, violinTooltip)}
                             onClick={handleViolinClick}
-                            horizontal={horizontal}
                         />
+                    )
                     }
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && !disableCrossPlot &&
                         <CrossPlot
                             crossProps={crossProps}
-                            left={horizontal ? 0 : (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2}
-                            top={horizontal ? (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2 : 0}
+                            left={horizontal ? 0 : violinCenter}
+                            top={horizontal ? violinCenter : 0}
                             median={median}
                             firstQuartile={firstQuartile}
                             thirdQuartile={thirdQuartile}
@@ -147,12 +169,10 @@ const SingleViolin = <T,>({
                     }
                     {/* Outliers */}
                     {outlierPoints.map((outlier, index) => {
-                        const vertcx = (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2;
                         const vertcy = valueScale(outlier.value);
                         const horizoncx = valueScale(outlier.value)
-                        const horizoncy = (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2;
-                        const cx = horizontal ? horizoncx : vertcx
-                        const cy = horizontal ? horizoncy : vertcy
+                        const cx = horizontal ? horizoncx : violinCenter
+                        const cy = horizontal ? violinCenter : vertcy
 
                         const pointTooltip = {
                             outlier: true,
@@ -186,10 +206,8 @@ const SingleViolin = <T,>({
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && violinProps?.showAllPoints &&
                         pointsNoOutliers.map((point: Point<T>, index: number) => {
 
-                            const vertcx = (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2;
                             const vertcy = valueScale(point.value);
                             const horizoncx = valueScale(point.value)
-                            const horizoncy = (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2;
 
                             const jitterAmount = violinProps?.jitter ?? 0;
                             const seed = `${distribution.label}-${point}-${index}`;
@@ -197,8 +215,8 @@ const SingleViolin = <T,>({
                                 ? (seededRandom(seed) - 0.5) * 2 * jitterAmount
                                 : 0;
 
-                            const cx = horizontal ? horizoncx : vertcx + jitterX;
-                            const cy = horizontal ? horizoncy + jitterX : vertcy
+                            const cx = horizontal ? horizoncx : violinCenter + jitterX;
+                            const cy = horizontal ? violinCenter + jitterX : vertcy
 
                             const pointTooltip = {
                                 label: distribution.label,
@@ -230,12 +248,10 @@ const SingleViolin = <T,>({
                     {/* display points if data points are less than threshold (3) */}
                     {distribution.data.length < (violinProps?.pointDisplayThreshold ?? 3) &&
                         distribution.data.map((point: Point<T>, index: number) => {
-                            const vertcx = (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2;
                             const vertcy = valueScale(point.value);
                             const horizoncx = valueScale(point.value)
-                            const horizoncy = (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2;
-                            const cx = horizontal ? horizoncx : vertcx
-                            const cy = horizontal ? horizoncy : vertcy
+                            const cx = horizontal ? horizoncx : violinCenter
+                            const cy = horizontal ? violinCenter : vertcy
                             const radius = point.radius ?? 2;
 
                             const pointTooltip = {

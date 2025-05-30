@@ -35,7 +35,7 @@ function App() {
     <Stack>
       <Box
         padding={1}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "50vw", height: "100vh" }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "1600px", height: "800px" }}
         mt={2}
         mb={2}
         ml={10}
@@ -45,12 +45,11 @@ function App() {
           distributions={sp1Screen}
           loading={false}
           axisLabel="SCREEN Gene Expression (SP1)"
-          labelOrientation="horizontal"
-          horizontal
+          labelOrientation="vertical"
           violinProps={{
-            bandwidth: "silverman",
-            showAllPoints: true,
-            jitter: 10,
+            bandwidth: "scott",
+            // showAllPoints: true,
+            // jitter: 10,
           }}
           crossProps={{
             outliers: "all"
