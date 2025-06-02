@@ -26,3 +26,5 @@ dist-ssr
 *storybook.log
 
 .yarnrc.yml
+.yarn
+.yarn/install-state.gz
