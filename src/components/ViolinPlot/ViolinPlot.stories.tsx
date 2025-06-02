@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 import ViolinPlot from './violinPlot';
 import { testData } from './testData';
+import { Box, Typography } from '@mui/material';
 
 const meta = {
     title: 'ViolinPlot',
@@ -122,11 +123,22 @@ export const ViolinAndPointClick: Story = {
     },
 };
 
-export const CustomTooltip: Story = {
+export const CustomPointTooltip: Story = {
     args: {
         distributions: testData,
         loading: false,
         axisLabel: "Axis Label",
         labelOrientation: "rightDiagonal",
+        violinProps: {
+            showAllPoints: true,
+            jitter: 20
+        },
+        pointTooltipBody:(point) => {
+            return (
+                <Box sx={{ textAlign: "center", p: 1 }}>
+                  <Typography>Custom Tooltip: {point.value}</Typography>
+                </Box>
+            );
+        }
     },
 };
