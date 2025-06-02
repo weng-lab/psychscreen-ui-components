@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import React, { useCallback, useMemo } from "react";
 import CrossPlot from "./crossPlot";
 import { calculateBoxStats, scottRule, silvermanRule, kernelDensityEstimator, gaussian, seededRandom } from "./helpers";
-import { Point, SingleViolinProps, TooltipData } from "./types";
+import { ViolinPoint, SingleViolinProps, TooltipData } from "./types";
 import ViolinTooltip from "./violinTooltip";
 import { Portal, useTooltip } from "@visx/tooltip";
 
@@ -37,8 +37,8 @@ const SingleViolin = <T,>({
     //get all the stats for the box plot
     const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(data, crossProps?.outliers ?? "all");
 
-    const outlierPoints: Point<T>[] = distribution.data.filter(d => outliers.includes(d.value))
-    const pointsNoOutliers: Point<T>[] = distribution.data.filter(d => !outliers.includes(d.value))
+    const outlierPoints: ViolinPoint<T>[] = distribution.data.filter(d => outliers.includes(d.value))
+    const pointsNoOutliers: ViolinPoint<T>[] = distribution.data.filter(d => !outliers.includes(d.value))
 
     const violinData = useMemo(() => {
         const ticks = d3.range(min, max, .1);
@@ -70,7 +70,7 @@ const SingleViolin = <T,>({
         thirdQuartile: thirdQuartile.toFixed(2)
     }), [distribution.label, distribution.data.length, median, firstQuartile, thirdQuartile]);
 
-    const handleMouseMove = useCallback((event: React.MouseEvent<SVGPathElement>, data: TooltipData<T>, point?: Point<T>) => {
+    const handleMouseMove = useCallback((event: React.MouseEvent<SVGPathElement>, data: TooltipData<T>, point?: ViolinPoint<T>) => {
         showTooltip({
             tooltipData: point && pointTooltipBody ? { point: point } : data,
             tooltipLeft: event.pageX,
@@ -86,7 +86,7 @@ const SingleViolin = <T,>({
         }
     };
 
-    const handlePointClick = (point: Point<T>) => {
+    const handlePointClick = (point: ViolinPoint<T>) => {
         if (!onPointClicked || !tooltipData) return;
 
         if (tooltipData) {
@@ -204,7 +204,7 @@ const SingleViolin = <T,>({
                     })}
                     {/* show all poionts for each distribution */}
                     {distribution.data.length >= (violinProps?.pointDisplayThreshold ?? 3) && violinProps?.showAllPoints &&
-                        pointsNoOutliers.map((point: Point<T>, index: number) => {
+                        pointsNoOutliers.map((point: ViolinPoint<T>, index: number) => {
 
                             const vertcy = valueScale(point.value);
                             const horizoncx = valueScale(point.value)
@@ -247,7 +247,7 @@ const SingleViolin = <T,>({
                     }
                     {/* display points if data points are less than threshold (3) */}
                     {distribution.data.length < (violinProps?.pointDisplayThreshold ?? 3) &&
-                        distribution.data.map((point: Point<T>, index: number) => {
+                        distribution.data.map((point: ViolinPoint<T>, index: number) => {
                             const vertcy = valueScale(point.value);
                             const horizoncx = valueScale(point.value)
                             const cx = horizontal ? horizoncx : violinCenter

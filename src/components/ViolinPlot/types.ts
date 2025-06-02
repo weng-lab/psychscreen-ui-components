@@ -7,7 +7,7 @@ export type Datum = {
     count: number
 }[]
 
-export type Point<T> = {
+export type ViolinPoint<T> = {
     value: number;
     color?: string;
     radius?: number;
@@ -16,7 +16,7 @@ export type Point<T> = {
 }
 
 export type Distribution<T> = {
-    data: Point<T>[];
+    data: ViolinPoint<T>[];
     label?: string;
     violinColor?: string;
     opacity?: number;
@@ -49,8 +49,8 @@ export type ViolinPlotProps<T> = {
     horizontal?: boolean;
     labelOrientation?: "horizontal" | "vertical" | "leftDiagonal" | "rightDiagonal"
     onViolinClicked?: (distribution: Distribution<T>) => void;
-    onPointClicked?: (point: Point<T>) => void;
-    pointTooltipBody?: (point: Point<T>) => JSX.Element;
+    onPointClicked?: (point: ViolinPoint<T>) => void;
+    pointTooltipBody?: (point: ViolinPoint<T>) => JSX.Element;
 }
 
 export interface CrossPlotProps<T> {
@@ -72,7 +72,7 @@ export interface CrossPlotProps<T> {
 
 
 export interface TooltipData<T> {
-    point?: Point<T>;
+    point?: ViolinPoint<T>;
     label?: string;
     min?: string;
     median?: string;
@@ -89,7 +89,7 @@ export interface TooltipProps<T> {
     top: number;
     data: TooltipData<T>;
     open: boolean;
-    pointTooltipBody?: (point: Point<T>) => JSX.Element;
+    pointTooltipBody?: (point: ViolinPoint<T>) => JSX.Element;
 }
 
 export interface SingleViolinProps<T> {
@@ -104,7 +104,7 @@ export interface SingleViolinProps<T> {
     disableViolinPlot: boolean;
     disableCrossPlot: boolean;
     horizontal: boolean;
-    pointTooltipBody?: (point: Point<T>) => JSX.Element;
+    pointTooltipBody?: (point: ViolinPoint<T>) => JSX.Element;
     onViolinClicked?: (distribution: Distribution<T>) => void | undefined;
-    onPointClicked?: (point: Point<T>) => void | undefined;
+    onPointClicked?: (point: ViolinPoint<T>) => void | undefined;
 }
