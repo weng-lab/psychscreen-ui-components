@@ -80,13 +80,10 @@ function App() {
         <ViolinBoxPlot
           distributions={distributions}
           loading={false}
-          axisLabel="GTEX Gene Expression (SP1)"
+          axisLabel="Factorbook Tissues"
           labelOrientation="rightDiagonal"
           violinProps={{
             bandwidth: "scott",
-          }}
-          crossProps={{
-            outliers: "all",
           }}
         />
       </Box>
