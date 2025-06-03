@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { Box, Stack, Typography } from "@mui/material";
 import ViolinBoxPlot from "./components/ViolinPlot/violinPlot";
 import { useRef } from "react";
-import { sp1AdiposeSub, sp1AdiposeVisceral, sp1EsophagusMucosa, sp1KidneyMedulla, wholeBlood, sp1Screen } from "./components/ViolinPlot/testData";
+import { sp1AdiposeSub, sp1AdiposeVisceral, sp1EsophagusMucosa, sp1KidneyMedulla, wholeBlood, sp1Screen, factobook } from "./components/ViolinPlot/testData";
 
 function App() {
 
@@ -78,15 +78,12 @@ function App() {
         ref={ref}
       >
         <ViolinBoxPlot
-          distributions={distributions}
+          distributions={factobook}
           loading={false}
-          axisLabel="GTEX Gene Expression (SP1)"
+          axisLabel="Factorbook Tissues"
           labelOrientation="rightDiagonal"
           violinProps={{
             bandwidth: "scott",
-          }}
-          crossProps={{
-            outliers: "all",
           }}
         />
       </Box>
