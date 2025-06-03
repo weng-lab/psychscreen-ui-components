@@ -232,6 +232,7 @@ const ViolinPlot = <T extends object>(
                     {props.distributions.map((x: Distribution<T>, i) => {
                         return (
                             <SingleViolin
+                                key={i}
                                 distribution={x}
                                 distIndex={i}
                                 violinProps={props.violinProps}
