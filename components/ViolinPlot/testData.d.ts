@@ -23,3 +23,10 @@ export declare const testData: {
     }[];
     violinColor: string;
 }[];
+export declare const factobook: {
+    label: string;
+    data: {
+        value: number;
+    }[];
+    violinColor: string;
+}[];
