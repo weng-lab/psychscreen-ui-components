@@ -41,6 +41,7 @@ export type CrossProps = {
 export type ViolinPlotProps<T> = {
     distributions: Distribution<T>[];
     loading: boolean;
+    svgRef?: React.RefObject<SVGSVGElement>;
     axisLabel?: string;
     disableCrossPlot?: boolean;
     disableViolinPlot?: boolean;
