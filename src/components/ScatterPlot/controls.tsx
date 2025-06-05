@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { ControlButtonsProps } from "./types";
 import { IconButton, Stack, Tooltip } from "@mui/material";
-import { ZoomIn, ZoomOut, PanTool, Edit, SettingsBackupRestore } from "@mui/icons-material"
+import { ZoomIn, ZoomOut, PanTool, Edit, SettingsBackupRestore, Download } from "@mui/icons-material"
 
 const ControlButtons = ({
     selectable,
@@ -12,7 +12,9 @@ const ControlButtons = ({
     zoomOut,
     zoomReset,
     position,
-    highlight
+    highlight,
+    downloadButton,
+    downloadPlot
 }: ControlButtonsProps) => {
 
     useEffect(() => {
@@ -27,7 +29,7 @@ const ControlButtons = ({
                         handleSelectionModeChange('select'); // Switch back to select mode when Shift is released
                     }
                 };
-    
+
                 window.addEventListener('keyup', handleKeyUp);
                 return () => {
                     window.removeEventListener('keyup', handleKeyUp);
@@ -81,9 +83,15 @@ const ControlButtons = ({
                             <SettingsBackupRestore />
                         </IconButton>
                     </Tooltip>
+                    {downloadButton === "inline" && (
+                        <Tooltip title="Download Plot as PNG">
+                            <IconButton aria-label="download" onClick={() => downloadPlot()}>
+                                <Download />
+                            </IconButton>
+                        </Tooltip>
+                    )}
                 </Stack>
-            )
-            }
+            )}
         </>
 
     );

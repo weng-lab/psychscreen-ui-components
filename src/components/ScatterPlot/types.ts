@@ -1,6 +1,8 @@
 import { ScaleLinear } from '@visx/vendor/d3-scale';
 import { ProvidedZoom } from "@visx/zoom/lib/types";
 
+type Download = "none" | "inline" | "topRight" | "topLeft" | "bottomRight" | "bottomLeft"
+
 /**
     All information given to a point on the plot, including its coordinates(x and y), its radius, color, and opacity, and its metadata information
     which can be any amount of strings used to display in the tooltip
@@ -203,18 +205,23 @@ export type ChartProps<T, S extends boolean | undefined, Z extends boolean | und
     bottomAxisLabel?: string;
     initialState?: InitialState<S, Z>;
     /**
-     * example usage in parent
+     * example usage in parent to externally download component
      * 
-     * const downloadFnRef = useRef<(filename?: string) => void>(() => {});
+     *  const downloadFnRef = useRef<(filename?: string) => void>(() => {});
 
         const handleDownloadClick = () => {
-        downloadFnRef.current?.('custom-name.png');
+            downloadFnRef.current?.('custom-name.png');
         };
 
         <ScatterPlot registerDownload={(fn) => (downloadFnRef.current = fn)} />
         <button onClick={handleDownloadClick}>Download</button>
      */
     registerDownload?: (downloadFn: (filename?: string) => void) => void;
+    /**
+     * Download Button positioning to internally download component
+     * Default none
+     */
+    downloadButton?: Download;
 };
 
 export type Line = { x: number; y: number }[];
@@ -245,6 +252,8 @@ export type ControlButtonsProps = {
     zoomReset: () => void;
     position?: "left" | "bottom" | "right";
     highlight?: string;
+    downloadButton: Download;
+    downloadPlot: () => void;
 }
 
 interface TransformMatrix {
