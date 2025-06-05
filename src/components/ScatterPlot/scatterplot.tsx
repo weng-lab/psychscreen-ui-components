@@ -17,10 +17,11 @@ import ScatterTooltip from './tooltip';
 import ControlButtons from './controls';
 import { Box, IconButton, Stack, Tooltip } from '@mui/material';
 import { ScaleLinear } from '@visx/vendor/d3-scale';
-import { HighlightAlt } from "@mui/icons-material"
+import { HighlightAlt, Download } from "@mui/icons-material"
 import MiniMap from './minimap';
 import { HandlerArgs } from '@visx/drag/lib/useDrag';
 import { useParentSize } from '@visx/responsive';
+import { handleDownload } from './helpers';
 
 const initialTransformMatrix = {
     scaleX: 1,
@@ -57,6 +58,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     const size = Math.min(parentHeight, parentWidth)
 
     const graphRef = useRef<SVGRectElement | null>(null);
+    const divRef = React.useRef<HTMLDivElement>(null);
 
     const [tooltipData, setTooltipData] = React.useState<Point<T> | null>(null);
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
@@ -71,6 +73,16 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     const boundedHeight = boundedWidth;
     const hoveredPoint = tooltipData ? props.pointData.find(point => point.x === tooltipData.x && point.y === tooltipData.y) : null;
     const [previousDisplayedPoints, setPreviousDisplayedPoints] = useState<Point<T>[]>([])
+    const downloadButton = props.downloadButton ?? "none"
+
+    // taken from chat strugled to figure out how to download canvas and svg together
+    useEffect(() => {
+        if (!props.registerDownload) return;
+
+        props.registerDownload((filename = 'scatterPlot.png') => {
+            handleDownload(divRef.current, filename);
+        });
+    }, [props, props.registerDownload]);
 
     useEffect(() => {
         const graphElement = graphRef.current;
@@ -419,6 +431,10 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
         }
     }, [boundedWidth, boundedHeight, groupedPoints, props, previousDisplayedPoints])
 
+    const downloadPlot = () => {
+        handleDownload(divRef.current);
+    };
+
     //Axis styling
     const axisLeftLabel = (
         <Text
@@ -497,8 +513,29 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                         zoomReset={handleZoomReset}
                                         position={props.controlsPosition}
                                         highlight={props.controlsHighlight}
+                                        downloadButton={downloadButton}
+                                        downloadPlot={downloadPlot}
                                     />
                                 </Stack>
+                            )}
+                            {/* download button based on positioning */}
+                            {["topRight", "topLeft", "bottomRight", "bottomLeft"].includes(downloadButton) && (
+                                <Tooltip title="Download Plot as PNG">
+                                    <IconButton
+                                        aria-label="download"
+                                        onClick={() => downloadPlot()}
+                                        sx={{
+                                            position: "absolute",
+                                            zIndex: 10,
+                                            ...(downloadButton === "topRight" && { top: 10, right: 10 }),
+                                            ...(downloadButton === "topLeft" && { top: 10, left: 10 }),
+                                            ...(downloadButton === "bottomRight" && { bottom: 10, right: 10 }),
+                                            ...(downloadButton === "bottomLeft" && { bottom: 10, left: 10 }),
+                                        }}
+                                    >
+                                        <Download />
+                                    </IconButton>
+                                </Tooltip>
                             )}
                             {/* Zoomable Group for Points */}
                             <Stack justifyContent="center" alignItems="center" direction="row" sx={{ position: "relative" }}>
@@ -508,7 +545,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                             <CircularProgress />
                                         </Box>
                                     ) : (
-                                        <div style={{ position: 'relative' }}>
+                                        <div style={{ position: 'relative' }} ref={divRef} >
                                             <canvas
                                                 ref={(canvas) => {
                                                     if (canvas) {

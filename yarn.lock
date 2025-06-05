@@ -2299,6 +2299,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/dom-to-image@npm:^2":
+  version: 2.6.7
+  resolution: "@types/dom-to-image@npm:2.6.7"
+  checksum: 10c0/2f5045f116fba81fade6df5f4c6435280a6bf693a10df4ef6b0b586339833e1fe70649ffa8dc2cd221e65c1a87bc81d4765a4b6ee30da457f2bc5be92de9aa90
+  languageName: node
+  linkType: hard
+
+"@types/downloadjs@npm:^1.4.6":
+  version: 1.4.6
+  resolution: "@types/downloadjs@npm:1.4.6"
+  checksum: 10c0/c807ce77cd5035c7a35e58e40b1a0331fd23bd9e7776b0bc7b34a7bc0e4d0e210d5b1304e1c34d236a6fd72f8d31924b08e0f7f657d5e18fba2a2144172d6547
+  languageName: node
+  linkType: hard
+
 "@types/estree@npm:1.0.7, @types/estree@npm:^1.0.0":
   version: 1.0.7
   resolution: "@types/estree@npm:1.0.7"
@@ -3055,6 +3069,8 @@ __metadata:
     "@tanstack/react-query": "npm:^5.67.1"
     "@types/cytoscape": "npm:^3.21.8"
     "@types/d3": "npm:^7"
+    "@types/dom-to-image": "npm:^2"
+    "@types/downloadjs": "npm:^1.4.6"
     "@types/node": "npm:^22.15.17"
     "@types/react": "npm:^18.3.9"
     "@types/react-dom": "npm:^18.3.0"
@@ -3071,6 +3087,8 @@ __metadata:
     cytoscape-cose-bilkent: "npm:^4.1.0"
     cytoscape-popper: "npm:^4.0.1"
     d3: "npm:^7.9.0"
+    dom-to-image: "npm:^2.6.0"
+    downloadjs: "npm:^1.4.7"
     eslint: "npm:^8.0.0"
     eslint-plugin-react-hooks: "npm:^5.1.0-rc.0"
     eslint-plugin-react-refresh: "npm:^0.4.12"
@@ -4199,6 +4217,20 @@ __metadata:
     "@babel/runtime": "npm:^7.8.7"
     csstype: "npm:^3.0.2"
   checksum: 10c0/f735074d66dd759b36b158fa26e9d00c9388ee0e8c9b16af941c38f014a37fc80782de83afefd621681b19ac0501034b4f1c4a3bff5caa1b8667f0212b5e124c
+  languageName: node
+  linkType: hard
+
+"dom-to-image@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "dom-to-image@npm:2.6.0"
+  checksum: 10c0/6c77851d2f301d2a4bbc3fa3f9d6f152bcc4f2a20b57185b9fa1fd81244c0c9a0c7f6deffb30461bba57d83f8b37d905fb5440d9bcda5b7221b968001a2c94fe
+  languageName: node
+  linkType: hard
+
+"downloadjs@npm:^1.4.7":
+  version: 1.4.7
+  resolution: "downloadjs@npm:1.4.7"
+  checksum: 10c0/a89af5fc0b0034402ca2d58c8a09e2baaabdd6b7be47bf227755f50bddd3463eae1abaab6bf68b9b4814ce7cc39d63af9066df8a94c5269a30e75eb57c622f38
   languageName: node
   linkType: hard
 
