@@ -21,6 +21,8 @@ import { HighlightAlt } from "@mui/icons-material"
 import MiniMap from './minimap';
 import { HandlerArgs } from '@visx/drag/lib/useDrag';
 import { useParentSize } from '@visx/responsive';
+import downloadjs from 'downloadjs';
+import domtoimage from 'dom-to-image';
 
 const initialTransformMatrix = {
     scaleX: 1,
@@ -57,6 +59,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     const size = Math.min(parentHeight, parentWidth)
 
     const graphRef = useRef<SVGRectElement | null>(null);
+    const divRef = React.useRef<HTMLDivElement>(null);
 
     const [tooltipData, setTooltipData] = React.useState<Point<T> | null>(null);
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
@@ -71,6 +74,23 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
     const boundedHeight = boundedWidth;
     const hoveredPoint = tooltipData ? props.pointData.find(point => point.x === tooltipData.x && point.y === tooltipData.y) : null;
     const [previousDisplayedPoints, setPreviousDisplayedPoints] = useState<Point<T>[]>([])
+
+    // taken from chat strugled to figure out how to download canvas and svg together
+    useEffect(() => {
+        if (!props.registerDownload) return;
+
+        props.registerDownload((filename = 'scatterPlot.png') => {
+            if (!divRef.current) return;
+
+            domtoimage.toPng(divRef.current)
+                .then((dataUrl) => {
+                    downloadjs(dataUrl, filename, 'image/png');
+                })
+                .catch((error) => {
+                    console.error('Download failed:', error);
+                });
+        });
+    }, [props, props.registerDownload]);
 
     useEffect(() => {
         const graphElement = graphRef.current;
@@ -508,7 +528,7 @@ const ScatterPlot = <T extends object, S extends boolean | undefined = undefined
                                             <CircularProgress />
                                         </Box>
                                     ) : (
-                                        <div style={{ position: 'relative' }}>
+                                        <div style={{ position: 'relative' }} ref={divRef} >
                                             <canvas
                                                 ref={(canvas) => {
                                                     if (canvas) {

@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import ViolinBoxPlot from "./components/ViolinPlot/violinPlot";
 import { useRef } from "react";
 import { sp1AdiposeSub, sp1AdiposeVisceral, sp1EsophagusMucosa, sp1KidneyMedulla, wholeBlood, sp1Screen } from "./components/ViolinPlot/testData";
@@ -15,7 +15,6 @@ type Point = {
 function App() {
 
   const ref = useRef()
-  const svgRef = useRef<SVGSVGElement>(null);
 
   const distributions = [
     {
@@ -46,27 +45,15 @@ function App() {
     { x: 5, y: 6, color: 'green', shape: "circle" },
 ];
 
-  const downloadSVG = (ref: React.RefObject<SVGSVGElement>, filename: string) => {
-    if (!ref.current) {
-      console.error('SVG reference is not set.');
-      return;
-    }
-    
-    const serializer = new XMLSerializer();
-    const source = serializer.serializeToString(ref.current);
-    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filename}.svg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+const downloadFnRef = useRef<(filename?: string) => void>(() => {});
+
+  const handleDownloadClick = () => {
+    downloadFnRef.current?.('custom-name.png');
+  };
 
   return (
     <Stack>
-      <Button onClick={() => downloadSVG(svgRef, 'test')}>DownloadSVG</Button>
+      <button onClick={handleDownloadClick}>Download Graph</button>
       <Box
         padding={1}
         sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative", width: "1600px", height: "800px" }}
@@ -88,7 +75,7 @@ function App() {
                 selectionType: "pan"
             }
         }}
-        svgRef={svgRef}
+        registerDownload={(fn) => (downloadFnRef.current = fn)}
         />
         </Box>
       <Box

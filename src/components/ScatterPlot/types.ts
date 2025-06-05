@@ -202,6 +202,19 @@ export type ChartProps<T, S extends boolean | undefined, Z extends boolean | und
     leftAxisLabel?: string;
     bottomAxisLabel?: string;
     initialState?: InitialState<S, Z>;
+    /**
+     * example usage in parent
+     * 
+     * const downloadFnRef = useRef<(filename?: string) => void>(() => {});
+
+        const handleDownloadClick = () => {
+        downloadFnRef.current?.('custom-name.png');
+        };
+
+        <ScatterPlot registerDownload={(fn) => (downloadFnRef.current = fn)} />
+        <button onClick={handleDownloadClick}>Download</button>
+     */
+    registerDownload?: (downloadFn: (filename?: string) => void) => void;
 };
 
 export type Line = { x: number; y: number }[];
