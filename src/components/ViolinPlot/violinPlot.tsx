@@ -24,10 +24,10 @@ const ViolinPlot = <T extends object>(
     //If the label orientation is anything but horizontal, find the max height of the elements, otherwise set to fontsize
     const maxLabelHeight = props.horizontal ? ((labelOrientation === "vertical" ? fontSize : Math.max(
         ...labels.map(label => getTextHeight(label, fontSize, "Arial"))
-    ) / (labelOrientation !== "horizontal" ? 1.5 : 1))) :
+    ) / (labelOrientation !== "horizontal" ? 1.25 : 1))) :
         (labelOrientation === "horizontal" ? fontSize : Math.max(
             ...labels.map(label => getTextHeight(label, fontSize, "Arial"))
-        ) / (labelOrientation !== "vertical" ? 1.5 : 1));
+        ) / (labelOrientation !== "vertical" ? 1.25 : 1));
 
     const baseOffset = 40;
     const offset = props.horizontal ? labelOrientation !== "vertical" ? maxLabelHeight / 1.75 : maxLabelHeight : baseOffset;
@@ -57,20 +57,22 @@ const ViolinPlot = <T extends object>(
     }, [vertXMax, labels]);
 
     const vertYScale = useMemo(() => {
+        const padding = .07 * (maxYValue - minYValue)
         return scaleLinear<number>({
             range: [vertYMax, 0],
             round: true,
             // Make the bottom most tick 7% of the domain less so that there is room between the lowest plot and the bottom axis
-            domain: [minYValue - 0.07 * (maxYValue - minYValue), maxYValue],
+            domain: [minYValue - padding, maxYValue + padding],
         });
     }, [vertYMax, minYValue, maxYValue]);
 
     const horizonXScale = useMemo(() => {
+        const padding = .07 * (maxYValue - minYValue)
         return scaleLinear<number>({
             range: [0, horizonXMax],
             round: true,
             // Make the bottom most tick 7% of the domain less so that there is room between the lowest plot and the bottom axis
-            domain: [minYValue - 0.07 * (maxYValue - minYValue), maxYValue],
+            domain: [minYValue - padding, maxYValue + padding],
         });
     }, [horizonXMax, minYValue, maxYValue]);
 
@@ -104,7 +106,7 @@ const ViolinPlot = <T extends object>(
             angle={-90}
             fontSize={fontSize}
             y={vertYMax / 2}
-            x={0}
+            x={-10}
         >
             {props.axisLabel}
         </Text>
