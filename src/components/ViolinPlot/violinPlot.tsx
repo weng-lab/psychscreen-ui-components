@@ -106,7 +106,7 @@ const ViolinPlot = <T extends object>(
             angle={-90}
             fontSize={fontSize}
             y={vertYMax / 2}
-            x={0}
+            x={-10}
         >
             {props.axisLabel}
         </Text>
