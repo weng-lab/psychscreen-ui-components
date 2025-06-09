@@ -24,10 +24,10 @@ const ViolinPlot = <T extends object>(
     //If the label orientation is anything but horizontal, find the max height of the elements, otherwise set to fontsize
     const maxLabelHeight = props.horizontal ? ((labelOrientation === "vertical" ? fontSize : Math.max(
         ...labels.map(label => getTextHeight(label, fontSize, "Arial"))
-    ) / (labelOrientation !== "horizontal" ? 1.5 : 1))) :
+    ) / (labelOrientation !== "horizontal" ? 1.25 : 1))) :
         (labelOrientation === "horizontal" ? fontSize : Math.max(
             ...labels.map(label => getTextHeight(label, fontSize, "Arial"))
-        ) / (labelOrientation !== "vertical" ? 1.5 : 1));
+        ) / (labelOrientation !== "vertical" ? 1.25 : 1));
 
     const baseOffset = 40;
     const offset = props.horizontal ? labelOrientation !== "vertical" ? maxLabelHeight / 1.75 : maxLabelHeight : baseOffset;
