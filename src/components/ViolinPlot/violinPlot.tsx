@@ -57,20 +57,22 @@ const ViolinPlot = <T extends object>(
     }, [vertXMax, labels]);
 
     const vertYScale = useMemo(() => {
+        const padding = .07 * (maxYValue - minYValue)
         return scaleLinear<number>({
             range: [vertYMax, 0],
             round: true,
             // Make the bottom most tick 7% of the domain less so that there is room between the lowest plot and the bottom axis
-            domain: [minYValue - 0.07 * (maxYValue - minYValue), maxYValue],
+            domain: [minYValue - padding, maxYValue + padding],
         });
     }, [vertYMax, minYValue, maxYValue]);
 
     const horizonXScale = useMemo(() => {
+        const padding = .07 * (maxYValue - minYValue)
         return scaleLinear<number>({
             range: [0, horizonXMax],
             round: true,
             // Make the bottom most tick 7% of the domain less so that there is room between the lowest plot and the bottom axis
-            domain: [minYValue - 0.07 * (maxYValue - minYValue), maxYValue],
+            domain: [minYValue - padding, maxYValue + padding],
         });
     }, [horizonXMax, minYValue, maxYValue]);
 
