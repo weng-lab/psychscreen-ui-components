@@ -60,7 +60,7 @@ const SingleViolin = <T,>({
         return [...densityData].sort((a, b) => a.value - b.value)
     }, [data, max, min, violinProps])
 
-    const violinWidth = labelScale.bandwidth();
+    const violinWidth = Math.min(labelScale.bandwidth(), 50);
     const boxWidth = crossProps?.medianWidth ?? violinWidth * .25;
 
     const violinTooltip: TooltipData<T> = useMemo(() => ({
@@ -96,7 +96,7 @@ const SingleViolin = <T,>({
     };
 
     //center of each Violin
-    const violinCenter = horizontal ? (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2 : (labelScale(labels[distIndex]) ?? 0) + offset + violinWidth / 2;
+    const violinCenter = horizontal ? (labelScale(labels[distIndex]) ?? 0) + violinWidth / 2 : (labelScale(labels[distIndex]) ?? 0) + offset + labelScale.bandwidth() / 2;
     const widthScale = d3.scaleLinear()
         .domain([0, d3.max(violinData, d => Math.abs(d.count)) || 1])
         .range([0, violinWidth / 2]);
