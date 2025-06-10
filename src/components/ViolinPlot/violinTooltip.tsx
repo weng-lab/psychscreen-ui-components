@@ -1,11 +1,11 @@
-import { Tooltip } from "@visx/tooltip";
+import { TooltipWithBounds } from "@visx/tooltip";
 import { TooltipProps } from "./types";
 
 const ViolinTooltip = <T,>({ left, top, data, open, pointTooltipBody }: TooltipProps<T>) => {
     if (!open || !data) return null;
 
     return (
-        <Tooltip left={left + 10} top={top}>
+        <TooltipWithBounds left={left + 10} top={top}>
             {pointTooltipBody && data.point ? (
                 pointTooltipBody(data.point)
             ) : (
@@ -34,7 +34,7 @@ const ViolinTooltip = <T,>({ left, top, data, open, pointTooltipBody }: TooltipP
                     }
                 })
             )}
-        </Tooltip>
+        </TooltipWithBounds>
     );
 };
 

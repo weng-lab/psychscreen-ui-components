@@ -12,7 +12,7 @@ export type ViolinPoint<T> = {
     color?: string;
     radius?: number;
     opacity?: number;
-    metaData?: T;
+    metadata?: T;
 }
 
 export type Distribution<T> = {
