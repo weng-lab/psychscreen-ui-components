@@ -9,6 +9,7 @@ export type Datum = {
 
 export type ViolinPoint<T> = {
     value: number;
+    outlier?: boolean;
     color?: string;
     radius?: number;
     opacity?: number;
