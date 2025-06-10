@@ -37,7 +37,12 @@ const SingleViolin = <T,>({
     //get all the stats for the box plot
     const { min, max, firstQuartile, thirdQuartile, median, outliers } = calculateBoxStats(data, crossProps?.outliers ?? "all");
 
-    const outlierPoints: ViolinPoint<T>[] = distribution.data.filter(d => outliers.includes(d.value))
+    const outlierPoints: ViolinPoint<T>[] = distribution.data
+        .filter(d => outliers.includes(d.value))
+        .map(d => ({
+            ...d,
+            outlier: true
+        }));
     const pointsNoOutliers: ViolinPoint<T>[] = distribution.data.filter(d => !outliers.includes(d.value))
 
     const violinData = useMemo(() => {
